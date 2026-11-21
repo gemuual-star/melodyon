@@ -102,3 +102,11 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - CI на 6d92633: 3860 тестов, 0 упало, 7 пропущено; debug APK собран. Release build успешен; ассеты v1.0.0 (prerelease) в melodyon-releases заменены.
 - Живая проверка из песочницы: поиск, client_id, получение HLS-плейлиста и сегментов работают. В приложении на устройстве НЕ проверено.
 - Не проверено: воспроизведение HLS fMP4 на Desktop (ffmpeg открывает URL напрямую); скачанный файл fMP4 на Android в .m4a.
+
+## Релиз v1.0.1 (коммит 7815dda)
+- appVersion=1.0.1 (gradle.properties), versionCode=2 (androidApp/build.gradle.kts).
+- CI 44938469854 и Release build 44938468645 на 7815dda зелёные. Подпись APK тем же сертификатом, что и 1.0.0 (SHA-256 4e038a3a…cf9e).
+- Опубликован как обычный (не prerelease) релиз v1.0.1 в gemuual-star/melodyon-releases, отмечен latest.
+- ВАЖНО, имена ассетов: Android-апдейтер (`AppUpdateManager.GitHubRelease.apk`) берёт APK только с именем `Melodyon-Android-<версия>.apk` (или из PREFERRED_APK_NAMES) и требует sha256-digest ассета. Windows-апдейтер ставит только `melodyon-installer-windows-x64-<версия>.exe` в зарегистрированную установку; портативный ZIP сам не обновляется.
+- Не проверено: обновление 1.0.0 → 1.0.1 изнутри приложения на устройстве; работа SoundCloud в приложении.
+- Публикация: скачать артефакты android-release и windows-x64 прогона Release build, создать draft-релиз через API, загрузить ассеты на uploads.github.com, снять draft.
