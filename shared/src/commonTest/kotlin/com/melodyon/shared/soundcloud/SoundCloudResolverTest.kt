@@ -38,7 +38,7 @@ class SoundCloudResolverTest {
     @Test
     fun hlsStreamsAreMarkedAsPlaylists() = runTest {
         val resolver = SoundCloudStreamResolver(FakeYouTube()) { ResolvedStream("https://x/playlist.m3u8", isHls = true, mimeType = "audio/mpeg") }
-        assertEquals("application/x-mpegurl", resolver.refresh("sc:1").mimeType)
+        assertEquals("application/x-mpegURL", resolver.refresh("sc:1").mimeType)
     }
 
     @Test
