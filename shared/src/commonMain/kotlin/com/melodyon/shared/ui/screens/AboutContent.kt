@@ -241,15 +241,10 @@ data class AboutCommunityLink(
     val url: String,
 )
 
-val aboutCommunityLinks: List<AboutCommunityLink> =
-    listOf(
-        AboutCommunityLink(AboutCommunityLinkKind.DISCORD, "https://discord.com/invite/zrdbeRG2Mt"),
-        AboutCommunityLink(AboutCommunityLinkKind.TELEGRAM, "https://t.me/melodyonapp"),
-        AboutCommunityLink(AboutCommunityLinkKind.REPOSITORY, "https://github.com/MelodyonGroup/Melodyon"),
-    )
+val aboutCommunityLinks: List<AboutCommunityLink> = emptyList()
 
 val aboutLicenseLink: AboutCommunityLink =
-    AboutCommunityLink(AboutCommunityLinkKind.LICENSE, "https://github.com/MelodyonGroup/Melodyon/blob/main/LICENSE")
+    AboutCommunityLink(AboutCommunityLinkKind.LICENSE, "https://www.gnu.org/licenses/gpl-3.0.html")
 
 data class AboutScreenText(
     val title: String,

@@ -6,7 +6,7 @@ import kotlin.test.assertNull
 
 class LatestReleaseTest {
     private fun response(tag: String) =
-        """{"tag_name":"$tag","html_url":"https://github.com/MelodyonGroup/Melodyon/releases/tag/$tag","assets":[]}"""
+        """{"tag_name":"$tag","html_url":"https://github.com/gemuual-star/melodyon-releases/releases/tag/$tag","assets":[]}"""
 
     @Test
     fun reportsOnlyANewerParseableRelease() {

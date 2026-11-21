@@ -295,10 +295,6 @@ private fun OnboardingPageLayout(
                                         }
                                     }
                                 }
-                                if (pageContent.page == OnboardingPage.CRASH_REPORTS || pageWelcome) {
-                                    Spacer(Modifier.height(16.dp))
-                                    PrivacyLink()
-                                }
                                 featureContent(pageContent.page)
                                 pageContent.error?.let {
                                     Text(
@@ -321,29 +317,6 @@ private fun OnboardingPageLayout(
                         .padding(horizontal = gutter, vertical = 16.dp),
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun PrivacyLink() {
-    val uriHandler = LocalUriHandler.current
-    val privacyUrl = "https://melodyon.cc/privacy"
-    var openFailed by remember { mutableStateOf(false) }
-    Column {
-        TextButton(
-            onClick = { openFailed = runCatching { uriHandler.openUri(privacyUrl) }.isFailure },
-            shapes = ButtonDefaults.shapes(),
-        ) {
-            Text(stringResource(Res.string.onboarding_privacy_policy))
-        }
-        if (openFailed) {
-            Text(
-                stringResource(Res.string.onboarding_privacy_open_failed),
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-            )
-            SelectionContainer { Text(privacyUrl) }
         }
     }
 }

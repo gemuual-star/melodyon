@@ -723,15 +723,6 @@ fun FrameWindowScope.DesktopMenuBar(
             )
             Separator()
             Item(
-                text = stringResource(Res.string.menu_report_issue),
-                onClick = {
-                    try {
-                        Desktop.getDesktop().browse(URI("https://github.com/MelodyonGroup/Melodyon/issues"))
-                    } catch (_: Exception) {
-                    }
-                },
-            )
-            Item(
                 text = stringResource(Res.string.menu_about_melodyon),
                 icon = menuIcon(infoPainter),
                 onClick = {

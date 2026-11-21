@@ -168,7 +168,7 @@ class AiModelCatalog(
                     .prepareGet(url) {
                         timeout { requestTimeoutMillis = 20_000 }
                         if (preset.id == "OpenRouter" || url.contains("openrouter.ai")) {
-                            header("HTTP-Referer", "https://github.com/MelodyonGroup/Melodyon")
+                            header("HTTP-Referer", "https://github.com/gemuual-star/melodyon-releases")
                             header("X-Title", "Melodyon")
                         }
                         if (apiKey.isNotBlank()) {

@@ -32,7 +32,7 @@ class AppUpdateManagerTest {
     private fun releaseWithAssets(vararg names: String) =
         GitHubRelease(
             tagName = "v14.0.0",
-            htmlUrl = "https://github.com/MelodyonGroup/Melodyon/releases/tag/v14.0.0",
+            htmlUrl = "https://github.com/gemuual-star/melodyon-releases/releases/tag/v14.0.0",
             assets = names.map { GitHubReleaseAsset(it, "uploaded", 100, downloadUrl = "https://example.com/$it") },
         )
 

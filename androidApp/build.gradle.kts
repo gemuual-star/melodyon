@@ -255,7 +255,7 @@ android {
         applicationId = "com.melodyon.app"
         minSdk = 24
         targetSdk = 37
-        versionCode = 155
+        versionCode = 1
         versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -317,7 +317,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
-            manifestPlaceholders["appLabel"] = "Melodyon KMP Debug"
+            manifestPlaceholders["appLabel"] = "Melodyon Debug"
         }
     }
 

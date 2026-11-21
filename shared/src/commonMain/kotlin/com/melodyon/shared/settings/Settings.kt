@@ -620,7 +620,7 @@ class Settings(
     var discordButton1Url by preference("{song.url}")
     var discordButton2Enabled by preference(true)
     var discordButton2Text by preference("Visit Melodyon")
-    var discordButton2Url by preference("https://github.com/MelodyonGroup/Melodyon")
+    var discordButton2Url by preference("https://github.com/gemuual-star/melodyon-releases")
     var discordUsername by preference("")
     var discordName by preference("")
     var discordAvatar by preference("")

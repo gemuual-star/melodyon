@@ -39,7 +39,7 @@ import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 
 object DesktopUpdateManager {
-    private const val API_BASE = "https://api.github.com/repos/MelodyonGroup/Melodyon"
+    private const val API_BASE = "https://api.github.com/repos/gemuual-star/melodyon-releases"
     internal const val RELEASES_URL = "$API_BASE/releases?per_page=50"
     private const val REGISTRY_PATH = "Software\\Melodyon\\Desktop"
     private const val MAX_MANAGER_BYTES = 128L * 1024 * 1024
@@ -313,7 +313,7 @@ data class GitHubDesktopRelease(
         get() = assets.singleOrNull { it.name == "melodyon-installer-windows-x64-$version.exe" }
     val url: String get() =
         nightlyAsset?.takeIf { isNightly }?.downloadUrl
-            ?: "https://github.com/MelodyonGroup/Melodyon/releases/tag/$tagName"
+            ?: "https://github.com/gemuual-star/melodyon-releases/releases/tag/$tagName"
 
     internal fun canInstall(registeredInstallation: Boolean): Boolean =
         registeredInstallation && !draft && !prerelease && ReleaseVersion.parse(version)?.prerelease?.isEmpty() == true

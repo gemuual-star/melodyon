@@ -367,15 +367,6 @@ private fun DesktopOnboardingPage(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    if (content.page == OnboardingPage.WELCOME || content.page == OnboardingPage.CRASH_REPORTS) {
-                        val uriHandler = LocalUriHandler.current
-                        TextButton(
-                            onClick = { runCatching { uriHandler.openUri("https://melodyon.cc/privacy") } },
-                            shapes = ButtonDefaults.shapes(),
-                        ) {
-                            Text(stringResource(Res.string.privacy_policy))
-                        }
-                    }
                     Spacer(Modifier.weight(1f))
                     content.onBack?.let { back ->
                         TextButton(
