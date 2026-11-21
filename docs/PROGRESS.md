@@ -11,13 +11,14 @@
 - [~] WIP: механический ребрендинг `scripts/melodyon/rebrand.py` (текст + пути, пакеты com.metrolist.* -> com.melodyon.*, com.metrolist.music -> com.melodyon.app).
   Не трогаются внешние идентификаторы: пакет библиотеки `com.metrolist.innertubex` (jitpack), `com.github.MetrolistGroup.{innertubex,quackjs}`,
   пакет из подмодуля `com.metrolist.music.listentogether.proto`, подмодуль metroproto, реестр player_configs (raw.githubusercontent.com/MetrolistGroup/faraday).
-  Ещё не сделано: чистка ссылок/контактов (melodyon.cc, github.com/Melodyon/..., t.me, weblate, donate), applicationId, удаление упоминаний Metrolist в UI, сборка не проверена.
+  Ещё не сделано: чистка ссылок/контактов (melodyon.cc, github.com/Melodyon/..., t.me, weblate, donate), удаление упоминаний Metrolist в UI.
+- [x] Debug-сборка Android после ребрендинга проходит (BUILD SUCCESSFUL, ~10 мин с нуля). Тесты ещё не прогонялись.
 
 ## Не проверено
 - Ничего из кода ещё не собиралось.
 
 ## Следующие шаги
-1. Изучить структуру (модули app/desktopApp/shared/innertube...), версии JDK/SDK/Gradle; поставить окружение в песочнице.
+1. Прогнать тесты (`./gradlew :shared:jvmSharedTest` / `test`), зафиксировать базовое число.
 2. Удалить/заменить upstream workflows (.github/workflows) на свои: release-windows.yml (ручной запуск) и android fallback.
 3. Ребрендинг metrolist → melodyon, applicationId com.melodyon.app, убрать ссылки/контакты/упоминания.
 4. Апдейтер → gemuual-star/melodyon-releases.
@@ -40,5 +41,7 @@ curl -sSL -o jdk.tgz "https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/
 curl -sSL -o clt.zip https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip && mkdir -p android-sdk/cmdline-tools && unzip -q clt.zip -d android-sdk/cmdline-tools && mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
 export JAVA_HOME=/home/user/tools/jdk21 ANDROID_HOME=/home/user/tools/android-sdk PATH=/home/user/tools/jdk21/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 yes | sdkmanager --licenses; sdkmanager --install "platforms;android-37.0" "platforms;android-37.1" "build-tools;37.0.0" platform-tools "ndk;30.0.16248370" "cmake;4.1.2"
+echo "sdk.dir=/home/user/tools/android-sdk" > /home/user/work/melodyon/local.properties
+cd /home/user/work/melodyon && ./gradlew :androidApp:assembleDebug -Porg.gradle.java.installations.paths=/home/user/tools/jdk21,/home/user/tools/jdk25 --console=plain
 # Gradle 9.8.2 (wrapper), Kotlin 2.4.21, compileSdk 37.1, minSdk 24, targetSdk 37
 ```
