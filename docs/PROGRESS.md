@@ -61,3 +61,16 @@ nohup ./gradlew :androidApp:assembleDebug -Porg.gradle.java.installations.paths=
   --console=plain > /tmp/build.log 2>&1 &
 ```
 Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читает токен из secrets.json (токен не в URL remote).
+
+## SoundCloud (статус на коммит после ce26844)
+- [x] API-слой без авторизации: `shared/.../soundcloud/SoundCloudApi.kt` (поиск, next_href, трек, поток, автообновление client_id).
+- [x] `SoundCloudStreamResolver` оборачивает YouTube-резолвер в Koin (`SharedModule.kt`): id вида `sc:<trackId>` идут в SoundCloud. Через него же работают очередь и оба загрузчика (Android `SongDownloadManager`, Desktop `DownloadManager` вызывают `resolveRemote`).
+- [x] Трек SoundCloud → `SongItem` (`SoundCloudSongMapping.kt`), значит локальные плейлисты/библиотека используют существующую БД.
+- [x] Таблетка «SoundCloud» перед «Все» (`ChipShelf.leadingContent` в `SearchContent.kt`), запрос только по нажатию; подключена в MobileApp, Android SearchScreen, Desktop SearchResultsList. Подгрузка страниц через `loadMoreFilteredResults`.
+- [x] Android debug-сборка прошла на коммите 2f3cbaa (до UI-изменений).
+- [ ] Не проверено: компиляция после UI-изменений; реальные запросы к SoundCloud; воспроизведение; скачивание HLS-треков (Desktop качает URL как файл, m3u8 может не скачаться); тексты песен для `sc:` (провайдеры ищут по названию/артисту, YouTube-провайдер может получить `sc:` id); радио/автомикс после SC-трека может пытаться звать YouTube `next` с `sc:` id.
+- [ ] Удалить код «Слушать вместе» физически.
+- [ ] Ключ подписи → секрет GitHub Actions; workflow Windows (ручной запуск) + Android release; публикация в melodyon-releases.
+
+### Тесты
+`./gradlew :shared:desktopTest --tests '*SoundCloud*' --tests '*LatestRelease*'` (+ флаги памяти из рецепта выше). Таск называется desktopTest, не jvmTest.
