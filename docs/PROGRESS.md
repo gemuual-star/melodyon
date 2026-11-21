@@ -74,3 +74,8 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 
 ### Тесты
 `./gradlew :shared:desktopTest --tests '*SoundCloud*' --tests '*LatestRelease*'` (+ флаги памяти из рецепта выше). Таск называется desktopTest, не jvmTest.
+
+## CI на GitHub Actions (репо публичный с этого момента)
+- Сборки и тесты идут в `.github/workflows/ci.yml` на каждый push в main: `:shared:desktopTest` (он зависит от `:shared:testServerWithoutReflection`), затем `:androidApp:assembleDebug`; APK и результаты тестов — артефакты прогона.
+- Песочница (4 ядра, 8 ГБ) для Gradle не годится: только правка кода, коммит, push, чтение логов через API.
+- Коммит 11880756: компиляция shared прошла; 79 тестов прогнано в testServerWithoutReflection, 23 упали — все в `ListenTogetherManagerLifecycleTest` (функция удалена по решению пользователя). Тест удалён вместе с выключением функции; остальной код «Слушать вместе» удалить физически позже.
