@@ -1,16 +1,16 @@
-package com.metrolist.desktop.experiment
+package com.melodyon.desktop.experiment
 
-import com.metrolist.desktop.state.playback.PlayerState
-import com.metrolist.desktop.utils.DesktopUrlHandler
-import com.metrolist.shared.model.SongItem
+import com.melodyon.desktop.state.playback.PlayerState
+import com.melodyon.desktop.utils.DesktopUrlHandler
+import com.melodyon.shared.model.SongItem
 import java.io.File
 import kotlin.concurrent.thread
-import com.metrolist.desktop.main as desktopMain
+import com.melodyon.desktop.main as desktopMain
 
 fun main(args: Array<String>) {
-    val media = System.getProperty("metrolist.experiment.media")
+    val media = System.getProperty("melodyon.experiment.media")
     if (media != null) {
-        val trigger = File(requireNotNull(System.getProperty("metrolist.experiment.trigger")))
+        val trigger = File(requireNotNull(System.getProperty("melodyon.experiment.trigger")))
         thread(name = "native-image-playback-probe", isDaemon = true) {
             try {
                 while (!trigger.isFile) Thread.sleep(50)

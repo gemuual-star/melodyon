@@ -15,47 +15,47 @@ Use X11 or XWayland. Login needs GTK3/WebKitGTK 4.1. Saved credentials need Secr
 3. Mark it executable and run it:
 
 ```sh
-chmod u+x -- ./Metrolist.AppImage
-./Metrolist.AppImage
+chmod u+x -- ./Melodyon.AppImage
+./Melodyon.AppImage
 ```
 
 Substitute the downloaded filename. Check playback, sign-in and retained credentials after restart.
 
-On Arch Linux, install the community-maintained [`metrolist-desktop-bin`](https://aur.archlinux.org/packages/metrolist-desktop-bin) package, which wraps the x86_64 release AppImage, for example with `yay -S metrolist-desktop-bin`. Update it through your AUR helper instead of replacing the AppImage.
+On Arch Linux, install the community-maintained [`melodyon-desktop-bin`](https://aur.archlinux.org/packages/melodyon-desktop-bin) package, which wraps the x86_64 release AppImage, for example with `yay -S melodyon-desktop-bin`. Update it through your AUR helper instead of replacing the AppImage.
 
 ## Homebrew
 
-On x86_64 or ARM64 Linux with [Homebrew](https://brew.sh), the [Metrolist tap](https://github.com/MetrolistGroup/homebrew-tap) unpacks the release AppImage, so FUSE is not needed:
+On x86_64 or ARM64 Linux with [Homebrew](https://brew.sh), the [Melodyon tap](https://github.com/MelodyonGroup/homebrew-tap) unpacks the release AppImage, so FUSE is not needed:
 
 ```sh
-brew trust metrolistgroup/tap
-brew install metrolistgroup/tap/metrolist
-metrolist
+brew trust melodyongroup/tap
+brew install melodyongroup/tap/melodyon
+melodyon
 ```
 
 Homebrew only installs from trusted taps, so `brew trust` is needed once.
 
-`brew info metrolistgroup/tap/metrolist` shows how to add the desktop entry to your application menu. Update with `brew upgrade metrolist`.
+`brew info melodyongroup/tap/melodyon` shows how to add the desktop entry to your application menu. Update with `brew upgrade melodyon`.
 
 ## Nix
 
 The repository flake wraps the release AppImage for x86_64 and aarch64 Linux. Run it once, or install it into your profile:
 
 ```sh
-nix run github:MetrolistGroup/Metrolist
-nix profile install github:MetrolistGroup/Metrolist
+nix run github:MelodyonGroup/Melodyon
+nix profile install github:MelodyonGroup/Melodyon
 ```
 
-To use it from a NixOS or Home Manager configuration, add `github:MetrolistGroup/Metrolist` as an input and include `inputs.metrolist.packages.${pkgs.stdenv.hostPlatform.system}.default` in your packages. The flake follows the latest stable release; run `nix flake update metrolist` or `nix profile upgrade` to update.
+To use it from a NixOS or Home Manager configuration, add `github:MelodyonGroup/Melodyon` as an input and include `inputs.melodyon.packages.${pkgs.stdenv.hostPlatform.system}.default` in your packages. The flake follows the latest stable release; run `nix flake update melodyon` or `nix profile upgrade` to update.
 
 ## Flatpak
 
-[flatpark](https://flatpark.org/apps/com.metrolist.desktop/) repackages the release AppImage as the Flatpak `com.metrolist.desktop` for x86_64 and aarch64:
+[flatpark](https://flatpark.org/apps/com.melodyon.desktop/) repackages the release AppImage as the Flatpak `com.melodyon.desktop` for x86_64 and aarch64:
 
 ```sh
 flatpak --user remote-add --if-not-exists flatpark https://dl.flatpark.org/flatpark.flatpakrepo
-flatpak --user install flatpark com.metrolist.desktop
-flatpak run com.metrolist.desktop
+flatpak --user install flatpark com.melodyon.desktop
+flatpak run com.melodyon.desktop
 ```
 
 Inside the sandbox, the download folder can only be Downloads or Music. Update with `flatpak update`.
@@ -70,7 +70,7 @@ For silent playback, check [ALSA routing](../desktop.md#linux-audio-setup). For 
 
 ### Sonos and DLNA with firewalld
 
-Discovery sends SSDP searches to `239.255.255.250:1900`. Speakers reply from UDP port 1900 to a temporary local UDP port. Allowing only incoming destination port 1900 does not allow these replies. Metrolist serves cast audio on TCP port `57643` for the entire session, including song changes. This applies to Google Cast and FCast too. The app reports an error if it cannot bind this port or if the receiver has not requested the stream after 15 seconds of requested playback. A missing request can indicate a firewall, routing or receiver problem.
+Discovery sends SSDP searches to `239.255.255.250:1900`. Speakers reply from UDP port 1900 to a temporary local UDP port. Allowing only incoming destination port 1900 does not allow these replies. Melodyon serves cast audio on TCP port `57643` for the entire session, including song changes. This applies to Google Cast and FCast too. The app reports an error if it cannot bind this port or if the receiver has not requested the stream after 15 seconds of requested playback. A missing request can indicate a firewall, routing or receiver problem.
 
 Check the Wi-Fi or Ethernet interface's zone with `firewall-cmd --get-active-zones`. For a speaker at `192.168.8.50` in the `public` zone, allow its discovery replies and audio requests:
 
@@ -79,4 +79,4 @@ sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source addre
 sudo firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source address="192.168.8.50/32" port port="57643" protocol="tcp" accept'
 ```
 
-Replace the example IP and zone with your speaker and network. Repeat for each speaker, including members of a Sonos group that fetch audio. Reopen the cast picker after changing the rules. Once discovery and playback work, repeat the same commands with `--permanent` to keep the rules after a restart. See the [firewalld rich rule reference](https://firewalld.org/documentation/man-pages/firewalld.richlanguage.html) for address and port matching. mDNS alone does not discover DLNA or Sonos devices in Metrolist.
+Replace the example IP and zone with your speaker and network. Repeat for each speaker, including members of a Sonos group that fetch audio. Reopen the cast picker after changing the rules. Once discovery and playback work, repeat the same commands with `--permanent` to keep the rules after a restart. See the [firewalld rich rule reference](https://firewalld.org/documentation/man-pages/firewalld.richlanguage.html) for address and port matching. mDNS alone does not discover DLNA or Sonos devices in Melodyon.

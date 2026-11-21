@@ -1,9 +1,9 @@
-package com.metrolist.desktop.nativeimage
+package com.melodyon.desktop.nativeimage
 
-import com.metrolist.desktop.utils.isDesktopPlatformSupported
-import com.metrolist.desktop.window.jna.User32Extend
-import com.metrolist.desktop.window.jna.structure.MENUITEMINFO
-import com.metrolist.desktop.window.jna.structure.windowsBuildNumber
+import com.melodyon.desktop.utils.isDesktopPlatformSupported
+import com.melodyon.desktop.window.jna.User32Extend
+import com.melodyon.desktop.window.jna.structure.MENUITEMINFO
+import com.melodyon.desktop.window.jna.structure.windowsBuildNumber
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.COM.COMUtils
 import com.sun.jna.platform.win32.Ole32
@@ -31,7 +31,7 @@ private class SerializationProbeType(
 private fun serializationSmoke() {
     val manifest =
         checkNotNull(
-            Thread.currentThread().contextClassLoader.getResourceAsStream("metrolist-serialization-types.tsv"),
+            Thread.currentThread().contextClassLoader.getResourceAsStream("melodyon-serialization-types.tsv"),
         )
     val types = manifest.bufferedReader().use { it.readLines() }
     check(types.isNotEmpty())

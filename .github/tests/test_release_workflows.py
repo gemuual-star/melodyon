@@ -85,37 +85,37 @@ class ReleaseWorkflowsTest(unittest.TestCase):
     def test_stable_release_requires_and_checksums_ipa(self):
         script = step_script('release.yml', 'Validate and checksum release assets')
         assets = [
-            'Metrolist.apk',
-            'Metrolist-izzy.apk',
-            'Metrolist-KMP-mapping.txt',
-            'Metrolist-Desktop-Windows.zip',
-            'Metrolist-Desktop-Windows-arm64.zip',
-            'metrolist-installer-windows-x64-14.0.0.exe',
-            'metrolist-desktop-linux-x64-14.0.0.AppImage',
-            'metrolist-desktop-linux-arm64-14.0.0.AppImage',
-            'metrolist-desktop-macos-arm64-14.0.0.dmg',
-            'metrolist-desktop-macos-x64-14.0.0.dmg',
+            'Melodyon.apk',
+            'Melodyon-izzy.apk',
+            'Melodyon-KMP-mapping.txt',
+            'Melodyon-Desktop-Windows.zip',
+            'Melodyon-Desktop-Windows-arm64.zip',
+            'melodyon-installer-windows-x64-14.0.0.exe',
+            'melodyon-desktop-linux-x64-14.0.0.AppImage',
+            'melodyon-desktop-linux-arm64-14.0.0.AppImage',
+            'melodyon-desktop-macos-arm64-14.0.0.dmg',
+            'melodyon-desktop-macos-x64-14.0.0.dmg',
         ]
         for include_ipa in (False, True):
             with self.subTest(include_ipa=include_ipa), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / 'release-assets'
                 output.mkdir()
                 (Path(directory) / 'scripts').symlink_to(ROOT / 'scripts')
-                for name in assets + (['Metrolist.ipa'] if include_ipa else []):
+                for name in assets + (['Melodyon.ipa'] if include_ipa else []):
                     (output / name).write_bytes(b'package')
                 result = subprocess.run(
                     ['bash', '-c', script], cwd=directory,
-                    env={**os.environ, 'APP_VERSION': '14.0.0', 'GITHUB_REPOSITORY': 'MetrolistGroup/Metrolist'},
+                    env={**os.environ, 'APP_VERSION': '14.0.0', 'GITHUB_REPOSITORY': 'MelodyonGroup/Melodyon'},
                     capture_output=True, text=True,
                 )
                 self.assertEqual(result.returncode == 0, include_ipa, result.stderr)
                 if include_ipa:
                     sums = (output / 'SHA256SUMS').read_text()
-                    self.assertIn('Metrolist.ipa', sums)
-                    self.assertIn('Metrolist-with-Google-Cast.apk', sums)
-                    self.assertIn('metrolist-altstore.json', sums)
+                    self.assertIn('Melodyon.ipa', sums)
+                    self.assertIn('Melodyon-with-Google-Cast.apk', sums)
+                    self.assertIn('melodyon-altstore.json', sums)
                 else:
-                    self.assertIn('Missing release asset: release-assets/Metrolist.ipa', result.stderr)
+                    self.assertIn('Missing release asset: release-assets/Melodyon.ipa', result.stderr)
 
 if __name__ == '__main__':
     unittest.main()

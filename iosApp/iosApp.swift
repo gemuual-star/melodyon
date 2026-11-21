@@ -1,5 +1,5 @@
 /*
- * Metrolist Project (C) 2026
+ * Melodyon Project (C) 2026
  * Licensed under GPL-3.0 | See git history for contributors
  */
 
@@ -11,7 +11,7 @@ import Shared
 import SwiftUI
 
 @main
-struct MetrolistApp: App {
+struct MelodyonApp: App {
     init() {
         IosCrashRecovery.shared.install()
         NSSetUncaughtExceptionHandler { exception in
@@ -20,12 +20,12 @@ struct MetrolistApp: App {
         configureAppAudioSession()
         if UserDefaults.standard.object(forKey: "iosOnboardingComplete") == nil {
             let existingDatabase = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-                .first?.appendingPathComponent("metrolist/metrolist.db")
+                .first?.appendingPathComponent("melodyon/melodyon.db")
             let isUpgrade = existingDatabase.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
             UserDefaults.standard.set(isUpgrade, forKey: "iosOnboardingComplete")
         }
         if !IosCrashRecovery.shared.hasPendingReport {
-            MetrolistPlatform.shared.initialize()
+            MelodyonPlatform.shared.initialize()
         }
         if UserDefaults.standard.bool(forKey: "sentryEnabled") {
             startSentryReporting()
@@ -62,7 +62,7 @@ private struct AppHostView: View {
             .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification).receive(on: RunLoop.main)) { _ in
                 syncSentryConsent()
             }
-            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.metrolist.statusBarVisibilityChanged"))) { notification in
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.melodyon.statusBarVisibilityChanged"))) { notification in
                 statusBarHidden = (notification.object as? NSNumber)?.boolValue ?? false
             }
             .onOpenURL { url in
@@ -96,7 +96,7 @@ private func startSentryReporting() {
         options.tracesSampleRate = 0.0
         options.failedRequestTargets = [
             try? NSRegularExpression(
-                pattern: #"^https://(?:(?:[a-z0-9-]+\.)*metrolist\.cc|metroserverx\.meowery\.eu)(?::443)?(?:[/?#]|$)"#,
+                pattern: #"^https://(?:(?:[a-z0-9-]+\.)*melodyon\.cc|metroserverx\.meowery\.eu)(?::443)?(?:[/?#]|$)"#,
                 options: .caseInsensitive
             )
         ].compactMap { $0 }

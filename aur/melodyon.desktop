@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Melodyon
+Comment=YouTube Music desktop client
+Exec=/usr/bin/melodyon %u
+Icon=melodyon
+Terminal=false
+StartupWMClass=Melodyon
+Categories=AudioVideo;Player;
+MimeType=x-scheme-handler/melodyon;x-scheme-handler/melodyon-auth;

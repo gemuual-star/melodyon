@@ -17,17 +17,17 @@ class AppRunTest(unittest.TestCase):
         self.app = self.root / 'mounted app'
         (self.app / 'bin').mkdir(parents=True)
         shutil.copyfile(Path(__file__).with_name('linux-appimage-apprun.sh'), self.app / 'AppRun')
-        self.image = self.root / 'Metrolist space % " $ ` \\.AppImage'
+        self.image = self.root / 'Melodyon space % " $ ` \\.AppImage'
         self.image.write_text('#!/bin/sh\nprintf "%s\\n" "$@" > "$TEST_LAUNCH_LOG"\n')
         self.image.chmod(0o755)
-        shutil.copyfile(self.image, self.app / 'bin/Metrolist')
-        (self.app / 'bin/Metrolist').chmod(0o755)
-        (self.app / 'Metrolist.desktop').write_text(
-            '[Desktop Entry]\nType=Application\nName=Metrolist\nExec=Metrolist %u\n'
-            'Icon=Metrolist\nStartupWMClass=Metrolist\nTerminal=false\n'
-            'MimeType=x-scheme-handler/metrolist;x-scheme-handler/metrolist-auth;\n'
+        shutil.copyfile(self.image, self.app / 'bin/Melodyon')
+        (self.app / 'bin/Melodyon').chmod(0o755)
+        (self.app / 'Melodyon.desktop').write_text(
+            '[Desktop Entry]\nType=Application\nName=Melodyon\nExec=Melodyon %u\n'
+            'Icon=Melodyon\nStartupWMClass=Melodyon\nTerminal=false\n'
+            'MimeType=x-scheme-handler/melodyon;x-scheme-handler/melodyon-auth;\n'
         )
-        (self.app / 'Metrolist.png').write_bytes(b'icon')
+        (self.app / 'Melodyon.png').write_bytes(b'icon')
         self.data = self.root / 'user data'
         self.log = self.root / 'launched'
         self.env = {
@@ -46,27 +46,27 @@ class AppRunTest(unittest.TestCase):
 
     def test_pin_relaunches_after_mount_is_removed_and_keeps_uri_arguments(self):
         self.launch()
-        entry = self.data / 'applications/Metrolist.desktop'
+        entry = self.data / 'applications/Melodyon.desktop'
         self.assertTrue(entry.is_file())
-        self.assertEqual(b'icon', (self.data / 'icons/hicolor/512x512/apps/Metrolist.png').read_bytes())
+        self.assertEqual(b'icon', (self.data / 'icons/hicolor/512x512/apps/Melodyon.png').read_bytes())
         self.assertNotIn(str(self.app), entry.read_text())
-        self.assertIn('StartupWMClass=Metrolist\n', entry.read_text())
+        self.assertIn('StartupWMClass=Melodyon\n', entry.read_text())
         shutil.rmtree(self.app)
         self.log.unlink()
         if not shutil.which('gio'):
             self.skipTest('gio is needed to exercise desktop Exec escaping')
-        result = subprocess.run(['gio', 'launch', str(entry), 'metrolist://test/'],
+        result = subprocess.run(['gio', 'launch', str(entry), 'melodyon://test/'],
                                 env=self.env, capture_output=True, text=True, timeout=5)
         self.assertEqual(0, result.returncode, result.stderr)
         deadline = time.monotonic() + 2
         while not self.log.exists() and time.monotonic() < deadline:
             time.sleep(0.01)
-        self.assertEqual('metrolist://test/\n', self.log.read_text())
+        self.assertEqual('melodyon://test/\n', self.log.read_text())
 
     def test_respects_system_package_desktop_entry(self):
         directory = Path(self.env['XDG_DATA_DIRS']) / 'applications'
         directory.mkdir(parents=True)
-        (directory / 'Metrolist.desktop').write_text('system entry')
+        (directory / 'Melodyon.desktop').write_text('system entry')
         self.launch()
         self.assertFalse(self.data.exists())
 
@@ -78,7 +78,7 @@ class AppRunTest(unittest.TestCase):
     def test_relative_data_home_uses_home_and_relaunch_updates_moved_image(self):
         self.env['XDG_DATA_HOME'] = 'relative'
         self.launch()
-        entry = Path(self.env['HOME']) / '.local/share/applications/Metrolist.desktop'
+        entry = Path(self.env['HOME']) / '.local/share/applications/Melodyon.desktop'
         self.assertTrue(entry.is_file())
         moved = self.root / 'moved.AppImage'
         self.image.rename(moved)

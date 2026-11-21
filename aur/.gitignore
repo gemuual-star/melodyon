@@ -1,6 +1,6 @@
 /build/
 /src/
 /pkg/
-/metrolist/
-/metrolist-kmp/
+/melodyon/
+/melodyon-kmp/
 /*.pkg.tar.zst

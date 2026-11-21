@@ -36,8 +36,8 @@ def archive(directory, destination):
 
 
 def validate_windows(image):
-    if not (image / 'Metrolist.exe').is_file():
-        raise ValueError('Windows native image has no Metrolist.exe launcher')
+    if not (image / 'Melodyon.exe').is_file():
+        raise ValueError('Windows native image has no Melodyon.exe launcher')
     for path in image.rglob('*'):
         if path.suffix.lower() not in ('.exe', '.dll'):
             continue
@@ -52,9 +52,9 @@ def validate_windows(image):
 
 
 def validate_posix(image, target, launcher=None):
-    launcher = launcher or image / 'Metrolist'
+    launcher = launcher or image / 'Melodyon'
     if not launcher.is_file():
-        raise ValueError('Native image has no Metrolist launcher')
+        raise ValueError('Native image has no Melodyon launcher')
     binaries = []
     for path in sorted(image.rglob('*')):
         if not path.is_file():
@@ -124,7 +124,7 @@ def macos_rpath(launcher):
 
 
 def package(image, target, destination, version, graal=None):
-    name = f'metrolist-desktop-native-{target}-{version}'
+    name = f'melodyon-desktop-native-{target}-{version}'
     destination.mkdir(parents=True, exist_ok=True)
     if target.startswith('linux-'):
         if target not in ('linux-x64', 'linux-arm64'):
@@ -137,12 +137,12 @@ def package(image, target, destination, version, graal=None):
         (app / 'lib').mkdir(parents=True)
         shutil.copytree(image, app / 'lib/native')
         (app / 'bin').mkdir()
-        shutil.copy2(Path(__file__).with_name('linux-launcher.sh'), app / 'bin/Metrolist')
-        (app / 'bin/Metrolist').chmod(0o755)
+        shutil.copy2(Path(__file__).with_name('linux-launcher.sh'), app / 'bin/Melodyon')
+        (app / 'bin/Melodyon').chmod(0o755)
         shutil.copy2(ROOT / 'scripts/linux-appimage-apprun.sh', app / 'AppRun')
         (app / 'AppRun').chmod(0o755)
-        (app / 'Metrolist.desktop').write_text('[Desktop Entry]\nType=Application\nName=Metrolist\nExec=Metrolist %u\nIcon=Metrolist\nStartupWMClass=Metrolist\nComment=Metrolist music client\nCategories=AudioVideo;Player;\nTerminal=false\nMimeType=x-scheme-handler/metrolist;x-scheme-handler/metrolist-auth;\n')
-        shutil.copy2(ROOT / 'desktopApp/src/desktopMain/resources/logo.png', app / 'Metrolist.png')
+        (app / 'Melodyon.desktop').write_text('[Desktop Entry]\nType=Application\nName=Melodyon\nExec=Melodyon %u\nIcon=Melodyon\nStartupWMClass=Melodyon\nComment=Melodyon music client\nCategories=AudioVideo;Player;\nTerminal=false\nMimeType=x-scheme-handler/melodyon;x-scheme-handler/melodyon-auth;\n')
+        shutil.copy2(ROOT / 'desktopApp/src/desktopMain/resources/logo.png', app / 'Melodyon.png')
         (app / 'resources').symlink_to('lib/native/resources', target_is_directory=True)
         output = destination / (name + '.AppImage')
         subprocess.run(['bash', str(ROOT / 'scripts/build_appimage.sh'), '--native-appdir', str(app.resolve()), str(output.resolve())], check=True)
@@ -156,42 +156,42 @@ def package(image, target, destination, version, graal=None):
             digest = hashlib.file_digest(stream, 'sha256').hexdigest()
         if digest != checksum.read_text().strip():
             raise ValueError('Windows login helper checksum mismatch')
-        (image / 'install-manifest.json').write_text(json.dumps({'schema':1,'appId':'com.metrolist.desktop','version':version,'platform':'windows','architecture':'x86_64','launcher':'Metrolist.exe'},indent=2)+'\n')
+        (image / 'install-manifest.json').write_text(json.dumps({'schema':1,'appId':'com.melodyon.desktop','version':version,'platform':'windows','architecture':'x86_64','launcher':'Melodyon.exe'},indent=2)+'\n')
         output = destination / (name + '.zip')
         archive(image, output)
     elif target == 'macos-arm64':
         if graal is None:
             raise ValueError('macOS packaging requires --graalvm or GRAALVM_HOME')
         root = destination / name
-        app = root / 'Metrolist.app/Contents'
+        app = root / 'Melodyon.app/Contents'
         if root.exists():
             shutil.rmtree(root)
         shutil.copytree(image, app / 'MacOS', ignore=shutil.ignore_patterns('resources'))
         shutil.copytree(image / 'resources', app / 'Resources')
         shutil.copy2(ROOT / 'desktopApp/src/desktopMain/resources/logo.icns', app / 'Resources/logo.icns')
         copy_macos_jdk(graal, app / 'MacOS', app / 'Resources')
-        binaries = validate_posix(app, target, app / 'MacOS/Metrolist')
+        binaries = validate_posix(app, target, app / 'MacOS/Melodyon')
         for path in (app / 'MacOS').rglob('*'):
             if path.is_file() and path not in binaries:
                 raise ValueError(f'Non-Mach-O file in Contents/MacOS: {path.relative_to(app)}')
-        macos_rpath(app / 'MacOS/Metrolist')
+        macos_rpath(app / 'MacOS/Melodyon')
         with (app / 'Info.plist').open('wb') as stream:
             plistlib.dump({
-                'CFBundleExecutable': 'Metrolist',
-                'CFBundleIdentifier': 'com.metrolist.desktop',
-                'CFBundleName': 'Metrolist',
-                'CFBundleDisplayName': 'Metrolist',
+                'CFBundleExecutable': 'Melodyon',
+                'CFBundleIdentifier': 'com.melodyon.desktop',
+                'CFBundleName': 'Melodyon',
+                'CFBundleDisplayName': 'Melodyon',
                 'CFBundlePackageType': 'APPL',
                 'CFBundleShortVersionString': version.split('-')[0],
                 'CFBundleVersion': version.split('-')[0],
                 'CFBundleIconFile': 'logo.icns',
                 'NSHighResolutionCapable': True,
                 'LSMinimumSystemVersion': macos_minimum_version(binaries),
-                'CFBundleURLTypes': [{'CFBundleURLName': 'Metrolist URL', 'CFBundleURLSchemes': ['metrolist', 'metrolist-auth']}],
-                'NSLocalNetworkUsageDescription': 'Metrolist uses the local network to find and control casting devices.',
+                'CFBundleURLTypes': [{'CFBundleURLName': 'Melodyon URL', 'CFBundleURLSchemes': ['melodyon', 'melodyon-auth']}],
+                'NSLocalNetworkUsageDescription': 'Melodyon uses the local network to find and control casting devices.',
                 'NSBonjourServices': ['_fcast._tcp', '_googlecast._tcp'],
             }, stream)
-        for path in sorted(binaries, key=lambda path: (path == app / 'MacOS/Metrolist', -len(path.parts), str(path))):
+        for path in sorted(binaries, key=lambda path: (path == app / 'MacOS/Melodyon', -len(path.parts), str(path))):
             subprocess.run(['codesign', '--force', '--sign', '-', str(path)], check=True)
         subprocess.run(['codesign', '--force', '--sign', '-', str(app.parent)], check=True)
         subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app.parent)], check=True)

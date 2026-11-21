@@ -3,7 +3,7 @@ let
   asset = release.darwin.${stdenvNoCC.hostPlatform.system};
 in
 stdenvNoCC.mkDerivation {
-  pname = "metrolist";
+  pname = "melodyon";
   inherit (release) version;
   src = fetchurl { inherit (asset) url hash; };
   # The DMG is HFS+. 7zz keeps the runtime's symlinks with -snld.
@@ -22,21 +22,21 @@ stdenvNoCC.mkDerivation {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/Applications $out/bin
-    cp -R unpacked/Metrolist/Metrolist.app $out/Applications/
+    cp -R unpacked/Melodyon/Melodyon.app $out/Applications/
     # The jpackage launcher finds its runtime relative to its own path, so it is called rather than linked.
-    cat > $out/bin/metrolist <<SH
+    cat > $out/bin/melodyon <<SH
     #!/bin/sh
-    exec "$out/Applications/Metrolist.app/Contents/MacOS/Metrolist" "\$@"
+    exec "$out/Applications/Melodyon.app/Contents/MacOS/Melodyon" "\$@"
     SH
-    chmod +x $out/bin/metrolist
+    chmod +x $out/bin/melodyon
     runHook postInstall
   '';
   meta = {
     description = "YouTube Music desktop client";
-    homepage = "https://github.com/MetrolistGroup/Metrolist";
+    homepage = "https://github.com/MelodyonGroup/Melodyon";
     license = lib.licenses.gpl3;
     platforms = [ "aarch64-darwin" "x86_64-darwin" ];
     sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-    mainProgram = "metrolist";
+    mainProgram = "melodyon";
   };
 }

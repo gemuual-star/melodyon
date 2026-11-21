@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Melodyon
+Comment=Stream and manage your YouTube Music library
+Exec=com.melodyon.desktop %u
+Icon=com.melodyon.desktop
+Terminal=false
+Categories=AudioVideo;Player;Music;
+StartupWMClass=Melodyon
+Keywords=music;player;youtube;streaming;
+MimeType=x-scheme-handler/melodyon;x-scheme-handler/melodyon-auth;

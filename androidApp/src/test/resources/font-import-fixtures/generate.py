@@ -25,11 +25,11 @@ for name, width in (("first", 350), ("second", 550)):
     font.setupHorizontalHeader(ascent=800, descent=-200)
     font.setupOS2(sTypoAscender=800, sTypoDescender=-200, usWinAscent=800, usWinDescent=200)
     font.setupNameTable({
-        "familyName": f"Metrolist Test {name}",
+        "familyName": f"Melodyon Test {name}",
         "styleName": "Regular",
-        "uniqueFontIdentifier": f"Metrolist-Test-{name}",
-        "fullName": f"Metrolist Test {name} Regular",
-        "psName": f"Metrolist-Test-{name}-Regular",
+        "uniqueFontIdentifier": f"Melodyon-Test-{name}",
+        "fullName": f"Melodyon Test {name} Regular",
+        "psName": f"Melodyon-Test-{name}-Regular",
     })
     font.setupPost()
     font.setupMaxp()

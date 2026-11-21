@@ -1,26 +1,26 @@
 # Home scrolling and player gestures, exercised on the low-end benchmark device.
 # AGP expands these source-level rules and R8 rewrites them for the release DEX.
 # Cold start holds the splash screen until App startup, settings, Koin and the theme are ready.
-HSPLcom/metrolist/android/App**->**(**)**
-HSPLcom/metrolist/android/MainActivity**->**(**)**
-HSPLcom/metrolist/android/NavigationRestorationViewModel**->**(**)**
-HSPLcom/metrolist/android/di/**->**(**)**
-HSPLcom/metrolist/android/locale/**->**(**)**
-HSPLcom/metrolist/android/ui/theme/**->**(**)**
-HSPLcom/metrolist/shared/settings/**->**(**)**
-HSPLcom/metrolist/shared/ui/theme/**->**(**)**
-HSPLcom/metrolist/android/ui/MetrolistAppKt**->**(**)**
-HSPLcom/metrolist/android/ui/screens/HomeScreenKt**->**(**)**
-HSPLcom/metrolist/shared/ui/screens/HomeContentKt**->**(**)**
-HSPLcom/metrolist/shared/ui/components/SpeedDialGridKt**->**(**)**
-HSPLcom/metrolist/android/ui/components/MiniPlayerKt**->**(**)**
-HPLcom/metrolist/shared/ui/components/BottomSheetKt**->**(**)**
-HPLcom/metrolist/shared/ui/components/BottomSheetState**->**(**)**
+HSPLcom/melodyon/android/App**->**(**)**
+HSPLcom/melodyon/android/MainActivity**->**(**)**
+HSPLcom/melodyon/android/NavigationRestorationViewModel**->**(**)**
+HSPLcom/melodyon/android/di/**->**(**)**
+HSPLcom/melodyon/android/locale/**->**(**)**
+HSPLcom/melodyon/android/ui/theme/**->**(**)**
+HSPLcom/melodyon/shared/settings/**->**(**)**
+HSPLcom/melodyon/shared/ui/theme/**->**(**)**
+HSPLcom/melodyon/android/ui/MelodyonAppKt**->**(**)**
+HSPLcom/melodyon/android/ui/screens/HomeScreenKt**->**(**)**
+HSPLcom/melodyon/shared/ui/screens/HomeContentKt**->**(**)**
+HSPLcom/melodyon/shared/ui/components/SpeedDialGridKt**->**(**)**
+HSPLcom/melodyon/android/ui/components/MiniPlayerKt**->**(**)**
+HPLcom/melodyon/shared/ui/components/BottomSheetKt**->**(**)**
+HPLcom/melodyon/shared/ui/components/BottomSheetState**->**(**)**
 # The expanded player, queue, progress sliders and lyrics redraw every frame while visible.
-HPLcom/metrolist/shared/ui/player/**->**(**)**
-HPLcom/metrolist/android/ui/player/**->**(**)**
-HPLcom/metrolist/shared/ui/components/sliders/**->**(**)**
-HPLcom/metrolist/shared/ui/components/lyrics/**->**(**)**
+HPLcom/melodyon/shared/ui/player/**->**(**)**
+HPLcom/melodyon/android/ui/player/**->**(**)**
+HPLcom/melodyon/shared/ui/components/sliders/**->**(**)**
+HPLcom/melodyon/shared/ui/components/lyrics/**->**(**)**
 # Background playback runs these on ExoPlayer's playback thread for hours; keep them out of the interpreter.
 HSPLandroidx/media3/exoplayer/**->**(**)**
 HSPLandroidx/media3/common/**->**(**)**
@@ -28,6 +28,6 @@ HSPLandroidx/media3/decoder/**->**(**)**
 HSPLandroidx/media3/extractor/**->**(**)**
 HSPLandroidx/media3/datasource/**->**(**)**
 HSPLandroidx/media3/session/**->**(**)**
-HSPLcom/metrolist/android/playback/**->**(**)**
-HSPLcom/metrolist/shared/playback/**->**(**)**
-HSPLcom/metrolist/shared/youtube/playback/**->**(**)**
+HSPLcom/melodyon/android/playback/**->**(**)**
+HSPLcom/melodyon/shared/playback/**->**(**)**
+HSPLcom/melodyon/shared/youtube/playback/**->**(**)**

@@ -1,0 +1,19 @@
+cask "melodyon" do
+  arch arm: "arm64", intel: "x64"
+
+  version "@VERSION@"
+  sha256 arm:   "@MACOS_ARM64_SHA256@",
+         intel: "@MACOS_X64_SHA256@"
+
+  url "https://github.com/MelodyonGroup/Melodyon/releases/download/v#{version}/melodyon-desktop-macos-#{arch}-#{version}.dmg"
+  name "Melodyon"
+  desc "YouTube Music desktop client"
+  homepage "https://github.com/MelodyonGroup/Melodyon"
+
+  livecheck do
+    url :url
+    strategy :github_latest
+  end
+
+  app "Melodyon.app"
+end

@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.28.0.schema.json
+PackageIdentifier: MelodyonGroup.Melodyon
+PackageVersion: '@VERSION@'
+PackageLocale: en-US
+Publisher: MelodyonGroup
+PublisherUrl: https://github.com/MelodyonGroup
+PublisherSupportUrl: https://github.com/MelodyonGroup/Melodyon/issues
+PackageName: Melodyon Desktop
+PackageUrl: https://github.com/MelodyonGroup/Melodyon
+License: GPL-3.0
+LicenseUrl: https://github.com/MelodyonGroup/Melodyon/blob/v@VERSION@/LICENSE
+ShortDescription: YouTube Music desktop client
+ReleaseNotesUrl: https://github.com/MelodyonGroup/Melodyon/releases/tag/v@VERSION@
+ManifestType: defaultLocale
+ManifestVersion: 1.28.0

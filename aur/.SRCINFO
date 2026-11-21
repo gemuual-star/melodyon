@@ -1,8 +1,8 @@
-pkgbase = metrolist-git
+pkgbase = melodyon-git
 	pkgdesc = YouTube Music desktop client
 	pkgver = 14.0.0
 	pkgrel = 1
-	url = https://github.com/MetrolistGroup/Metrolist
+	url = https://github.com/MelodyonGroup/Melodyon
 	arch = x86_64
 	license = GPL-3.0-only
 	makedepends = git
@@ -19,13 +19,13 @@ pkgbase = metrolist-git
 	depends = libxrender
 	depends = libxtst
 	depends = webkit2gtk-4.1
-	provides = metrolist
-	conflicts = metrolist
+	provides = melodyon
+	conflicts = melodyon
 	options = !strip
 	options = !debug
-	source = metrolist-kmp::git+https://github.com/MetrolistGroup/Metrolist.git#branch=main
-	source = metrolist.desktop
+	source = melodyon-kmp::git+https://github.com/MelodyonGroup/Melodyon.git#branch=main
+	source = melodyon.desktop
 	sha256sums = SKIP
 	sha256sums = 1c1b9dedc07ec7ed0efc27f524c21e35727b934791772296bff8f7a4461cbef0
 
-pkgname = metrolist-git
+pkgname = melodyon-git

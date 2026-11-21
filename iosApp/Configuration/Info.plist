@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>Metrolist</string>
+    <string>Melodyon</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -17,9 +17,9 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>METROLIST_VERSION</string>
+    <string>MELODYON_VERSION</string>
     <key>CFBundleVersion</key>
-    <string>METROLIST_VERSION</string>
+    <string>MELODYON_VERSION</string>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
@@ -27,8 +27,8 @@
             <string>Editor</string>
             <key>CFBundleURLSchemes</key>
             <array>
-                <string>metrolist-auth</string>
-                <string>metrolist</string>
+                <string>melodyon-auth</string>
+                <string>melodyon</string>
             </array>
         </dict>
     </array>
