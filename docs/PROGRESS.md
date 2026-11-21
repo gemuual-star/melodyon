@@ -79,3 +79,9 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Сборки и тесты идут в `.github/workflows/ci.yml` на каждый push в main: `:shared:desktopTest` (он зависит от `:shared:testServerWithoutReflection`), затем `:androidApp:assembleDebug`; APK и результаты тестов — артефакты прогона.
 - Песочница (4 ядра, 8 ГБ) для Gradle не годится: только правка кода, коммит, push, чтение логов через API.
 - Коммит 11880756: компиляция shared прошла; 79 тестов прогнано в testServerWithoutReflection, 23 упали — все в `ListenTogetherManagerLifecycleTest` (функция удалена по решению пользователя). Тест удалён вместе с выключением функции; остальной код «Слушать вместе» удалить физически позже.
+
+## Зелёный CI (коммит a206eb8, прогон 44930447032)
+- `:shared:desktopTest`: 3808 тестов, 0 упало, 7 пропущено. `:androidApp:assembleDebug` прошёл, APK в артефакте `android-debug-apk`.
+- Исправлено: эталон отпечатка DeviceConnect (метка переименована в melodyon-device-connect-v2), удалены тесты менеджера «Слушать вместе» (Lifecycle, Sync).
+- Не проверено: работа SoundCloud вживую (запросы, воспроизведение, HLS-скачивание, тексты, радио после SC-трека), запуск на устройстве, Windows.
+- Следующие шаги: 1) физически удалить код «Слушать вместе»; 2) ключ подписи → секреты Actions, release-workflow Android + Windows (ручной запуск) с публикацией в gemuual-star/melodyon-releases; 3) доработать SC: HLS-скачивание, тексты для sc:, радио/автомикс без YouTube next для sc:.
