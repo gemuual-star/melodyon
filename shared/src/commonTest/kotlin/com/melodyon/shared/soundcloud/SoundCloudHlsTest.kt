@@ -35,6 +35,19 @@ class SoundCloudHlsTest {
     }
 
     @Test
+    fun skipsAbrAndEncryptedTranscodings() {
+        val tr = { preset: String, proto: String, mime: String ->
+            """{"url":"https://api-v2.soundcloud.com/media/$preset$proto","preset":"$preset","snipped":false,"format":{"protocol":"$proto","mime_type":"$mime"}}"""
+        }
+        val body = """{"id":9,"title":"t","user":{"username":"u"},"media":{"transcodings":[
+            ${tr("abr_sq", "hls", "audio/mpegurl")},${tr("aac_96k", "hls", "audio/mp4; codecs=\\"mp4a.40.2\\"")},
+            ${tr("aac_160k", "hls", "audio/mp4; codecs=\\"mp4a.40.2\\"")}]}}"""
+        assertEquals("aac_160k", parseTrack(body).bestTranscoding()?.preset)
+        val drm = """{"id":10,"title":"t","user":{"username":"u"},"media":{"transcodings":[${tr("aac_160k", "cbc-encrypted-hls", "audio/mp4")}]}}"""
+        assertEquals(null, parseTrack(drm).bestTranscoding())
+    }
+
+    @Test
     fun encryptedPlaylistIsRejected() {
         assertFailsWith<SoundCloudException> {
             parseHlsSegments("https://x/p.m3u8", "#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI=\"k\"\na.mp3")

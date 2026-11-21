@@ -85,10 +85,15 @@ internal val soundCloudJson = Json { ignoreUnknownKeys = true; coerceInputValues
 
 /** Prefers progressive MP3 (seekable, downloadable as one file), then HLS MP3, then HLS Opus/AAC. Snipped previews are skipped. */
 fun ScTrack.bestTranscoding(): ScTranscoding? {
-    val full = media.transcodings.filter { !it.snipped && it.url.isNotBlank() }
+    // Only plain "progressive"/"hls" are playable without DRM; encrypted-hls protocols are skipped.
+    // "abr_*" presets (mime audio/mpegurl) are adaptive master playlists that the api returns 404 for.
+    val full = media.transcodings.filter {
+        !it.snipped && it.url.isNotBlank() && !it.preset.startsWith("abr") && !it.format.mimeType.contains("mpegurl")
+    }
     return full.firstOrNull { it.format.protocol == "progressive" && it.format.mimeType.startsWith("audio/mpeg") }
         ?: full.firstOrNull { it.format.protocol == "progressive" }
-        ?: full.firstOrNull { it.format.protocol == "hls" && it.format.mimeType.startsWith("audio/mpeg") }
+        ?: full.firstOrNull { it.format.protocol == "hls" && it.preset.startsWith("aac_160") }
+        ?: full.firstOrNull { it.format.protocol == "hls" && it.format.mimeType.startsWith("audio/mp4") }
         ?: full.firstOrNull { it.format.protocol == "hls" }
 }
 
