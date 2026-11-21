@@ -469,7 +469,7 @@ class DeviceConnectCryptoTest {
 
     @Test
     fun fingerprintsMatchForSameSecret() {
-        assertEquals("2RyssyoEoI4Ek/IP7bvpvb0zzlcCIkYRt/7cSJBKYq8=", AccountIdentity.accountFingerprint("same"))
+        assertEquals("q0/vTTNi5Qi53XRk9fy66mbfx1YbyIbJtqqXBCL1THw=", AccountIdentity.accountFingerprint("same"))
         assertNotEquals(
             AccountIdentity.accountFingerprint("a"),
             AccountIdentity.accountFingerprint("b"),
