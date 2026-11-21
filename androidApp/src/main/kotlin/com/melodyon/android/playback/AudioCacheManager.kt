@@ -5,6 +5,10 @@
 
 package com.melodyon.android.playback
 
+import com.melodyon.shared.soundcloud.downloadTrackAudio
+import com.melodyon.shared.soundcloud.soundCloudTrackId
+import com.melodyon.shared.soundcloud.isSoundCloudSongId
+import com.melodyon.shared.soundcloud.GlobalSoundCloud
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
@@ -153,6 +157,8 @@ internal fun playbackCaptureDirectory(context: Context): File = File(context.cac
 
 internal fun requireDownloadableAudioResource(resource: PlaybackResource) {
     if (resource.isSabr) return
+    // Melodyon: SoundCloud HLS tracks are downloaded segment by segment (see storeAudioFile).
+    if (isSoundCloudSongId(resource.videoId)) return
     if (!resource.isDirectFile || !resource.url.startsWith("https://", ignoreCase = true)) {
         throw DownloadTransferException(IllegalArgumentException("Resolved audio is not a downloadable file"))
     }
@@ -915,6 +921,14 @@ class AudioCacheManager(
                             checkNotNull(resource.sabrBootstrap).mimeType.substringBefore(';')
                         } else if (DirectPlaybackCache.copyComplete(resource, tempFile)) {
                             resource.mimeType?.substringBefore(';') ?: "application/octet-stream"
+                        } else if (isSoundCloudSongId(song.id) && !resource.isDirectFile) {
+                            val trackId = checkNotNull(soundCloudTrackId(song.id))
+                            tempFile.outputStream().buffered().use { out ->
+                                GlobalSoundCloud.api.downloadTrackAudio(trackId, onProgress) { bytes ->
+                                    control?.awaitIfPaused()
+                                    out.write(bytes)
+                                }
+                            }
                         } else if (resource.isDirectFile && resource.contentLengthBytes != null && kind == KIND_CACHE) {
                             error("Playback capture is incomplete")
                         } else if (resource.isSabr) {

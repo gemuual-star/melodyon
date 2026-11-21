@@ -1,5 +1,6 @@
 package com.melodyon.shared.repository
 
+import com.melodyon.shared.soundcloud.isSoundCloudSongId
 import com.melodyon.shared.api.lyrics.AiModelCatalog
 import com.melodyon.shared.api.lyrics.AiProviderPresets
 import com.melodyon.shared.api.lyrics.LyprioLyricsProvider
@@ -578,7 +579,8 @@ class LyricsRepository(
         allSources: Boolean = false,
         isVideoContext: Boolean = false,
     ): ProviderLyricsFetch {
-        val normalizedVideoId = videoId?.takeIf { it.isNotBlank() }
+        // Melodyon: SoundCloud ids are not YouTube videos — providers then search by title/artist only.
+        val normalizedVideoId = videoId?.takeIf { it.isNotBlank() && !isSoundCloudSongId(it) }
         return try {
             withTimeoutOrNull(
                 (if (provider == LyricsProvider.LYPRIO) LyprioLyricsProvider.SEARCH_TIMEOUT_MS else PROVIDER_TIMEOUT_MS).milliseconds,

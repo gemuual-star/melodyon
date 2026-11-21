@@ -1,5 +1,6 @@
 package com.melodyon.shared.soundcloud
 
+import io.ktor.client.statement.readRawBytes
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -48,6 +49,39 @@ class SoundCloudApi(
     suspend fun track(trackId: Long): ScTrack {
         val body = authorized { id -> http.get("$apiUrl/tracks/$trackId") { parameter("client_id", id) } }
         return parseTrack(body)
+    }
+
+    /** SoundCloud "related tracks" — used as radio/autoplay after a SoundCloud track. */
+    suspend fun relatedTracks(trackId: Long, limit: Int = 30): List<ScTrack> {
+        val body = authorized { id ->
+            http.get("$apiUrl/tracks/$trackId/related") {
+                parameter("limit", limit)
+                parameter("client_id", id)
+            }
+        }
+        return parseSearchPage(body).collection
+    }
+
+    /**
+     * Downloads an HLS stream (SoundCloud serves unencrypted MP3/Opus segments) by fetching the
+     * playlist and every segment in order; [sink] receives the bytes, giving one playable file.
+     */
+    internal suspend fun rawGet(url: String): ByteArray {
+        val response = http.get(url)
+        if (!response.status.isSuccess()) throw SoundCloudException("SoundCloud media HTTP ${response.status.value}")
+        return response.readRawBytes()
+    }
+
+    suspend fun downloadHls(playlistUrl: String, sink: suspend (ByteArray) -> Unit) {
+        val playlist = http.get(playlistUrl)
+        if (!playlist.status.isSuccess()) throw SoundCloudException("HLS playlist HTTP ${playlist.status.value}")
+        val segments = parseHlsSegments(playlistUrl, playlist.bodyAsText())
+        if (segments.isEmpty()) throw SoundCloudException("Empty HLS playlist")
+        segments.forEach { url ->
+            val response = http.get(url)
+            if (!response.status.isSuccess()) throw SoundCloudException("HLS segment HTTP ${response.status.value}")
+            sink(response.readRawBytes())
+        }
     }
 
     /** Resolves a short-lived direct media URL (progressive MP3 or HLS playlist) for [track]. */

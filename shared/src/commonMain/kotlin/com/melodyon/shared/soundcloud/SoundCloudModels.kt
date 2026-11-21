@@ -99,3 +99,26 @@ fun parseSearchPage(body: String): ScSearchPage {
 fun parseTrack(body: String): ScTrack = soundCloudJson.decodeFromString<ScTrack>(body)
 
 fun parseStreamUrl(body: String): String? = soundCloudJson.decodeFromString<ScStreamUrl>(body).url.takeIf { it.startsWith("https://") }
+
+/** Segment URLs of a media playlist, resolved against [playlistUrl]; encrypted playlists are rejected. */
+fun parseHlsSegments(playlistUrl: String, body: String): List<String> {
+    val lines = body.lineSequence().map { it.trim() }.filter { it.isNotEmpty() }.toList()
+    if (lines.any { it.startsWith("#EXT-X-KEY") && !it.contains("METHOD=NONE") }) throw SoundCloudException("Encrypted HLS is not supported")
+    val origin = playlistUrl.substringBefore("://") + "://" + playlistUrl.substringAfter("://").substringBefore('/')
+    val dir = playlistUrl.substringBefore('?').substringBeforeLast('/') + "/"
+    return lines.filterNot { it.startsWith("#") }.map {
+        when {
+            it.startsWith("https://") || it.startsWith("http://") -> it
+            it.startsWith("/") -> origin + it
+            else -> dir + it
+        }
+    }
+}
+
+/** Container of downloaded SoundCloud audio: HLS Opus segments are Ogg, everything else MP3/AAC per mime. */
+fun soundCloudAudioMime(stream: ResolvedStream): String =
+    when {
+        stream.mimeType.contains("opus") || stream.mimeType.contains("ogg") -> "audio/ogg"
+        stream.mimeType.contains("mp4") || stream.mimeType.contains("aac") -> "audio/mp4"
+        else -> "audio/mpeg"
+    }

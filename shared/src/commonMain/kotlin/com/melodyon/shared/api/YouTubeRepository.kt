@@ -1,5 +1,9 @@
 package com.melodyon.shared.api
 
+import com.melodyon.shared.soundcloud.toSongItem
+import com.melodyon.shared.soundcloud.isSoundCloudSongId
+import com.melodyon.shared.soundcloud.soundCloudTrackId
+import com.melodyon.shared.soundcloud.GlobalSoundCloud
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.innertubex.InnerTubeHttpException
 import com.metrolist.innertubex.bodyAsTextLimited
@@ -2386,6 +2390,7 @@ class YouTubeRepository(
         params: String? = null,
         continuation: String? = null,
     ): JsonObject {
+        require(!isSoundCloudSongId(videoId)) { "SoundCloud track has no YouTube /next data" }
         val session = innerTube.sessionSnapshot()
         val voteRevision = SongLikeState.voteObservationRevision()
         val key = NextRequestKey(session, videoId, playlistId, params, continuation)
@@ -2436,6 +2441,11 @@ class YouTubeRepository(
         playlistId: String = "RDAMVM$videoId",
         params: String? = null,
     ): RadioQueuePage {
+        // Melodyon: radio for a SoundCloud track = SoundCloud "related tracks".
+        soundCloudTrackId(videoId)?.let { trackId ->
+            val songs = GlobalSoundCloud.api.relatedTracks(trackId).map { it.toSongItem() }
+            return RadioQueuePage(songs = BlockedContent.filterSongs(songs), chips = emptyList())
+        }
         val page = parseRadioQueueResponse(nextResponse(videoId, playlistId, params))
         return page.copy(songs = BlockedContent.filterSongs(page.songs))
     }

@@ -5,6 +5,10 @@
 
 package com.melodyon.desktop.storage
 
+import com.melodyon.shared.soundcloud.downloadTrackAudio
+import com.melodyon.shared.soundcloud.soundCloudTrackId
+import com.melodyon.shared.soundcloud.isSoundCloudSongId
+import com.melodyon.shared.soundcloud.GlobalSoundCloud
 import com.melodyon.desktop.utils.AppLogger
 import com.metrolist.innertubex.extraction.AudioQuality
 import com.melodyon.shared.db.MusicDatabase
@@ -765,6 +769,12 @@ object DownloadManager {
                                         val source = fileInDownloadDir("${song.id}.source.${System.nanoTime()}.tmp")
                                         downloadSabrAudio(resource, source, onProgress = onProgress)
                                         source.absolutePath
+                                    } else if (isSoundCloudSongId(song.id) && !resource.isDirectFile) {
+                                        val source = fileInDownloadDir("${song.id}.source.${System.nanoTime()}.tmp")
+                                        source.outputStream().buffered().use { out ->
+                                            GlobalSoundCloud.api.downloadTrackAudio(checkNotNull(soundCloudTrackId(song.id)), onProgress) { out.write(it) }
+                                        }
+                                        source.absolutePath
                                     } else {
                                         if (!resource.isDirectFile) throw IOException("Unsupported download transport")
                                         downloadUrl(
@@ -819,7 +829,7 @@ object DownloadManager {
                                 downloadDate = System.currentTimeMillis(),
                                 album = song.album?.name,
                                 year = song.year,
-                                sourceUrl = "https://music.youtube.com/watch?v=${song.id}",
+                                sourceUrl = if (isSoundCloudSongId(song.id)) "soundcloud:${song.id}" else "https://music.youtube.com/watch?v=${song.id}",
                                 mimeType = "audio/mp4",
                                 explicitness = song.artworkExplicitness,
                                 loudnessDb = downloadedResource?.loudnessDb,
