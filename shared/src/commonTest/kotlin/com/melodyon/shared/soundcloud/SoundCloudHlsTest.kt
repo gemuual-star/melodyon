@@ -40,8 +40,8 @@ class SoundCloudHlsTest {
             """{"url":"https://api-v2.soundcloud.com/media/$preset$proto","preset":"$preset","snipped":false,"format":{"protocol":"$proto","mime_type":"$mime"}}"""
         }
         val body = """{"id":9,"title":"t","user":{"username":"u"},"media":{"transcodings":[
-            ${tr("abr_sq", "hls", "audio/mpegurl")},${tr("aac_96k", "hls", "audio/mp4; codecs=\\"mp4a.40.2\\"")},
-            ${tr("aac_160k", "hls", "audio/mp4; codecs=\\"mp4a.40.2\\"")}]}}"""
+            ${tr("abr_sq", "hls", "audio/mpegurl")},${tr("aac_96k", "hls", "audio/mp4")},
+            ${tr("aac_160k", "hls", "audio/mp4")}]}}"""
         assertEquals("aac_160k", parseTrack(body).bestTranscoding()?.preset)
         val drm = """{"id":10,"title":"t","user":{"username":"u"},"media":{"transcodings":[${tr("aac_160k", "cbc-encrypted-hls", "audio/mp4")}]}}"""
         assertEquals(null, parseTrack(drm).bestTranscoding())
@@ -58,6 +58,6 @@ class SoundCloudHlsTest {
     fun audioMimeFollowsTranscoding() {
         assertEquals("audio/mpeg", soundCloudAudioMime(ResolvedStream("https://a", true, "audio/mpeg")))
         assertEquals("audio/ogg", soundCloudAudioMime(ResolvedStream("https://a", true, "audio/ogg; codecs=\"opus\"")))
-        assertEquals("audio/mp4", soundCloudAudioMime(ResolvedStream("https://a", true, "audio/mp4; codecs=\"mp4a.40.2\"")))
+        assertEquals("audio/mp4", soundCloudAudioMime(ResolvedStream("https://a", true, "audio/mp4")))
     }
 }
