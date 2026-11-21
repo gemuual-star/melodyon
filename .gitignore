@@ -96,3 +96,16 @@ HANDOFF.md
 .opencode
 .mcp.json
 /*.flatpak
+
+# Melodyon: секреты и кэши
+secrets*.json
+tokens*.json
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+.secrets/
+*.p12
+*.pem
+.env
+.cache/
