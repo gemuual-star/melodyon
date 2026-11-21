@@ -677,7 +677,7 @@ private fun buildIntegrationsRegistry(
     }
 
     host.deviceConnect?.let { builder.deviceConnectPage(it) }
-    if (host.listenTogetherManager != null || host.onOpenListenTogether != null) {
+    if (settings.listenTogetherEnabled && (host.listenTogetherManager != null || host.onOpenListenTogether != null)) {
         builder.customPage(
             SettingsPageId.LISTEN_TOGETHER,
             stringResource(Res.string.listen_together),
@@ -707,7 +707,7 @@ private fun buildIntegrationsRegistry(
             SettingsPageId.LAST_FM,
             SettingsPageId.LISTEN_BRAINZ,
             SettingsPageId.DEVICE_CONNECT.takeIf { host.deviceConnect != null },
-            SettingsPageId.LISTEN_TOGETHER.takeIf { host.listenTogetherManager != null || host.onOpenListenTogether != null },
+            SettingsPageId.LISTEN_TOGETHER.takeIf { Settings.shared.listenTogetherEnabled && (host.listenTogetherManager != null || host.onOpenListenTogether != null) },
         ).toTypedArray(),
     )
     return builder.build()

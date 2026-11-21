@@ -130,21 +130,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <intent-filter android:autoVerify="true">
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" />
-                <data android:host="melodyon.cc" />
-                <data android:pathPrefix="/listen" />
-                <data android:pathPrefix="/party" />
-                <data android:pathPrefix="/watch" />
-                <data android:pathPrefix="/playlist" />
-                <data android:pathPrefix="/channel/" />
-                <data android:pathPrefix="/browse/" />
-                <data android:pathPrefix="/album/" />
-                <data android:pathPrefix="/artist/" />
-            </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

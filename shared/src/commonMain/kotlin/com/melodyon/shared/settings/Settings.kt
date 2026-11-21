@@ -656,7 +656,10 @@ class Settings(
     var pendingScrobblesJson by preference("[]")
     var corruptPendingScrobblesJson by preference("")
     var systemInDarkTheme by preference(false)
-    var listenTogetherEnabled by preference(ListenTogetherEnabledKey, true)
+    /** Melodyon: функция «Слушать вместе» удалена из продукта — всегда выключена. */
+    var listenTogetherEnabled: Boolean
+        get() = false
+        set(@Suppress("UNUSED_PARAMETER") value) {}
     var listenTogetherDesktopSession by preference("")
     var listenTogetherUsername by preference("")
     var listenTogetherServerUrl by preference(DEFAULT_LISTEN_TOGETHER_SERVER_URL)
