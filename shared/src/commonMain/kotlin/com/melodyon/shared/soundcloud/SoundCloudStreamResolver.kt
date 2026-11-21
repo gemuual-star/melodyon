@@ -1,9 +1,9 @@
 package com.melodyon.shared.soundcloud
 
 import com.melodyon.shared.model.SongItem
-import com.melodyon.shared.youtube.playback.AudioQuality
-import com.melodyon.shared.youtube.playback.ContentHints
-import com.melodyon.shared.youtube.playback.PlaybackFailureCategory
+import com.metrolist.innertubex.extraction.AudioQuality
+import com.metrolist.innertubex.extraction.ContentHints
+import com.melodyon.shared.playback.PlaybackFailureCategory
 import com.melodyon.shared.youtube.playback.PlaybackNetworkState
 import com.melodyon.shared.youtube.playback.PlaybackResource
 import com.melodyon.shared.youtube.playback.StreamResolver
