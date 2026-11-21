@@ -123,6 +123,9 @@ fun parseHlsSegments(playlistUrl: String, body: String): List<String> {
     return listOfNotNull(init?.let(::resolve)) + lines.filterNot { it.startsWith("#") }.map(::resolve)
 }
 
+/** True for fMP4 playlists, whose first entry from [parseHlsSegments] is the init segment. */
+fun hlsHasInitSegment(body: String): Boolean = body.lineSequence().any { it.trim().startsWith("#EXT-X-MAP") }
+
 /** Container of downloaded SoundCloud audio: HLS Opus segments are Ogg, everything else MP3/AAC per mime. */
 fun soundCloudAudioMime(stream: ResolvedStream): String =
     when {

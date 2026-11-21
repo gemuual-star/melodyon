@@ -75,13 +75,18 @@ class SoundCloudApi(
     suspend fun downloadHls(playlistUrl: String, sink: suspend (ByteArray) -> Unit) {
         val playlist = http.get(playlistUrl)
         if (!playlist.status.isSuccess()) throw SoundCloudException("HLS playlist HTTP ${playlist.status.value}")
-        val segments = parseHlsSegments(playlistUrl, playlist.bodyAsText())
-        if (segments.isEmpty()) throw SoundCloudException("Empty HLS playlist")
-        segments.forEach { url ->
-            val response = http.get(url)
-            if (!response.status.isSuccess()) throw SoundCloudException("HLS segment HTTP ${response.status.value}")
-            sink(response.readRawBytes())
+        val body = playlist.bodyAsText()
+        val segments = parseHlsSegments(playlistUrl, body)
+        // AAC streams are fragmented MP4: glued together they report one segment as the whole duration
+        // and cannot seek, so they are rebuilt into a regular M4A. MP3 segments can simply be appended.
+        val remuxer = if (hlsHasInitSegment(body)) FragmentedMp4Remuxer(rawGet(segments.first())) else null
+        val media = if (remuxer != null) segments.drop(1) else segments
+        if (media.isEmpty()) throw SoundCloudException("Empty HLS playlist")
+        media.forEach { url ->
+            val bytes = rawGet(url)
+            sink(remuxer?.append(bytes) ?: bytes)
         }
+        remuxer?.let { sink(it.finish()) }
     }
 
     /** Resolves a short-lived direct media URL (progressive MP3 or HLS playlist) for [track]. */
