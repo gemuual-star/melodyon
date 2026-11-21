@@ -13,10 +13,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  android-and-tests:
-    name: Tests + Android debug
+  tests:
+    name: Shared tests
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,33 +29,34 @@ jobs:
             21
       - uses: gradle/actions/setup-gradle@v4
       - name: Shared tests (desktop JVM)
-        run: >
-          ./gradlew :shared:desktopTest --continue
-          -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64
-          --console=plain
-      - name: Test report summary
+        run: ./gradlew :shared:desktopTest --continue -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
+      - name: Test summary
         if: always()
         run: |
           python3 - <<'EOF'
           import glob,re
           t=f=e=s=0
-          for x in glob.glob('shared/build/test-results/desktopTest/*.xml'):
-              h=open(x).read(2000)
-              m=re.search(r'tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)"',h)
+          for x in glob.glob('shared/build/test-results/*/*.xml'):
+              m=re.search(r'tests="(\d+)" skipped="(\d+)" failures="(\d+)" errors="(\d+)"',open(x).read(3000))
               if m: a=list(map(int,m.groups())); t+=a[0]; s+=a[1]; f+=a[2]; e+=a[3]
           print(f"TESTS total={t} skipped={s} failures={f} errors={e}")
           EOF
-      - uses: actions/upload-artifact@v4
-        if: always()
+  android:
+    name: Android debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
         with:
-          name: test-results
-          path: shared/build/test-results/desktopTest
-          if-no-files-found: ignore
-      - name: Android debug APK
-        run: >
-          ./gradlew :androidApp:assembleDebug
-          -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64
-          --console=plain
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            25
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :androidApp:assembleDebug -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
       - uses: actions/upload-artifact@v4
         with:
           name: android-debug-apk

@@ -1,0 +1,79 @@
+name: Release build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: Android release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            25
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          umask 077
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.p12"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.p12" >> "$GITHUB_ENV"
+      - name: Build signed APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :androidApp:assembleRelease -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
+      - name: Verify signature
+        run: |
+          s=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | tail -1)
+          for a in $(find androidApp/build/outputs/apk -name '*.apk'); do "$s" verify --print-certs "$a" | grep -i 'SHA-256'; done
+      - run: rm -f "$RUNNER_TEMP/release.p12"
+        if: always()
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: androidApp/build/outputs/apk/**/*.apk
+
+  windows:
+    name: Windows x64
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            25
+            21
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: metro-wv2-helper/global.json
+      - name: Build Windows login helper
+        shell: pwsh
+        working-directory: metro-wv2-helper
+        run: |
+          dotnet publish metro-wv2-helper.csproj --configuration Release --runtime win-x64 --self-contained true --output ../desktopApp/src/desktopMain/resources/windows -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -p:DebugSymbols=false -p:PublishReadyToRun=true
+          if ($LASTEXITCODE -ne 0) { throw "helper build failed" }
+      - name: Build Windows package
+        shell: bash
+        run: ./gradlew :desktopApp:assembleWindowsRelease -Pmelodyon.debug=false -Pmelodyon.desktop.arch=x86_64 -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64 --no-configuration-cache --console=plain
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: dist/*

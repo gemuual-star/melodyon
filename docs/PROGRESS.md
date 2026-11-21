@@ -85,3 +85,8 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Исправлено: эталон отпечатка DeviceConnect (метка переименована в melodyon-device-connect-v2), удалены тесты менеджера «Слушать вместе» (Lifecycle, Sync).
 - Не проверено: работа SoundCloud вживую (запросы, воспроизведение, HLS-скачивание, тексты, радио после SC-трека), запуск на устройстве, Windows.
 - Следующие шаги: 1) физически удалить код «Слушать вместе»; 2) ключ подписи → секреты Actions, release-workflow Android + Windows (ручной запуск) с публикацией в gemuual-star/melodyon-releases; 3) доработать SC: HLS-скачивание, тексты для sc:, радио/автомикс без YouTube next для sc:.
+
+## Релиз (подпись + Windows)
+- Ключ подписи Android: PKCS12, alias `melodyon`, создан в песочнице (`/home/user/.secrets/melodyon-release.p12`), хранится в секретах репо: KEYSTORE_B64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD. В git и на Drive его нет. Если песочница сброшена — ключ всё равно доступен CI через секреты.
+- `.github/workflows/release.yml` (ручной запуск): подписанный APK (ubuntu) + Windows x64 (windows-latest, helper на .NET, `:desktopApp:assembleWindowsRelease`). Публикацию в `gemuual-star/melodyon-releases` делает агент из песочницы (скачивает артефакты, создаёт релиз через API) — токен в CI не кладётся.
+- CI разделён на два параллельных job: тесты и debug APK.
