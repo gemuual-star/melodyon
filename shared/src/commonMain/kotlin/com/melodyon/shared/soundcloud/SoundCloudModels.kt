@@ -51,6 +51,7 @@ data class ScTrack(
     val policy: String? = null,
     val genre: String? = null,
     @SerialName("publisher_metadata") val publisherMetadata: ScPublisherMetadata? = null,
+    @SerialName("track_authorization") val trackAuthorization: String? = null,
     val user: ScUser = ScUser(),
     val media: ScMedia = ScMedia(),
 ) {
@@ -106,13 +107,15 @@ fun parseHlsSegments(playlistUrl: String, body: String): List<String> {
     if (lines.any { it.startsWith("#EXT-X-KEY") && !it.contains("METHOD=NONE") }) throw SoundCloudException("Encrypted HLS is not supported")
     val origin = playlistUrl.substringBefore("://") + "://" + playlistUrl.substringAfter("://").substringBefore('/')
     val dir = playlistUrl.substringBefore('?').substringBeforeLast('/') + "/"
-    return lines.filterNot { it.startsWith("#") }.map {
+    fun resolve(it: String) =
         when {
             it.startsWith("https://") || it.startsWith("http://") -> it
             it.startsWith("/") -> origin + it
             else -> dir + it
         }
-    }
+    // fMP4 (AAC) playlists carry the init segment in #EXT-X-MAP; it must precede the media segments.
+    val init = lines.firstOrNull { it.startsWith("#EXT-X-MAP") }?.let { Regex("URI=\"([^\"]+)\"").find(it)?.groupValues?.get(1) }
+    return listOfNotNull(init?.let(::resolve)) + lines.filterNot { it.startsWith("#") }.map(::resolve)
 }
 
 /** Container of downloaded SoundCloud audio: HLS Opus segments are Ogg, everything else MP3/AAC per mime. */

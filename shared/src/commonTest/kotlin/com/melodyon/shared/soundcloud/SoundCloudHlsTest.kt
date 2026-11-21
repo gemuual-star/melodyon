@@ -29,6 +29,12 @@ class SoundCloudHlsTest {
     }
 
     @Test
+    fun initSegmentComesFirst() {
+        val body = "#EXTM3U\n#EXT-X-MAP:URI=\"https://h.example/init.mp4?p=1\"\n#EXTINF:10.0,\nhttps://h.example/s0.m4s"
+        assertEquals(listOf("https://h.example/init.mp4?p=1", "https://h.example/s0.m4s"), parseHlsSegments("https://h.example/playlist.m3u8", body))
+    }
+
+    @Test
     fun encryptedPlaylistIsRejected() {
         assertFailsWith<SoundCloudException> {
             parseHlsSegments("https://x/p.m3u8", "#EXTM3U\n#EXT-X-KEY:METHOD=AES-128,URI=\"k\"\na.mp3")

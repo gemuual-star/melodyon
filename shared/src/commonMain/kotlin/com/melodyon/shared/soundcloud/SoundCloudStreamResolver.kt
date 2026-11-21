@@ -83,7 +83,8 @@ fun ResolvedStream.toPlaybackResource(songId: String): PlaybackResource =
         headers = emptyMap(),
         loudnessDb = null,
         expiresAt = Clock.System.now() + 10.minutes,
-        mimeType = if (isHls) "application/x-mpegurl" else mimeType.ifBlank { "audio/mpeg" },
+        // ExoPlayer matches the HLS mime type case-sensitively (MimeTypes.APPLICATION_M3U8).
+        mimeType = if (isHls) "application/x-mpegURL" else mimeType.ifBlank { "audio/mpeg" },
         clientName = SoundCloudStreamResolver.SOUNDCLOUD_PROFILE,
         profileId = SoundCloudStreamResolver.SOUNDCLOUD_PROFILE,
         requireBoundedRange = false,

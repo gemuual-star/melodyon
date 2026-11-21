@@ -87,7 +87,10 @@ class SoundCloudApi(
     /** Resolves a short-lived direct media URL (progressive MP3 or HLS playlist) for [track]. */
     suspend fun streamUrl(track: ScTrack): ResolvedStream {
         val transcoding = track.bestTranscoding() ?: throw SoundCloudException("Track ${track.id} has no playable stream")
-        val body = authorized { id -> http.get(transcoding.url) { parameter("client_id", id) } }
+        val body = authorized { id -> http.get(transcoding.url) {
+                parameter("client_id", id)
+                track.trackAuthorization?.let { parameter("track_authorization", it) }
+            } }
         val url = parseStreamUrl(body) ?: throw SoundCloudException("Empty stream url")
         return ResolvedStream(url = url, isHls = transcoding.format.protocol == "hls", mimeType = transcoding.format.mimeType)
     }
