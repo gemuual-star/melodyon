@@ -4,7 +4,7 @@ import com.melodyon.shared.soundcloud.GlobalSoundCloud
 import com.melodyon.shared.soundcloud.SoundCloudApi
 import com.melodyon.shared.soundcloud.mergeSoundCloudPages
 import com.melodyon.shared.soundcloud.toSearchResultPage
-com.metrolist.innertubex.utils.YouTubeUrlParser
+import com.metrolist.innertubex.utils.YouTubeUrlParser
 import com.melodyon.shared.api.YouTubeRepository
 import com.melodyon.shared.model.SearchFilter
 import com.melodyon.shared.model.SearchResultPage
