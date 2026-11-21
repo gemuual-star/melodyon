@@ -117,3 +117,9 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Проверено в песочнице на реальном треке SoundCloud (22 сегмента): ffprobe показывает 216.19 с при длине трека 216.19 с, перемотка на 150 с декодируется, PCM совпадает побайтно со старой склейкой. Юнит-тест `FragmentedMp4RemuxerTest` (3 теста) прошёл локально на kotlinc 2.2.20.
 - Не проверено: в приложении на устройстве. Уже скачанные треки остаются битыми — их нужно удалить и скачать заново.
 - Локальная проверка без Gradle: kotlinc в `/home/user/kt/kotlinc` (скачать `kotlin-compiler-2.2.20.zip` с релизов JetBrains/kotlin), тестовые сегменты в `/home/user/sc`.
+
+## Релиз v1.0.2 (коммит f0281be)
+- appVersion=1.0.2, versionCode=3. CI 44941107232: 3863 теста, 0 упало, 7 пропущено. Release build 44941106732 зелёный (Android + Windows x64).
+- Опубликован как latest в gemuual-star/melodyon-releases: `Melodyon-Android-1.0.2.apk`, `Melodyon-1.0.2-windows-x64.zip`.
+- Подпись APK: сертификат совпадает с 1.0.0/1.0.1 (SHA-256 4e038a3a…cf9e).
+- Не проверено: обновление изнутри приложения, воспроизведение скачанного трека SoundCloud на устройстве.
