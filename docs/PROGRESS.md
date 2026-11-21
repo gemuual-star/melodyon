@@ -93,3 +93,12 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Release-прогон 44932470999 (коммит df0b3e1): оба job зелёные. Опубликовано как prerelease v1.0.0 в melodyon-releases: Melodyon-1.0.0-android.apk (подписан), Melodyon-1.0.0-windows-x64.zip (портативный, не установщик). На устройствах не запускалось. Апдейтер смотрит releases/latest, prerelease он не видит — это намеренно, пока сборка тестовая.
 - CI на df0b3e1 зелёный.
 - Следующее: SoundCloud (HLS-скачивание, тексты, радио), физическое удаление «Слушать вместе», установщик Windows (сейчас ZIP).
+
+## SoundCloud: исправление воспроизведения/скачивания (коммиты b1e36cf..6d92633)
+- Причина ошибки: SoundCloud отдаёт почти все треки только как HLS AAC (fMP4); мы выбирали abr_sq (api возвращает 404) и не передавали track_authorization; mime HLS был в регистре, который ExoPlayer не узнаёт.
+- Исправлено: выбор aac_160k HLS, пропуск abr_* и DRM (cbc/ctr-encrypted-hls — такие треки скрываются из выдачи), track_authorization, mime application/x-mpegURL.
+- Скачивание HLS: плейлист + init-сегмент (#EXT-X-MAP) + сегменты в один файл (Android AudioCacheManager, Desktop DownloadManager).
+- Радио после SC-трека: SoundCloud /tracks/{id}/related. Тексты: провайдеры ищут по названию/артисту (videoId sc: не передаётся).
+- CI на 6d92633: 3860 тестов, 0 упало, 7 пропущено; debug APK собран. Release build успешен; ассеты v1.0.0 (prerelease) в melodyon-releases заменены.
+- Живая проверка из песочницы: поиск, client_id, получение HLS-плейлиста и сегментов работают. В приложении на устройстве НЕ проверено.
+- Не проверено: воспроизведение HLS fMP4 на Desktop (ffmpeg открывает URL напрямую); скачанный файл fMP4 на Android в .m4a.
