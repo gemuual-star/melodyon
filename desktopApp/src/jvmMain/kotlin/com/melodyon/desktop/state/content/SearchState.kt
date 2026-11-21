@@ -91,6 +91,8 @@ object SearchState {
         if (filter == null) controller.clearFilter() else controller.searchFiltered(filter)
     }
 
+    fun searchSoundCloud() = controller.searchSoundCloud()
+
     fun loadMoreFilteredResults() = controller.loadMoreFilteredResults()
 
     fun retryLoadMoreFilteredResults() = controller.retryLoadMoreFilteredResults()

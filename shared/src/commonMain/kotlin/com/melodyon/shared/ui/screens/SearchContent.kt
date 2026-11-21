@@ -7,6 +7,7 @@
 
 package com.melodyon.shared.ui.screens
 
+import androidx.compose.material3.FilterChip
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
@@ -232,6 +233,7 @@ fun SearchContent(
     onHistoryItemInsert: (String) -> Unit,
     onClearHistory: () -> Unit,
     onFilterSelected: (SearchFilter?) -> Unit,
+    onSoundCloudSelected: () -> Unit = {},
     onLoadMore: () -> Unit,
     onRetryLoadMore: () -> Unit,
     modifier: Modifier = Modifier,
@@ -304,6 +306,7 @@ fun SearchContent(
                         SearchResultsList(
                             uiState = uiState,
                             onFilterSelected = onFilterSelected,
+                            onSoundCloudSelected = onSoundCloudSelected,
                             onItemClick = if (uiState.selectedFilter == SearchFilter.VIDEO) onVideoItemClick else onItemClick,
                             onVideoItemClick = onVideoItemClick,
                             onItemLongClick = onItemLongClick,
@@ -947,6 +950,7 @@ private fun searchListItemShape(
 private fun SearchResultsList(
     uiState: SearchUiState,
     onFilterSelected: (SearchFilter?) -> Unit,
+    onSoundCloudSelected: () -> Unit = {},
     onItemClick: (YTItem) -> Unit,
     onVideoItemClick: (YTItem) -> Unit = onItemClick,
     onItemLongClick: (YTItem) -> Unit,
@@ -982,7 +986,7 @@ private fun SearchResultsList(
 
     val summaries = searchSummary?.summaries.orEmpty()
     val filteredItems = filteredResults?.items.orEmpty()
-    val showingFilteredResults = selectedFilter != null && filteredResults != null
+    val showingFilteredResults = (selectedFilter != null || uiState.soundCloudSelected) && filteredResults != null
     val allResultsEmpty = summaries.all { it.items.isEmpty() }
     val showNoResults =
         hasSearched && !isSearching && !uiState.searchFailed &&
@@ -1024,6 +1028,15 @@ private fun SearchResultsList(
                             ),
                         selectedOption = selectedFilter,
                         onSelectionChange = onFilterSelected,
+                        // Melodyon: SoundCloud pill sits before «All»; it is only queried on tap.
+                        leadingContent = {
+                            FilterChip(
+                                selected = uiState.soundCloudSelected,
+                                onClick = onSoundCloudSelected,
+                                label = { Text("SoundCloud") },
+                                modifier = Modifier.padding(end = 8.dp),
+                            )
+                        },
                         label = { filter ->
                             when (filter) {
                                 SearchFilter.SONG -> text.filterSongs
@@ -1060,7 +1073,7 @@ private fun SearchResultsList(
             item(key = "search_failed") {
                 Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(stringResource(Res.string.search_online_failed))
-                    TextButton(onClick = { onFilterSelected(selectedFilter) }, shapes = ButtonDefaults.shapes()) {
+                    TextButton(onClick = { if (uiState.soundCloudSelected) onSoundCloudSelected() else onFilterSelected(selectedFilter) }, shapes = ButtonDefaults.shapes()) {
                         Text(stringResource(Res.string.retry))
                     }
                 }

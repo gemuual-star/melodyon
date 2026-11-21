@@ -542,6 +542,7 @@ fun SearchScreen(
                         onFilterSelected = { filter ->
                             if (filter == null) searchViewModel.shared.clearFilter() else searchViewModel.shared.searchFiltered(filter)
                         },
+                        onSoundCloudSelected = searchViewModel.shared::searchSoundCloud,
                         onLoadMore = searchViewModel.shared::loadMoreFilteredResults,
                         onRetryLoadMore = searchViewModel.shared::retryLoadMoreFilteredResults,
                         currentSongId = currentSong?.id,

@@ -97,6 +97,7 @@ fun SearchResultsList(
             onFilterSelected = { filter ->
                 SearchState.updateSearchFilter(filter)
             },
+            onSoundCloudSelected = SearchState::searchSoundCloud,
             onRetryLoadMore = SearchState::retryLoadMoreFilteredResults,
             onLoadMore = {
                 SearchState.loadMoreFilteredResults()

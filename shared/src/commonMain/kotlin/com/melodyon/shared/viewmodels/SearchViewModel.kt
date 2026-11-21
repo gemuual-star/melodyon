@@ -1,6 +1,10 @@
 package com.melodyon.shared.viewmodels
 
-import com.metrolist.innertubex.utils.YouTubeUrlParser
+import com.melodyon.shared.soundcloud.GlobalSoundCloud
+import com.melodyon.shared.soundcloud.SoundCloudApi
+import com.melodyon.shared.soundcloud.mergeSoundCloudPages
+import com.melodyon.shared.soundcloud.toSearchResultPage
+com.metrolist.innertubex.utils.YouTubeUrlParser
 import com.melodyon.shared.api.YouTubeRepository
 import com.melodyon.shared.model.SearchFilter
 import com.melodyon.shared.model.SearchResultPage
@@ -31,6 +35,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class SearchViewModel(
     private val scope: CoroutineScope,
     private val repository: YouTubeRepository = GlobalYouTubeRepository.instance,
+    private val soundCloud: SoundCloudApi = GlobalSoundCloud.api,
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -151,6 +156,7 @@ class SearchViewModel(
                         searchFailed = false,
                         hasSearched = true,
                         selectedFilter = null,
+                        soundCloudSelected = false,
                         unfilteredResults = null,
                         filteredResults = null,
                     )
@@ -196,7 +202,7 @@ class SearchViewModel(
         filterJob =
             scope.launch {
                 pendingHistoryMutation?.join()
-                _uiState.update { it.copy(isSearching = true, selectedFilter = filter, searchFailed = false) }
+                _uiState.update { it.copy(isSearching = true, selectedFilter = filter, soundCloudSelected = false, searchFailed = false) }
 
                 try {
                     val result =
@@ -240,6 +246,10 @@ class SearchViewModel(
 
     fun loadMoreFilteredResults() {
         val state = _uiState.value
+        if (state.soundCloudSelected) {
+            loadMoreSoundCloud()
+            return
+        }
         val query = state.query
         val filter = state.selectedFilter ?: return
         val continuation = state.filteredResults?.continuation ?: return
@@ -309,9 +319,69 @@ class SearchViewModel(
         _uiState.update { it.copy(isLoadingMore = false, loadMoreFailed = false) }
     }
 
+    /** SoundCloud pill: anonymous SoundCloud track search for the current query. */
+    fun searchSoundCloud() {
+        val query = _uiState.value.query.trim()
+        if (query.isEmpty()) return
+        filterJob?.cancel()
+        cancelLoadMore()
+        filterJob =
+            scope.launch {
+                _uiState.update {
+                    it.copy(
+                        isSearching = true,
+                        selectedFilter = null,
+                        soundCloudSelected = true,
+                        searchFailed = false,
+                        loadMoreFailed = false,
+                        unfilteredResults = null,
+                        filteredResults = null,
+                    )
+                }
+                try {
+                    val page = soundCloud.searchTracks(query)
+                    _uiState.update {
+                        if (!it.soundCloudSelected || it.query.trim() != query) it
+                        else it.copy(isSearching = false, filteredResults = page.toSearchResultPage(), unfilteredResults = null)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    _uiState.update {
+                        if (!it.soundCloudSelected) it
+                        else it.copy(isSearching = false, searchFailed = true, filteredResults = SearchResultPage(emptyList()))
+                    }
+                }
+            }
+    }
+
+    private fun loadMoreSoundCloud() {
+        val state = _uiState.value
+        val next = state.filteredResults?.continuation ?: return
+        if (state.isLoadingMore || state.isSearching || state.loadMoreFailed) return
+        loadMoreJob =
+            scope.launch {
+                _uiState.update { it.copy(isLoadingMore = true, loadMoreFailed = false) }
+                try {
+                    val page = soundCloud.nextPage(next).toSearchResultPage()
+                    _uiState.update { current ->
+                        val existing = current.filteredResults
+                        if (!current.soundCloudSelected || existing?.continuation != next) current
+                        else current.copy(filteredResults = mergeSoundCloudPages(existing, page))
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    _uiState.update { if (it.soundCloudSelected) it.copy(loadMoreFailed = true) else it }
+                } finally {
+                    _uiState.update { it.copy(isLoadingMore = false) }
+                }
+            }
+    }
+
     fun clearFilter() {
         cancelLoadMore()
-        _uiState.update { it.copy(selectedFilter = null, unfilteredResults = null, filteredResults = null) }
+        _uiState.update { it.copy(selectedFilter = null, soundCloudSelected = false, unfilteredResults = null, filteredResults = null) }
         if (_uiState.value.query.isNotEmpty()) {
             search(recordSearchHistory = !Settings.shared.pauseSearchHistory)
         }
@@ -602,6 +672,8 @@ class SearchViewModel(
         val isLoadingMore: Boolean = false,
         val searchFailed: Boolean = false,
         val loadMoreFailed: Boolean = false,
+        /** Melodyon: the SoundCloud pill is active; [filteredResults] then holds SoundCloud songs and `next_href` as continuation. */
+        val soundCloudSelected: Boolean = false,
     )
 }
 
@@ -695,7 +767,7 @@ internal fun canLoadMoreFilteredResults(
     state: SearchViewModel.SearchUiState,
     loadingContinuation: String?,
 ): Boolean =
-    state.selectedFilter != null &&
+    (state.selectedFilter != null || state.soundCloudSelected) &&
         state.filteredResults?.continuation != null &&
         !state.isSearching &&
         !state.isLoadingMore &&

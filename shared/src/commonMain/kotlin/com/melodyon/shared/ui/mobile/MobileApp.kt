@@ -1225,6 +1225,10 @@ fun MobileApp(
                                             searchViewModel.searchFiltered(filter)
                                         }
                                     },
+                                    onSoundCloudSelected = {
+                                        cancelVideoLookup()
+                                        searchViewModel.searchSoundCloud()
+                                    },
                                     onLoadMore = searchViewModel::loadMoreFilteredResults,
                                     onRetryLoadMore = searchViewModel::retryLoadMoreFilteredResults,
                                     onRemoveHistoryItem = searchViewModel::removeSearchHistoryItem,

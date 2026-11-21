@@ -1,5 +1,6 @@
 package com.melodyon.shared.youtube.di
 
+import com.melodyon.shared.soundcloud.GlobalSoundCloud
 import com.melodyon.shared.soundcloud.SoundCloudApi
 import com.melodyon.shared.soundcloud.SoundCloudStreamResolver
 import com.metrolist.innertubex.InnerTube
@@ -73,7 +74,7 @@ val sharedModule =
             )
         }
 
-        single { SoundCloudApi(get()) }
+        single { GlobalSoundCloud.api }
 
         single<StreamResolver> {
             val soundCloud = get<SoundCloudApi>()
