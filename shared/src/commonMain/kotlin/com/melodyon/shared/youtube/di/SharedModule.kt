@@ -1,5 +1,7 @@
 package com.melodyon.shared.youtube.di
 
+import com.melodyon.shared.soundcloud.SoundCloudApi
+import com.melodyon.shared.soundcloud.SoundCloudStreamResolver
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.innertubex.cipher.RemotePlayerConfigStore
 import com.metrolist.innertubex.cipher.YouTubeCipherService
@@ -71,15 +73,22 @@ val sharedModule =
             )
         }
 
+        single { SoundCloudApi(get()) }
+
         single<StreamResolver> {
-            DefaultStreamResolver(
-                extractor = get(),
-                innerTube = get(),
-                tokenProvider = getOrNull(),
-                clientHealthTracker = get(),
-                playerConfigRefresh = { get<YouTubeCipherService>().refreshAfterStreamRejection() },
-                musicVideoResolver = get(),
-                localAudioSource = getOrNull<LocalAudioSource>(),
+            val soundCloud = get<SoundCloudApi>()
+            SoundCloudStreamResolver(
+                delegate =
+                    DefaultStreamResolver(
+                        extractor = get(),
+                        innerTube = get(),
+                        tokenProvider = getOrNull(),
+                        clientHealthTracker = get(),
+                        playerConfigRefresh = { get<YouTubeCipherService>().refreshAfterStreamRejection() },
+                        musicVideoResolver = get(),
+                        localAudioSource = getOrNull<LocalAudioSource>(),
+                    ),
+                streamLookup = { trackId -> soundCloud.streamUrl(trackId) },
             )
         }
 
