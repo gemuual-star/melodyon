@@ -90,3 +90,6 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Ключ подписи Android: PKCS12, alias `melodyon`, создан в песочнице (`/home/user/.secrets/melodyon-release.p12`), хранится в секретах репо: KEYSTORE_B64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD. В git и на Drive его нет. Если песочница сброшена — ключ всё равно доступен CI через секреты.
 - `.github/workflows/release.yml` (ручной запуск): подписанный APK (ubuntu) + Windows x64 (windows-latest, helper на .NET, `:desktopApp:assembleWindowsRelease`). Публикацию в `gemuual-star/melodyon-releases` делает агент из песочницы (скачивает артефакты, создаёт релиз через API) — токен в CI не кладётся.
 - CI разделён на два параллельных job: тесты и debug APK.
+- Release-прогон 44932470999 (коммит df0b3e1): оба job зелёные. Опубликовано как prerelease v1.0.0 в melodyon-releases: Melodyon-1.0.0-android.apk (подписан), Melodyon-1.0.0-windows-x64.zip (портативный, не установщик). На устройствах не запускалось. Апдейтер смотрит releases/latest, prerelease он не видит — это намеренно, пока сборка тестовая.
+- CI на df0b3e1 зелёный.
+- Следующее: SoundCloud (HLS-скачивание, тексты, радио), физическое удаление «Слушать вместе», установщик Windows (сейчас ZIP).
