@@ -31,6 +31,7 @@ fun rememberMelodyonSettingsRegistry(
     builder.registerContentSettings(host)
     builder.registerLyricsSettings(host)
     builder.registerPrivacySettings(host)
+    if (host.platform != SettingsPlatform.IOS) builder.registerProxySettings()
 
     @Composable
     fun customPage(
@@ -240,7 +241,10 @@ fun rememberMelodyonSettingsRegistry(
         SettingsPageId.PLAYER,
         SettingsPageId.LYRICS,
     )
-    builder.rootGroup(stringResource(Res.string.settings_privacy_security), SettingsPageId.PRIVACY)
+    builder.rootGroup(
+        stringResource(Res.string.settings_privacy_security),
+        *listOfNotNull(SettingsPageId.PRIVACY, SettingsPageId.PROXY.takeIf { host.platform != SettingsPlatform.IOS }).toTypedArray(),
+    )
     builder.rootGroup(
         stringResource(Res.string.settings_storage_data),
         *listOf(SettingsPageId.STORAGE, SettingsPageId.BACKUP_RESTORE)

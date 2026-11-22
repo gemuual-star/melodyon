@@ -37,6 +37,7 @@ enum class SettingsPageId {
     CONTENT_HOME,
     LYRICS,
     PRIVACY,
+    PROXY,
     ANDROID_AUTO,
     FONTS,
     PLAYER_STYLE,

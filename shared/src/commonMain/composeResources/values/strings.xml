@@ -5554,4 +5554,20 @@
     <string name="proxy_test_running">Checking…</string>
     <string name="proxy_test_success">Connected. External IP: %1$s (%2$d ms)</string>
     <string name="proxy_test_failed">Connection failed: %1$s</string>
+    <string name="proxy_page_subtitle">Route all traffic through your proxy</string>
+    <string name="proxy_group_connection">Connection</string>
+    <string name="proxy_group_server">Server</string>
+    <string name="proxy_group_auth">Authentication</string>
+    <string name="proxy_group_check">Check</string>
+    <string name="proxy_group_reliability">Reliability</string>
+    <string name="proxy_status_off">Proxy is off</string>
+    <string name="proxy_status_on">Active: %1$s</string>
+    <string name="proxy_status_auto_off">Turned off automatically</string>
+    <string name="proxy_auth_desc">Leave empty if the proxy has no login</string>
+    <string name="proxy_host_desc">You can paste host:port or user:pass@host:port</string>
+    <string name="proxy_check_desc">Connects through the proxy and shows your external IP</string>
+    <string name="proxy_test_ok_title">Proxy works</string>
+    <string name="proxy_test_fail_title">No connection</string>
+    <string name="proxy_test_ip">External IP: %1$s</string>
+    <string name="proxy_test_latency">Latency: %1$d ms</string>
 </resources>

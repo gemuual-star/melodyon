@@ -1382,6 +1382,7 @@ fun MobileApp(
                                                         SettingsPageId.CONTENT,
                                                         SettingsPageId.LYRICS,
                                                         SettingsPageId.PRIVACY,
+                                                        SettingsPageId.PROXY,
                                                         SettingsPageId.PLAYER_STYLE,
                                                         SettingsPageId.PLAYER_ARTWORK,
                                                         SettingsPageId.MINI_PLAYER_STYLE,

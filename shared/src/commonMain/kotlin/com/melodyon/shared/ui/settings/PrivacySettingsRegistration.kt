@@ -60,7 +60,6 @@ internal fun SettingsUiRegistryBuilder.registerPrivacySettings(host: SharedSetti
         icon = MelodyonIcons.Outlined.Security,
         tone = SettingsTone.CYAN,
     ) {
-        if (host.platform != SettingsPlatform.IOS) registerProxyGroup()
         group("history", stringResource(Res.string.history)) {
             switch("pauseListenHistory", stringResource(Res.string.pause_listen_history), checked = settings.pauseListenHistory) {
                 settings.pauseListenHistory = it

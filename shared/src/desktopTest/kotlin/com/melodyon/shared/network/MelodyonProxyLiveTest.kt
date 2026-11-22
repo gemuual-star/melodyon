@@ -24,6 +24,15 @@ class MelodyonProxyLiveTest {
     }
 
     @Test
+    fun socks5WithLoginGoesThroughProxy() {
+        val proxy = config ?: return
+        val direct = URI(PROXY_TEST_URL).toURL().readText().trim()
+        val viaProxy = runBlocking { testProxyConnection(proxy.copy(type = ProxyType.SOCKS)) }.getOrThrow()
+        println("PROXY_LIVE_SOCKS direct=$direct proxy=${viaProxy.ip} ${viaProxy.latencyMs}ms")
+        assertTrue(viaProxy.ip != direct, "SOCKS5 proxy IP must differ from direct IP")
+    }
+
+    @Test
     fun wrongPasswordIsReported() {
         val proxy = config ?: return
         val result = runBlocking { testProxyConnection(proxy.copy(password = "wrong-password")) }

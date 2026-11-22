@@ -2686,4 +2686,20 @@
     <string name="proxy_test_running">Проверка…</string>
     <string name="proxy_test_success">Подключено. Внешний IP: %1$s (%2$d мс)</string>
     <string name="proxy_test_failed">Не удалось подключиться: %1$s</string>
+    <string name="proxy_page_subtitle">Весь трафик приложения через ваш прокси</string>
+    <string name="proxy_group_connection">Подключение</string>
+    <string name="proxy_group_server">Сервер</string>
+    <string name="proxy_group_auth">Авторизация</string>
+    <string name="proxy_group_check">Проверка</string>
+    <string name="proxy_group_reliability">Надёжность</string>
+    <string name="proxy_status_off">Прокси выключен</string>
+    <string name="proxy_status_on">Активен: %1$s</string>
+    <string name="proxy_status_auto_off">Отключён автоматически</string>
+    <string name="proxy_auth_desc">Оставьте пустым, если прокси без логина</string>
+    <string name="proxy_host_desc">Можно вставить host:port или user:pass@host:port</string>
+    <string name="proxy_check_desc">Подключается через прокси и показывает внешний IP</string>
+    <string name="proxy_test_ok_title">Прокси работает</string>
+    <string name="proxy_test_fail_title">Нет подключения</string>
+    <string name="proxy_test_ip">Внешний IP: %1$s</string>
+    <string name="proxy_test_latency">Задержка: %1$d мс</string>
 </resources>
