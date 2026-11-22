@@ -29,6 +29,8 @@ jobs:
             21
       - uses: gradle/actions/setup-gradle@v4
       - name: Shared tests (desktop JVM)
+        env:
+          MELODYON_TEST_PROXY: ${{ secrets.MELODYON_TEST_PROXY }}
         run: ./gradlew :shared:desktopTest --continue -Porg.gradle.java.installations.fromEnv=JAVA_HOME_21_X64,JAVA_HOME_25_X64 --console=plain
       - name: Test summary
         if: always()

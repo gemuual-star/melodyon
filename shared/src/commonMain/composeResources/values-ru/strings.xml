@@ -2670,4 +2670,20 @@
     <string name="desktop_tray_toggle_on_click_desc_mac">Щелчок правой кнопкой мыши по значку в трее откроет или скроет окно Melodyon</string>
     <string name="desktop_omarchy_unsupported">Melodyon не работает на Omarchy. Используйте другой дистрибутив Linux, Windows 10 и выше или macOS.</string>
     <string name="learn_more">Узнать больше</string>
+    <string name="proxy_settings_title">Прокси</string>
+    <string name="proxy_enabled">Использовать прокси</string>
+    <string name="proxy_enabled_desc">Весь трафик приложения идёт через прокси</string>
+    <string name="proxy_type">Тип прокси</string>
+    <string name="proxy_host">Хост</string>
+    <string name="proxy_port">Порт</string>
+    <string name="proxy_username">Логин (необязательно)</string>
+    <string name="proxy_password">Пароль (необязательно)</string>
+    <string name="proxy_auto_disable">Отключать, если недоступен</string>
+    <string name="proxy_auto_disable_desc">Выключить прокси после 5 неудачных подключений подряд</string>
+    <string name="proxy_auto_disabled_notice">Прокси был отключён автоматически: он несколько раз подряд не ответил</string>
+    <string name="proxy_invalid">Укажите корректные хост и порт (1–65535)</string>
+    <string name="proxy_test">Проверить подключение</string>
+    <string name="proxy_test_running">Проверка…</string>
+    <string name="proxy_test_success">Подключено. Внешний IP: %1$s (%2$d мс)</string>
+    <string name="proxy_test_failed">Не удалось подключиться: %1$s</string>
 </resources>

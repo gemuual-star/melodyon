@@ -31,6 +31,7 @@ class AudioDecoder private constructor(
                 options["reconnect_delay_max"] = "5"
                 options["timeout"] = "15000000"
                 options["rw_timeout"] = "15000000"
+                com.melodyon.shared.network.MelodyonProxy.ffmpegProxyUrl()?.let { options["http_proxy"] = it }
                 val ua = headers.entries.firstOrNull { it.key.equals("User-Agent", ignoreCase = true) }?.value
                 if (!ua.isNullOrBlank()) {
                     options["user_agent"] = ua

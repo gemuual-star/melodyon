@@ -26,11 +26,23 @@ actual val sharedHttpTransportHandlesFailures = true
 actual fun Throwable.isHttpTransportException(): Boolean = this is IOException
 
 val sharedOkHttpClient: OkHttpClient by lazy {
+    MelodyonProxy.install()
     OkHttpClient
         .Builder()
+        .proxySelector(MelodyonProxy.selector)
+        .proxyAuthenticator(MelodyonProxy.okHttpAuthenticator)
         .connectionPool(ConnectionPool(10, 5, TimeUnit.MINUTES))
         .eventListenerFactory {
             object : EventListener() {
+                override fun connectEnd(
+                    call: Call,
+                    inetSocketAddress: java.net.InetSocketAddress,
+                    proxy: java.net.Proxy,
+                    protocol: okhttp3.Protocol?,
+                ) {
+                    if (proxy.type() != java.net.Proxy.Type.DIRECT) ProxyController.failureTracker.onSuccess()
+                }
+
                 override fun callFailed(
                     call: Call,
                     ioe: IOException,

@@ -152,6 +152,7 @@ class App :
         super.onCreate()
         instance = this
         AndroidContextProvider.applicationContext = applicationContext
+        com.melodyon.shared.network.MelodyonProxy.install()
         val processName = currentProcessName()
         if (processName == packageName) {
             Settings.shared.hasCanvasToggle = true

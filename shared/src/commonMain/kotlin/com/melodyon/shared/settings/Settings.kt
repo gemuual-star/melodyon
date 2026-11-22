@@ -650,6 +650,16 @@ class Settings(
     var lastFmPhotoCacheJson by preference(LastFmPhotoCacheJsonKey, "{}")
 
     var listenBrainzToken by preference("")
+
+    // Melodyon: user proxy (HTTP/SOCKS). Keys are new: Metrolist's old proxy keys are wiped by the legacy migration.
+    var proxyEnabled by preference("melodyonProxyEnabled", false)
+    var proxyType by preference("melodyonProxyType", "HTTP")
+    var proxyHost by preference("melodyonProxyHost", "")
+    var proxyPort by preference("melodyonProxyPort", "")
+    var proxyUsername by preference("melodyonProxyUsername", "")
+    var proxyPassword by preference("melodyonProxyPassword", "")
+    var proxyAutoDisable by preference("melodyonProxyAutoDisable", true)
+    var proxyAutoDisabledNotice by preference("melodyonProxyAutoDisabledNotice", false)
     var listenBrainzUsername by preference("")
     var listenBrainzEnabled by preference(false)
     var listenBrainzUseNowPlaying by preference(true)
