@@ -62,7 +62,9 @@ object MelodyonProxy {
         Authenticator.setDefault(
             object : Authenticator() {
                 override fun getPasswordAuthentication(): PasswordAuthentication? {
-                    if (requestorType != RequestorType.PROXY) return null
+                    // SOCKS5 auth asks with requestorType=SERVER and protocol "SOCKS5", so accept it explicitly.
+                    val socks = requestingProtocol?.startsWith("SOCKS", ignoreCase = true) == true
+                    if (requestorType != RequestorType.PROXY && !socks) return null
                     val config = Settings.shared.proxyConfig()?.takeIf { it.hasCredentials } ?: return null
                     return PasswordAuthentication(config.username, config.password.orEmpty().toCharArray())
                 }
@@ -109,6 +111,7 @@ actual suspend fun testProxyConnection(config: ProxyConfig): Result<ProxyTestRes
                     }.connectTimeout(15, TimeUnit.SECONDS)
                     .readTimeout(15, TimeUnit.SECONDS)
                     .build()
+            MelodyonProxy.install()
             val mark = TimeSource.Monotonic.markNow()
             try {
                 client.newCall(Request.Builder().url(PROXY_TEST_URL).build()).execute().use { response ->
@@ -117,9 +120,26 @@ actual suspend fun testProxyConnection(config: ProxyConfig): Result<ProxyTestRes
                     val ip = response.body.string().trim()
                     ProxyTestResult(ip = ip, latencyMs = mark.elapsedNow().inWholeMilliseconds)
                 }
+            } catch (e: IOException) {
+                throw IOException(describeProxyFailure(e), e)
             } finally {
                 client.dispatcher.executorService.shutdown()
                 client.connectionPool.evictAll()
             }
         }
     }
+
+/** Human-readable reason for the settings screen (the raw exception text is kept as a hint). */
+internal fun describeProxyFailure(e: Throwable): String {
+    val msg = e.message.orEmpty()
+    val reason =
+        when {
+            e is java.net.UnknownHostException -> "хост прокси не найден"
+            e is java.net.SocketTimeoutException -> "прокси не отвечает (таймаут)"
+            e is java.net.ConnectException -> "соединение с прокси отклонено, проверьте хост, порт и тип"
+            "407" in msg || msg.contains("authentication", ignoreCase = true) -> "неверный логин или пароль"
+            msg.contains("SOCKS", ignoreCase = true) -> "ошибка SOCKS, возможно выбран не тот тип прокси"
+            else -> null
+        }
+    return listOfNotNull(reason, msg.takeIf { it.isNotBlank() } ?: e::class.simpleName).joinToString(" — ")
+}

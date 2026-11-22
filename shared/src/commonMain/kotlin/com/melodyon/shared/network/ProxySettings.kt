@@ -15,7 +15,11 @@ data class ProxyConfig(
     val hasCredentials: Boolean get() = !username.isNullOrEmpty()
 }
 
-/** Returns a usable config or null when the proxy is off or host/port are invalid. */
+/**
+ * Returns a usable config or null when the proxy is off or host/port are invalid.
+ * Tolerates pasted values: `http://user:pass@host:port` or `host:port` in the host field,
+ * and stray spaces/newlines around the login and password.
+ */
 fun proxyConfigOf(
     enabled: Boolean,
     type: String,
@@ -25,13 +29,53 @@ fun proxyConfigOf(
     password: String,
 ): ProxyConfig? {
     if (!enabled) return null
-    val cleanHost = normalizeProxyHost(host) ?: return null
-    val cleanPort = port.trim().toIntOrNull()?.takeIf { it in 1..65535 } ?: return null
-    val proxyType = ProxyType.entries.firstOrNull { it.name.equals(type, ignoreCase = true) } ?: ProxyType.HTTP
-    return ProxyConfig(proxyType, cleanHost, cleanPort, username.trim().ifEmpty { null }, password.ifEmpty { null })
+    val parsed = parseProxyHostInput(host) ?: return null
+    val cleanPort =
+        port.trim().toIntOrNull()?.takeIf { it in 1..65535 }
+            ?: parsed.port
+            ?: return null
+    val proxyType =
+        ProxyType.entries.firstOrNull { it.name.equals(type, ignoreCase = true) }
+            ?: if (parsed.socks) ProxyType.SOCKS else ProxyType.HTTP
+    val user = username.trim().ifEmpty { parsed.username.orEmpty() }.ifEmpty { null }
+    val pass = password.trim().ifEmpty { parsed.password.orEmpty() }.ifEmpty { null }
+    return ProxyConfig(proxyType, parsed.host, cleanPort, user, pass)
 }
 
-/** Accepts "host", "http://host" or "host:port"-free input; rejects spaces and empty values. */
+internal data class ParsedProxyHost(
+    val host: String,
+    val port: Int?,
+    val username: String?,
+    val password: String?,
+    val socks: Boolean,
+)
+
+/** Splits a pasted proxy address into host, optional port and optional credentials. */
+internal fun parseProxyHostInput(raw: String): ParsedProxyHost? {
+    var rest = raw.trim()
+    val scheme = rest.substringBefore("://", "").lowercase()
+    rest = rest.substringAfter("://").substringBefore('/').trim()
+    var user: String? = null
+    var pass: String? = null
+    if ('@' in rest) {
+        val creds = rest.substringBeforeLast('@')
+        rest = rest.substringAfterLast('@')
+        user = creds.substringBefore(':').ifEmpty { null }
+        pass = creds.substringAfter(':', "").ifEmpty { null }
+    }
+    var port: Int? = null
+    if (!rest.startsWith("[") && rest.count { it == ':' } == 1) {
+        port = rest.substringAfter(':').toIntOrNull()?.takeIf { it in 1..65535 } ?: return null
+        rest = rest.substringBefore(':')
+    } else if (rest.startsWith("[") && "]:" in rest) {
+        port = rest.substringAfter("]:").toIntOrNull()?.takeIf { it in 1..65535 } ?: return null
+        rest = rest.substringBefore("]:") + "]"
+    }
+    val host = normalizeProxyHost(rest) ?: return null
+    return ParsedProxyHost(host, port, user, pass, scheme.startsWith("socks"))
+}
+
+/** Accepts "host" or "http://host"; rejects spaces and empty values. */
 fun normalizeProxyHost(raw: String): String? {
     val host = raw.trim().substringAfter("://").substringBefore('/').trim()
     if (host.isEmpty() || host.any { it.isWhitespace() }) return null
