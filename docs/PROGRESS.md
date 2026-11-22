@@ -152,3 +152,10 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - CI: 3880 тестов, 0 упало, 7 пропущено. Release build успешен. Опубликован v1.0.4 (latest) в melodyon-releases.
 - Не проверено: прокси в приложении на устройствах; точная причина ошибки у пользователя не воспроизведена.
 - Публикация релиза: artifacts из Release build → API melodyon-releases (имена Melodyon-Android-X.apk, Melodyon-X-windows-x64-setup.exe, Melodyon-X-windows-x64.zip). Перед релизом поднимать appVersion в gradle.properties и versionCode в androidApp/build.gradle.kts.
+
+## Релиз 1.0.5 (прокси через собственный туннель + отдельная страница)
+- Пользователь (телефон): SOCKS5 «authentication failed», HTTP «unexpected end of stream». Прокси oxylabs: на CONNECT без авторизации отвечает 407; SOCKS5 user/pass проверен сырым сокетом — работает.
+- Решение: `ProxyTunnel.kt` (jvmSharedMain) — свой SocketFactory: SOCKS5 RFC1928/1929 с логином и HTTP CONNECT с предварительным Proxy-Authorization; DNS цели на стороне прокси (ProxyAwareDns). sharedOkHttpClient: proxy=NO_PROXY + socketFactory/dns. ExoPlayer на Android переведён на OkHttpDataSource (media3-datasource-okhttp) с sharedOkHttpClient.
+- Настройки: отдельная страница SettingsPageId.PROXY (корневая группа «Конфиденциальность и безопасность»), разделы Подключение/Сервер/Авторизация/Проверка/Надёжность, карточка результата проверки.
+- Тесты: ProxyTunnelTest (фейковые SOCKS5/HTTP-серверы). CI cfbc8ff: 3885 тестов, 0 упало, 7 пропущено; debug APK собран.
+- Не проверено: на телефоне; live-тест с реальным прокси в логах CI не виден.
