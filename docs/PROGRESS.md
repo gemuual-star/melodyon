@@ -132,3 +132,9 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Не сделано: физическое удаление кода «Слушать вместе» (77 файлов вне каталогов listentogether ссылаются на него); UX/UI (ждёт ответа пользователя, что именно менять).
 - CI 45018000226 на 1779c6c: debug APK собран; тесты 3869, 1 упал (`LegacySettingsMigrationTest.storedLyricsProvidersDropRetiredSourcesAndKeepTheRemainingOrder` — в ожидаемом порядке не было трёх новых источников, которые дописываются в конец). Тест обновлён следующим коммитом; результат этого коммита смотреть в Actions.
 - Release build 45018327295 на 0d4d095 запущен вручную (первый прогон с job `windows-installer`), результат на момент записи неизвестен.
+
+## Состояние на момент остановки (ждём ответа пользователя по UX/UI)
+- Release build 45018327295 на 0d4d095: in_progress/None; Android release APK=completed/success, Windows x64=in_progress/None
+- CI 45018706877 на df83103: in_progress/None; Android debug APK=in_progress/None, Shared tests=in_progress/None
+- Настройка цвета текста песни уже есть: `Settings.lyricsNeutralColor` (Настройки → Тексты → Отображение → «Цвет текста песни»: «Следовать теме» / «Нейтральная» = белый или чёрный по яркости фона, см. `resolveLyricsTextColor` в `LyricsView.kt`). Новый код не писался.
+- Следующие шаги: 1) дождаться CI на df83103 и Release build 45018327295 (первый прогон job `windows-installer`), чинить по логам; 2) опубликовать v1.0.3 в melodyon-releases: `Melodyon-Android-1.0.3.apk`, `Melodyon-Desktop-windows.zip` (имя обязательно такое — его качает установщик), `melodyon-installer-windows-x64-1.0.3.exe`; 3) UX/UI по ответам пользователя; 4) физическое удаление кода «Слушать вместе».
