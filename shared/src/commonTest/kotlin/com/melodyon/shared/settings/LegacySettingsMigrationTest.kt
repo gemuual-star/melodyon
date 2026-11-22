@@ -124,6 +124,10 @@ class LegacySettingsMigrationTest {
                 LyricsProvider.UNISON,
                 LyricsProvider.PAXSENIX,
                 LyricsProvider.LRCRED,
+                // Sources added after the order was stored are appended at the end.
+                LyricsProvider.NETEASE,
+                LyricsProvider.QQMUSIC,
+                LyricsProvider.LYRICSOVH,
             )
         val order = LyricsProvider.parseUserOrderFromStoredCsv(settings.lyricsProviderOrder)
         assertEquals(expected, order)
