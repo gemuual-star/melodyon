@@ -77,3 +77,76 @@ jobs:
         with:
           name: windows-x64
           path: dist/*
+
+  windows-installer:
+    name: Windows installer
+    needs: windows
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-x64
+          path: release-input
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: windows-installer/go.mod
+          cache-dependency-path: windows-installer/go.sum
+      - name: Bind installer to this release
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path gradle.properties -Pattern '^appVersion=(.+)$').Matches[0].Groups[1].Value.Trim()
+          "APP_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $zip = Get-ChildItem release-input -Recurse -Filter *.zip | Select-Object -First 1
+          if ($null -eq $zip) { throw "portable ZIP not found" }
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          Copy-Item $zip.FullName "release-assets/Melodyon-Desktop-windows.zip"
+          $config = @"
+          package buildconfig
+
+          const (
+              TargetVersion = "$version"
+              ReleaseTag = "v$version"
+              DesktopAssetName = "Melodyon-Desktop-windows.zip"
+              RepositoryOwner = "gemuual-star"
+              RepositoryName = "melodyon-releases"
+          )
+          "@
+          Set-Content -Path "windows-installer/internal/buildconfig/config.go" -Value $config -Encoding utf8
+      - name: Test installer
+        working-directory: windows-installer
+        shell: pwsh
+        run: |
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { throw "go test failed" }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { throw "go vet failed" }
+      - name: Validate portable payload
+        working-directory: windows-installer
+        shell: pwsh
+        run: |
+          go run ./cmd/validate-payload "../release-assets/Melodyon-Desktop-windows.zip" "$env:APP_VERSION"
+          if ($LASTEXITCODE -ne 0) { throw "payload is not valid" }
+      - name: Build installer
+        working-directory: windows-installer
+        shell: pwsh
+        run: |
+          go run github.com/akavel/rsrc@v0.10.2 -arch amd64 -manifest MelodyonManager.exe.manifest -ico ../desktopApp/src/desktopMain/resources/logo.ico -o rsrc_windows_amd64.syso
+          if ($LASTEXITCODE -ne 0) { throw "rsrc failed" }
+          go build -trimpath -ldflags "-s -w -H=windowsgui" -o "../release-assets/melodyon-installer-windows-x64-$env:APP_VERSION.exe" .
+          if ($LASTEXITCODE -ne 0) { throw "go build failed" }
+      - name: Install, repair and uninstall end to end
+        working-directory: windows-installer
+        shell: pwsh
+        run: |
+          $env:MELODYON_MANAGER_E2E_BINARY = (Resolve-Path "../release-assets/melodyon-installer-windows-x64-$env:APP_VERSION.exe").Path
+          $env:MELODYON_MANAGER_E2E_PAYLOAD = (Resolve-Path "../release-assets/Melodyon-Desktop-windows.zip").Path
+          $env:MELODYON_MANAGER_E2E_VERSION = $env:APP_VERSION
+          go test -run TestEndToEndInstallUpdateAndUninstall -count=1 -v .
+          if ($LASTEXITCODE -ne 0) { throw "installer end-to-end test failed" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: release-assets/*
+          if-no-files-found: error

@@ -255,7 +255,7 @@ android {
         applicationId = "com.melodyon.app"
         minSdk = 24
         targetSdk = 37
-        versionCode = 3
+        versionCode = 4
         versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

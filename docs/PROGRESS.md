@@ -123,3 +123,10 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Опубликован как latest в gemuual-star/melodyon-releases: `Melodyon-Android-1.0.2.apk`, `Melodyon-1.0.2-windows-x64.zip`.
 - Подпись APK: сертификат совпадает с 1.0.0/1.0.1 (SHA-256 4e038a3a…cf9e).
 - Не проверено: обновление изнутри приложения, воспроизведение скачанного трека SoundCloud на устройстве.
+
+## После 1.0.2: источники текстов, установщик Windows, версия 1.0.3 (в работе)
+- Тексты: добавлены источники NETEASE (music.163.com), QQMUSIC (u.y.qq.com + c.y.qq.com), LYRICSOVH (api.lyrics.ovh, без тайминга) — `shared/.../api/lyrics/{NetEase,QQMusic,LyricsOvh}LyricsProvider.kt`, общий подбор записи `LyricsCandidateMatch.kt` (совпадение названия + длительность ±8 с, без длительности — совпадение артиста). Добавлены в `LyricsProvider.userConfigurable` (в конец, перед YouTube-фолбэками), в настройки и диалог выбора источника. Тест `ExtraLyricsProvidersTest`. Коммит 1779c6c, CI на момент записи ещё шёл.
+- Живая проверка API из песочницы: NetEase (поиск + LRC), QQ Music (поиск + LRC), lyrics.ovh отвечают 200. В приложении не проверено.
+- Установщик Windows: исходники MetrolistManager (GPL-3.0, коммит 18d2846) скопированы в `windows-installer/` и переименованы (модуль `github.com/gemuual-star/melodyon/windows-installer`, appId `com.melodyon.desktop`, `Melodyon.exe`). Job `windows-installer` в `release.yml`: go test/vet, проверка ZIP, сборка `melodyon-installer-windows-x64-<версия>.exe`, e2e-тест установки. Установщик скачивает `Melodyon-Desktop-windows.zip` из релиза `v<версия>` в gemuual-star/melodyon-releases — ассет в релизе должен называться именно так.
+- appVersion=1.0.3, versionCode=4. Релиз 1.0.3 НЕ опубликован: сначала должны пройти CI и Release build.
+- Не сделано: физическое удаление кода «Слушать вместе» (77 файлов вне каталогов listentogether ссылаются на него); UX/UI (ждёт ответа пользователя, что именно менять).
