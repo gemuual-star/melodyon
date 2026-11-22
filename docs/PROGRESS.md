@@ -145,3 +145,10 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - [x] Тесты: ProxySettingsTest (commonTest), MelodyonProxyLiveTest (desktopTest; работает только с секретом репо MELODYON_TEST_PROXY=host:port:user:pass). CI ee10511: 3875 тестов, 0 упало.
 - [ ] Не проверено: прокси в самом приложении; SOCKS5 с логином на Android; вывод live-теста в логе CI не виден (stdout тестов не печатается).
 - Релиз 1.0.3: запущен workflow «Release build»; после него вручную загрузить APK/ZIP/установщик в melodyon-releases (тег v1.0.3, latest).
+
+## Релиз 1.0.4 (прокси-фикс)
+- Пользователь: «ошибка подключения» к прокси в 1.0.3. На JVM с OkHttp 5.5.1 HTTP-прокси disp.oxylabs.io:8001 работает (IP 48.47.189.242); SOCKS5 падал «authentication failed», потому что Authenticator принимал только requestorType=PROXY.
+- Исправлено (ad3a08c, 5331de5): разбор host:port и user:pass@host:port в поле хоста, trim логина/пароля, SOCKS5-авторизация, понятные ошибки, versionCode 5.
+- CI: 3880 тестов, 0 упало, 7 пропущено. Release build успешен. Опубликован v1.0.4 (latest) в melodyon-releases.
+- Не проверено: прокси в приложении на устройствах; точная причина ошибки у пользователя не воспроизведена.
+- Публикация релиза: artifacts из Release build → API melodyon-releases (имена Melodyon-Android-X.apk, Melodyon-X-windows-x64-setup.exe, Melodyon-X-windows-x64.zip). Перед релизом поднимать appVersion в gradle.properties и versionCode в androidApp/build.gradle.kts.
