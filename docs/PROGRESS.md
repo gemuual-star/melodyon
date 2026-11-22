@@ -138,3 +138,10 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - CI 45018706877 на df83103: in_progress/None; Android debug APK=in_progress/None, Shared tests=in_progress/None
 - Настройка цвета текста песни уже есть: `Settings.lyricsNeutralColor` (Настройки → Тексты → Отображение → «Цвет текста песни»: «Следовать теме» / «Нейтральная» = белый или чёрный по яркости фона, см. `resolveLyricsTextColor` в `LyricsView.kt`). Новый код не писался.
 - Следующие шаги: 1) дождаться CI на df83103 и Release build 45018327295 (первый прогон job `windows-installer`), чинить по логам; 2) опубликовать v1.0.3 в melodyon-releases: `Melodyon-Android-1.0.3.apk`, `Melodyon-Desktop-windows.zip` (имя обязательно такое — его качает установщик), `melodyon-installer-windows-x64-1.0.3.exe`; 3) UX/UI по ответам пользователя; 4) физическое удаление кода «Слушать вместе».
+
+## Прокси (коммит ee10511)
+- [x] Настройки → Конфиденциальность → «Прокси»: HTTP/HTTPS или SOCKS5, хост, порт, логин/пароль (необязательно), «Проверить подключение» (внешний IP через api.ipify.org), «Отключать, если недоступен» (5 неудач подряд → выкл + уведомление в футере группы).
+- [x] Маршрутизация: `MelodyonProxy` (jvmSharedMain) — глобальный ProxySelector + java.net.Authenticator (ExoPlayer/HttpURLConnection), proxySelector/proxyAuthenticator в sharedOkHttpClient (API, SoundCloud, обложки Coil на Android, скачивания), `http_proxy` для FFmpeg на desktop. Локальные адреса идут напрямую.
+- [x] Тесты: ProxySettingsTest (commonTest), MelodyonProxyLiveTest (desktopTest; работает только с секретом репо MELODYON_TEST_PROXY=host:port:user:pass). CI ee10511: 3875 тестов, 0 упало.
+- [ ] Не проверено: прокси в самом приложении; SOCKS5 с логином на Android; вывод live-теста в логе CI не виден (stdout тестов не печатается).
+- Релиз 1.0.3: запущен workflow «Release build»; после него вручную загрузить APK/ZIP/установщик в melodyon-releases (тег v1.0.3, latest).
