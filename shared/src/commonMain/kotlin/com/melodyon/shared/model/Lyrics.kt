@@ -210,7 +210,11 @@ val LyricsProvider.supportedTimingKinds: Set<LyricsTimingKind>
                 setOf(LyricsTimingKind.LINE_SYNCED)
             }
 
-            LyricsProvider.LRCLIB, LyricsProvider.YOUTUBE -> {
+            LyricsProvider.LYRICSOVH -> {
+                setOf(LyricsTimingKind.UNSYNCED)
+            }
+
+            LyricsProvider.LRCLIB, LyricsProvider.YOUTUBE, LyricsProvider.NETEASE, LyricsProvider.QQMUSIC -> {
                 setOf(LyricsTimingKind.LINE_SYNCED, LyricsTimingKind.UNSYNCED)
             }
 

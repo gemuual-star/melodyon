@@ -1179,6 +1179,12 @@
     <string name="lyrics_provider_kugou_description">Line-synced LRC with duration matching, especially useful for Chinese and Asian music</string>
     <!-- Translators: Supporting text beneath the provider Paxsenix option in the lyrics. -->
     <string name="lyrics_provider_paxsenix_description">Paxsenix searches Apple Music and retrieves word-synced lyrics, background vocals and transliterations</string>
+    <!-- Translators: Supporting text beneath the provider NetEase Cloud Music option in the lyrics. -->
+    <string name="lyrics_provider_netease_description">Large catalogue of line-synced lyrics, strong for Asian and international releases</string>
+    <!-- Translators: Supporting text beneath the provider QQ Music option in the lyrics. -->
+    <string name="lyrics_provider_qq_music_description">Line-synced lyrics from the QQ Music catalogue</string>
+    <!-- Translators: Supporting text beneath the provider lyrics.ovh option in the lyrics. -->
+    <string name="lyrics_provider_lyrics_ovh_description">Plain lyrics without timing, used when no synced source has the song</string>
     <!-- Translators: Supporting text beneath the provider Lyprio option in the lyrics. -->
     <string name="lyrics_provider_lyrics_plus_description">Multi-backend source with word or line timing, singer roles, background vocals, and transliterations</string>
     <!-- Translators: Supporting text beneath the provider unknown option in the lyrics. -->
@@ -1925,6 +1931,9 @@
     <string name="brand_kugou" translatable="false">KuGou</string>
     <!-- Translators: Option or section label for Paxsenix in the settings. -->
     <string name="brand_paxsenix" translatable="false">Paxsenix</string>
+    <string name="brand_netease" translatable="false">NetEase Cloud Music</string>
+    <string name="brand_qq_music" translatable="false">QQ Music</string>
+    <string name="brand_lyrics_ovh" translatable="false">lyrics.ovh</string>
     <!-- Translators: Option or section label for runtime in the AI lyrics translation settings. -->
     <string name="ai_runtime">Runtime</string>
     <!-- Translators: Option or section label for same provider default in the AI lyrics translation settings. -->

@@ -502,6 +502,9 @@ enum class LyricsProvider {
     LRCLIB,
     KUGOU,
     PAXSENIX,
+    NETEASE,
+    QQMUSIC,
+    LYRICSOVH,
     YOUTUBESUBTITLE,
     YOUTUBE,
     ;
@@ -510,7 +513,7 @@ enum class LyricsProvider {
         val alwaysLastFallbacks: List<LyricsProvider> = listOf(YOUTUBESUBTITLE, YOUTUBE)
 
         val userConfigurable: List<LyricsProvider> =
-            listOf(LYPRIO, BETTERLYRICS, LRCRED, UNISON, LRCLIB, KUGOU, PAXSENIX)
+            listOf(LYPRIO, BETTERLYRICS, LRCRED, UNISON, LRCLIB, KUGOU, PAXSENIX, NETEASE, QQMUSIC, LYRICSOVH)
 
         private val legacyDefaultUserOrders =
             listOf(
@@ -534,6 +537,9 @@ enum class LyricsProvider {
                 "LrcLib" -> LRCLIB
                 "KuGou" -> KUGOU
                 "Paxsenix" -> PAXSENIX
+                "NetEase" -> NETEASE
+                "QQ Music" -> QQMUSIC
+                "lyrics.ovh" -> LYRICSOVH
                 "SimpMusic" -> SIMPMUSIC
                 "YouTubeSubtitle" -> YOUTUBESUBTITLE
                 "YouTube Music", "YouTube" -> YOUTUBE

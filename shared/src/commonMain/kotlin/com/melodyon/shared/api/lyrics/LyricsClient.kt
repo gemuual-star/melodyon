@@ -48,6 +48,9 @@ class LyricsClient(
     private val simpMusicProvider = SimpMusicLyricsProvider(httpClient)
     private val kuGouLyricsProvider = KuGouLyricsProvider(httpClient)
     private val paxsenixLyricsProvider = PaxsenixLyricsProvider(httpClient)
+    private val netEaseLyricsProvider = NetEaseLyricsProvider(httpClient)
+    private val qqMusicLyricsProvider = QQMusicLyricsProvider(httpClient)
+    private val lyricsOvhLyricsProvider = LyricsOvhLyricsProvider(httpClient)
     private val youtubeLyricsProvider = YouTubeLyricsProvider(youtubeLyricsApi)
     private val youtubeSubtitleLyricsProvider = YouTubeSubtitleLyricsProvider(youtubeLyricsApi)
 
@@ -110,6 +113,18 @@ class LyricsClient(
 
             LyricsProvider.PAXSENIX -> {
                 result("Paxsenix") { paxsenixLyricsProvider.getLyrics(title, artist, duration, album) }
+            }
+
+            LyricsProvider.NETEASE -> {
+                result("NetEase") { netEaseLyricsProvider.getLyrics(title, artist, durationSec) }
+            }
+
+            LyricsProvider.QQMUSIC -> {
+                result("QQ Music") { qqMusicLyricsProvider.getLyrics(title, artist, durationSec) }
+            }
+
+            LyricsProvider.LYRICSOVH -> {
+                result("lyrics.ovh") { lyricsOvhLyricsProvider.getLyrics(title, artist) }
             }
 
             LyricsProvider.YOUTUBESUBTITLE -> {

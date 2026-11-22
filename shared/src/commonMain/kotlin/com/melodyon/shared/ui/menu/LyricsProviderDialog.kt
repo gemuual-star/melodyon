@@ -47,6 +47,9 @@ import com.melodyon.shared.generated.resources.brand_lrclib
 import com.melodyon.shared.generated.resources.brand_lrcred
 import com.melodyon.shared.generated.resources.brand_lyprio
 import com.melodyon.shared.generated.resources.brand_paxsenix
+import com.melodyon.shared.generated.resources.brand_netease
+import com.melodyon.shared.generated.resources.brand_qq_music
+import com.melodyon.shared.generated.resources.brand_lyrics_ovh
 import com.melodyon.shared.generated.resources.brand_unison
 import com.melodyon.shared.generated.resources.choose_lyrics
 import com.melodyon.shared.generated.resources.close
@@ -293,6 +296,9 @@ private fun providerName(provider: LyricsProvider): String =
             LyricsProvider.LRCLIB -> Res.string.brand_lrclib
             LyricsProvider.KUGOU -> Res.string.brand_kugou
             LyricsProvider.PAXSENIX -> Res.string.brand_paxsenix
+            LyricsProvider.NETEASE -> Res.string.brand_netease
+            LyricsProvider.QQMUSIC -> Res.string.brand_qq_music
+            LyricsProvider.LYRICSOVH -> Res.string.brand_lyrics_ovh
             LyricsProvider.YOUTUBESUBTITLE -> Res.string.lyrics_youtube_captions
             LyricsProvider.YOUTUBE -> Res.string.youtube_music
             LyricsProvider.AUTO, LyricsProvider.SIMPMUSIC -> error("Provider is not in the manual source list: $provider")

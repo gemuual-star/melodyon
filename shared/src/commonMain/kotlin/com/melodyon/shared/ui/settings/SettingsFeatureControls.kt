@@ -272,6 +272,9 @@ private fun lyricsProviderLabel(provider: LyricsProvider): String =
         LyricsProvider.LRCLIB -> stringResource(Res.string.brand_lrclib)
         LyricsProvider.KUGOU -> stringResource(Res.string.brand_kugou)
         LyricsProvider.PAXSENIX -> stringResource(Res.string.brand_paxsenix)
+        LyricsProvider.NETEASE -> stringResource(Res.string.brand_netease)
+        LyricsProvider.QQMUSIC -> stringResource(Res.string.brand_qq_music)
+        LyricsProvider.LYRICSOVH -> stringResource(Res.string.brand_lyrics_ovh)
         else -> provider.name
     }
 
@@ -286,6 +289,9 @@ private fun lyricsProviderDescription(provider: LyricsProvider): String =
             LyricsProvider.LRCLIB -> Res.string.lyrics_provider_lrclib_description
             LyricsProvider.KUGOU -> Res.string.lyrics_provider_kugou_description
             LyricsProvider.PAXSENIX -> Res.string.lyrics_provider_paxsenix_description
+            LyricsProvider.NETEASE -> Res.string.lyrics_provider_netease_description
+            LyricsProvider.QQMUSIC -> Res.string.lyrics_provider_qq_music_description
+            LyricsProvider.LYRICSOVH -> Res.string.lyrics_provider_lyrics_ovh_description
             else -> Res.string.lyrics_provider_unknown_description
         },
     )
