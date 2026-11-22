@@ -41,6 +41,16 @@ object MelodyonProxy {
             }
         }
 
+    /** Active proxy for [host], or null for a direct connection (disabled proxy or LAN host). */
+    fun activeFor(host: String?): ProxyConfig? = Settings.shared.proxyConfig()?.takeIf { !isLocalProxyBypassHost(host) }
+
+    /** Socket factory + DNS for OkHttp: every connection reads the current settings. */
+    internal val socketFactory: javax.net.SocketFactory =
+        ProxyTunnelSocketFactory(::activeFor) { ok ->
+            if (ok) ProxyController.failureTracker.onSuccess() else ProxyController.failureTracker.onFailure()
+        }
+    internal val dns: okhttp3.Dns = ProxyAwareDns(::activeFor)
+
     /** OkHttp proxy auth (OkHttp ignores java.net.Authenticator). */
     val okHttpAuthenticator =
         okhttp3.Authenticator { route, response ->
@@ -99,17 +109,11 @@ actual suspend fun testProxyConnection(config: ProxyConfig): Result<ProxyTestRes
             val client =
                 OkHttpClient
                     .Builder()
-                    .proxy(config.toJavaProxy())
-                    .proxyAuthenticator { route, response ->
-                        if (!config.hasCredentials || route?.proxy?.type() != Proxy.Type.HTTP ||
-                            response.request.header("Proxy-Authorization") != null
-                        ) {
-                            null
-                        } else {
-                            response.request.newBuilder().header("Proxy-Authorization", Credentials.basic(config.username.orEmpty(), config.password.orEmpty())).build()
-                        }
-                    }.connectTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(15, TimeUnit.SECONDS)
+                    .proxy(Proxy.NO_PROXY)
+                    .socketFactory(ProxyTunnelSocketFactory({ config }))
+                    .dns(ProxyAwareDns { config })
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    .readTimeout(20, TimeUnit.SECONDS)
                     .build()
             MelodyonProxy.install()
             val mark = TimeSource.Monotonic.markNow()
@@ -134,6 +138,8 @@ internal fun describeProxyFailure(e: Throwable): String {
     val msg = e.message.orEmpty()
     val reason =
         when {
+            e is ProxyHandshakeException -> return msg
+            e.cause is ProxyHandshakeException -> return e.cause?.message.orEmpty()
             e is java.net.UnknownHostException -> "хост прокси не найден"
             e is java.net.SocketTimeoutException -> "прокси не отвечает (таймаут)"
             e is java.net.ConnectException -> "соединение с прокси отклонено, проверьте хост, порт и тип"

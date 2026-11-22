@@ -1,5 +1,6 @@
 package com.melodyon.android.playback
 
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
@@ -3985,7 +3986,8 @@ private fun buildDirectDataSourceFactory(
     return DefaultDataSource.Factory(
         context,
         StatusReportingHttpDataSourceFactory(
-            DefaultHttpDataSource.Factory().setDefaultRequestProperties(resource.headers),
+            // Melodyon: OkHttp-based source so playback follows the in-app proxy (incl. SOCKS5 auth).
+            OkHttpDataSource.Factory(com.melodyon.shared.network.sharedOkHttpClient).setDefaultRequestProperties(resource.headers),
             onResponseStatus,
         ),
     )
@@ -4149,7 +4151,7 @@ private class SeekableMediaDataSource(
 }
 
 private class StatusReportingHttpDataSourceFactory(
-    private val delegate: DefaultHttpDataSource.Factory,
+    private val delegate: HttpDataSource.Factory,
     private val onResponseStatus: (Int) -> Unit,
 ) : DataSource.Factory {
     override fun createDataSource(): DataSource {
