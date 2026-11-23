@@ -325,7 +325,7 @@ fun WindowScope.TopBarWithPlayer(
     val deviceConnectState by DesktopDeviceConnect.manager.remote.state
         .collectAsState()
     val swapControls = PlayerState.swapPlayerControls
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val isMacOS = OsUtil.isMac
     var showAccountPanel by remember { mutableStateOf(false) }
     val navItems: @Composable () -> Unit = {

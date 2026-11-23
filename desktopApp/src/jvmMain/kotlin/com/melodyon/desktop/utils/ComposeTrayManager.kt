@@ -147,7 +147,7 @@ object ComposeTrayManager {
         val mediaControls by PlayerState.mediaControls.collectAsState()
         val isPlaying = PlayerState.isPlaying
         val currentTrack = PlayerState.currentTrack
-        val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+        val isListenTogetherGuest = false
 
         @Suppress("DEPRECATION")
         val icon = painterResource("logo.png")

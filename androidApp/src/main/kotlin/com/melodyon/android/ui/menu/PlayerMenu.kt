@@ -538,7 +538,7 @@ fun PlayerMenu(
                                 )
                             }
 
-                            if (Settings.shared.listenTogetherEnabled) {
+                            if (false) {
                                 item {
                                     PlayerMenuActionGroup(
                                         actions =

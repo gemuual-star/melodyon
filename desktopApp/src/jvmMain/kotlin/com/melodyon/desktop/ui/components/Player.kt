@@ -428,7 +428,7 @@ private fun StandardPlayerProgress(colorScheme: ColorScheme) {
     val playerBufferedPosition by PlayerState.playbackBufferedPosition.collectAsSecondsState()
     val playerDuration by PlayerState.playbackDuration.collectAsState()
     val isPlaying = PlayerState.isPlaying
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
 
     val isLive = playerIsLiveStream()
     var sliderWidthPx by remember { mutableIntStateOf(0) }
@@ -552,7 +552,7 @@ fun StandardBottomPlayer(
     val castState by PlayerState.castManager.state.collectAsState()
     val deviceConnectState by DesktopDeviceConnect.manager.remote.state
         .collectAsState()
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val playerMenu = rememberCursorContextMenuState()
     var showSleepDialog by remember { mutableStateOf(false) }
     var showDetailsDialog by remember { mutableStateOf(false) }
@@ -1164,7 +1164,6 @@ fun StandardBottomPlayer(
 
 internal fun shouldShowVideoButton(): Boolean {
     val track = PlayerState.currentTrack
-    if (PlayerState.isListenTogetherGuest()) return false
     if (Settings.shared.hideVideoSongs || !Settings.shared.musicVideoPlaybackEnabled) return false
     if (track == null) return false
     if (track.id.startsWith("local_")) return false

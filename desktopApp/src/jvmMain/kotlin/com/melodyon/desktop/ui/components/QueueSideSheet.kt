@@ -60,7 +60,7 @@ internal fun DesktopQueueContent(
 ) {
     val queueState by PlayerState.queue.state.collectAsState()
     val downloadStates by DownloadManager.downloadStates.collectAsState()
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val relatedSongs = PlayerState.relatedSongs
     val suggestionKeys = remember { SuggestedSongKeys() }
     val keyedSuggestions = remember(relatedSongs) { suggestionKeys.update(relatedSongs) }

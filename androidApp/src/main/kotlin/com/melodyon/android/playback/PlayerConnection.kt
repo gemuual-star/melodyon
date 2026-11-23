@@ -672,7 +672,7 @@ class PlayerConnection(
     ) {
         if (song.isUnavailable) return
         cancelPlaylistRequest()
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+        if (false) {
             listenTogetherPlaybackRequestsState.tryEmit(ListenTogetherPlaybackRequest(song = song))
             return
         }
@@ -867,7 +867,7 @@ class PlayerConnection(
         val generation = playlistRequestGeneration
         // Synced queue snapshots have no continuation cursor in the wire protocol.
         if (playlistPage?.hasMore == true &&
-            (AndroidListenTogetherManager.isGuestPlaybackLocked || AndroidDeviceConnect.manager.remote.willStartRemotePlayback)
+            (AndroidDeviceConnect.manager.remote.willStartRemotePlayback)
         ) {
             playlistRequestJob =
                 scope.launch {
@@ -904,7 +904,7 @@ class PlayerConnection(
                 }
             return
         }
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+        if (false) {
             val selectedSong = songs.getOrElse(startIndex) { songs.firstOrNull() } ?: return
             listenTogetherPlaybackRequestsState.tryEmit(
                 ListenTogetherPlaybackRequest(
@@ -943,7 +943,7 @@ class PlayerConnection(
             val commandGeneration = service.playbackCommandGeneration
             val needsPromotion =
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
-                    !AndroidListenTogetherManager.isGuestPlaybackLocked &&
+                    true &&
                     !_castState.value.isConnected &&
                     !AndroidDeviceConnect.manager.remote.willStartRemotePlayback &&
                     !service.player.wantsPlayback &&
@@ -969,7 +969,6 @@ class PlayerConnection(
 
     override fun togglePlayPause() {
         if (deferUntilConnected { togglePlayPause() }) return
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         val action =
             if (_castState.value.takeIf { it.isConnected }?.isPlaying
                 ?: (musicService?.player?.wantsPlayback == true)
@@ -998,7 +997,6 @@ class PlayerConnection(
         source: PlaybackSeekSource,
     ) {
         if (_currentSong.value?.isLive == true || _currentPlaybackResource.value?.isLive == true) return
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         if (AndroidDeviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.SEEK, positionMs = position))) return
         seekToInternal(position, publishToRoom = true, source = source)
     }
@@ -1016,7 +1014,6 @@ class PlayerConnection(
             service.updatePendingRestorePosition(position)
             service.seekTo(position, source)
         }
-        if (publishToRoom) AndroidListenTogetherManager.currentManager?.sendSeek(position)
     }
 
     override fun setVolume(volume: Float) {
@@ -1054,7 +1051,6 @@ class PlayerConnection(
     override fun skipToNext() = skipToNext(expectedSongId = null)
 
     private fun skipToNext(expectedSongId: String?) {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         if (AndroidDeviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.NEXT))) return
         skipToNextInternal(local = true, expectedSongId = expectedSongId)
     }
@@ -1079,7 +1075,6 @@ class PlayerConnection(
     }
 
     override fun skipToPrevious() {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         if (AndroidDeviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.PREVIOUS))) return
         skipToPreviousInternal(local = true)
     }
@@ -1103,7 +1098,6 @@ class PlayerConnection(
         toIndex: Int = -1,
     ) {
         if (deferUntilConnected { skipToQueueItem(index, expectedQueue, toIndex) }) return
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         val player = musicService?.player ?: return
         if (player.queueSnapshot() != expectedQueue) return
         if (AndroidDeviceConnect.intercept(
@@ -1119,7 +1113,6 @@ class PlayerConnection(
 
     override fun skipToQueueEntry(entryKey: Long) {
         if (deferUntilConnected { skipToQueueEntry(entryKey) }) return
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         val player = musicService?.player ?: return
         val state = player.queueState.value
         val index = queueEntryIndex(state, entryKey) ?: return
@@ -1220,7 +1213,7 @@ class PlayerConnection(
         if (deferUntilConnected { startRadio(song) }) return
         if (song.isUnavailable) return
         cancelPlaylistRequest()
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+        if (false) {
             listenTogetherPlaybackRequestsState.tryEmit(ListenTogetherPlaybackRequest(song = song))
             return
         }
@@ -1242,7 +1235,6 @@ class PlayerConnection(
 
     override fun addQueueEntry(entryKey: Long) {
         if (deferUntilConnected { addQueueEntry(entryKey) }) return
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         val player = musicService?.player ?: return
         val state = player.queueState.value
         val index = queueEntryIndex(state, entryKey) ?: return
@@ -1279,7 +1271,7 @@ class PlayerConnection(
     ) {
         if (deferUntilConnected { addDownloadedAlbumToQueue(songs, downloadedSongIds, playNext) }) return
         val remotePlayback =
-            _castState.value.isConnected || AndroidListenTogetherManager.currentManager?.hasActiveOrPendingRoom == true ||
+            _castState.value.isConnected || false ||
                 AndroidDeviceConnect.manager.remote.willStartRemotePlayback
         addToQueue(downloadedAlbumQueueSongs(songs, downloadedSongIds, remotePlayback), playNext)
     }
@@ -1288,7 +1280,7 @@ class PlayerConnection(
         songs: List<SongItem>,
         playNext: Boolean = false,
     ) {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked || songs.isEmpty()) return
+        if (songs.isEmpty()) return
         if (deferUntilConnected { addToQueue(songs, playNext) }) return
         val preparedSongs =
             BlockedContent.filterPlayableSongs(songs).map { song ->
@@ -1358,7 +1350,7 @@ class PlayerConnection(
     ): QueueRemoval? {
         val player = musicService?.player ?: return null
         val sync = AndroidDeviceConnect.manager.remote
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked || player.queueSnapshot() != expectedQueue) return null
+        if (player.queueSnapshot() != expectedQueue) return null
         val previewQueue = MusicQueue().apply { restore(expectedQueue) }
         val removal = previewQueue.removeAt(indices) ?: return null
         val validIndices = removal.items.mapTo(mutableSetOf()) { it.index }
@@ -1422,7 +1414,6 @@ class PlayerConnection(
         ) {
             return
         }
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         removals.asReversed().forEach(player::restoreQueueItems)
     }
 
@@ -1432,7 +1423,6 @@ class PlayerConnection(
         expectedQueue: MusicQueueSnapshot = _queueSnapshot.value,
         updatedItem: SongItem? = null,
     ) {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return
         val player = musicService?.player ?: return
         if (player.queueSnapshot() != expectedQueue) return
         if (AndroidDeviceConnect.intercept(
@@ -1455,7 +1445,6 @@ class PlayerConnection(
         toEntryKey: Long,
         updatedItem: SongItem?,
     ): Boolean {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return false
         val player = musicService?.player ?: return false
         val state = player.queueState.value
         val from = queueEntryIndex(state, fromEntryKey) ?: return false
@@ -1478,7 +1467,6 @@ class PlayerConnection(
     }
 
     override fun reorderQueueEntries(entryKeys: List<Long>): Boolean {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) return false
         val player = musicService?.player ?: return false
         val entries = player.queueState.value.entries
         if (entryKeys.size != entries.size || entryKeys.toSet() != entries.map { it.key }.toSet()) return false

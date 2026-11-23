@@ -33,8 +33,6 @@ interface PlayerPlatform {
         quality: String,
     ): String? = null
 
-    @Composable
-    fun isListenTogetherGuest(): Boolean
 
     @Composable
     fun isDeviceConnectActive(): Boolean

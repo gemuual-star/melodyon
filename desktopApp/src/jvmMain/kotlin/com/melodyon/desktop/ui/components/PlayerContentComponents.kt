@@ -140,7 +140,7 @@ fun PlayerCoreContent(
 ) {
     val playerMenu = rememberCursorContextMenuState()
     val castState by PlayerState.castManager.state.collectAsState()
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     var showCastDialog by remember { mutableStateOf(false) }
     var showDetailsDialog by remember { mutableStateOf(false) }
     var showSleepDialog by remember { mutableStateOf(false) }
@@ -451,7 +451,7 @@ fun PlayerProgressSection() {
     val bufferedPosition by PlayerState.playbackBufferedPosition.collectAsSecondsState()
     val duration by PlayerState.playbackDuration.collectAsState()
     val isPlaying = PlayerState.isPlaying
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val playbackPositionDescription = stringResource(Res.string.cd_playback_position)
 
     val isLive = playerIsLiveStream()

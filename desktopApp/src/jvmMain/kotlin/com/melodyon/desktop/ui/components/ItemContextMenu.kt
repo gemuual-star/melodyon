@@ -233,7 +233,7 @@ fun SongContextMenu(
         val playback = LocalPlaybackController.current
         val isLiked = PlayerState.isLiked(song.id)
         val isDisliked = PlayerState.isDisliked(song.id)
-        val isGuest = PlayerState.isListenTogetherGuest()
+        val isGuest = false
         val downloadState = mediaDownloadState(song.id)
         val isPinned = song.id in HomeState.uiState.speedDialPinnedIds
         songMediaMenuModel(
@@ -660,7 +660,7 @@ fun EpisodeContextMenu(
 ) {
     MediaContextMenu(expanded = expanded, offset = offset, onDismiss = onDismiss) {
         val song = episode.toSongItem()
-        val isGuest = PlayerState.isListenTogetherGuest()
+        val isGuest = false
         MediaMenuModel(
             title = episode.title,
             subtitle = episode.author?.name,

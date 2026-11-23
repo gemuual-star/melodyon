@@ -556,7 +556,7 @@ private fun FullscreenVideoControls(
     var dragProgress by remember { mutableStateOf(0f) }
     val duration by PlayerState.player.duration.collectAsState(0L)
     val isLive = playerIsLiveStream()
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     var sliderWidthPx by remember { mutableIntStateOf(0) }
     val smoothPosition = rememberPlayerProgressPosition(duration, sliderWidthPx, isLive)
     var pendingSeek by rememberPendingSeekPosition(

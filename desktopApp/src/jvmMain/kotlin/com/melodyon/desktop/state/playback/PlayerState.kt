@@ -779,7 +779,6 @@ object PlayerState {
         get() = localRepeatMode
         set(value) {
             if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.REPEAT, repeatMode = DcRepeatMode.valueOf(value.name)))) return
-            if (isListenTogetherGuest()) return
             localRepeatMode = value
             transitions.queueChanged()
             if (value == RepeatMode.ALL) {
@@ -929,7 +928,7 @@ object PlayerState {
         attachBackgroundVideoResource(song, playbackTransitionGeneration)
     }
 
-    internal fun keepsCanonicalMedia(): Boolean = deviceConnect.isActive || ListenTogetherState.listenTogetherManager.isInRoom.value
+    internal fun keepsCanonicalMedia(): Boolean = deviceConnect.isActive
 
     internal suspend fun resolveVideoCounterpartForLyrics(song: SongItem): Pair<String?, CounterpartPositionMap?> =
         video.resolveCounterpartForLyrics(song)
@@ -996,7 +995,7 @@ object PlayerState {
                         UiState.showVideoViewer = true
                         return@launch
                     }
-                    if (target.id != song.id && isListenTogetherGuest()) return@launch
+                    if (target.id != song.id && false) return@launch
                     val resource =
                         withContext(Dispatchers.IO) {
                             fetchPlaybackResource(target.id, target.toContentHints().copy(wantVideo = true), song = target)
@@ -1007,7 +1006,7 @@ object PlayerState {
                         return@launch
                     }
                     if (target.id != song.id) {
-                        if (deviceConnect.isActive || isListenTogetherGuest()) return@launch
+                        if (deviceConnect.isActive) return@launch
                         val playing = player.wantsPlayback
                         val currentPosition = player.currentPlaybackPositionMs()
                         val targetPosition = resolved.positionMap?.mapPosition(currentPosition) ?: currentPosition
@@ -1020,7 +1019,7 @@ object PlayerState {
                                     resumePlayback = playing,
                                     shouldCommit = {
                                         isCurrentRequest() && currentTrack?.id == song.id && queue.currentIndex.value == queueIndex &&
-                                            !deviceConnect.isActive && !isListenTogetherGuest()
+                                            !deviceConnect.isActive
                                     },
                                     replaceCurrentQueueItem = true,
                                 )
@@ -1154,7 +1153,7 @@ object PlayerState {
     ) {
         val hasSuccessor = queue.peekNext() != null || (repeatMode == RepeatMode.ALL && queue.items.value.isNotEmpty())
         val advance =
-            hasSuccessor && !isListenTogetherGuest() && !deviceConnect.isFollowing &&
+            hasSuccessor && !deviceConnect.isFollowing &&
                 shouldSkipAfterPlaybackFailure(
                     Settings.shared.autoSkipNextOnError,
                     desiredPlayback.value,
@@ -1260,7 +1259,7 @@ object PlayerState {
                 enabled = snapshotFlow { Settings.shared.sponsorBlockEnabled },
                 canSeek = {
                     Settings.shared.sponsorBlockEnabled && !castManager.state.value.isConnected &&
-                        !isListenTogetherGuest() && !deviceConnect.isFollowing
+                        !deviceConnect.isFollowing
                 },
                 seekTo = ::seekToPosition,
                 onSkipped = {
@@ -2247,7 +2246,7 @@ object PlayerState {
     }
 
     private fun canLoadRecommendations(song: SongItem): Boolean =
-        Settings.shared.autoLoadMore && repeatMode == RepeatMode.OFF && !isListenTogetherGuest() && !deviceConnect.isFollowing &&
+        Settings.shared.autoLoadMore && repeatMode == RepeatMode.OFF && !deviceConnect.isFollowing &&
             !syncSession.finite && queue.currentItem()?.id == song.id
 
     private fun maybePrefetchRecommendationsForCurrentQueue(song: SongItem) {
@@ -2445,7 +2444,7 @@ object PlayerState {
 
     internal val mediaControls =
         combine(
-            snapshotFlow { Triple(currentTrack != null, isPlaybackResolving, isListenTogetherGuest()) },
+            snapshotFlow { Triple(currentTrack != null, isPlaybackResolving, false) },
             queue.state,
             playbackPosition,
             snapshotFlow { repeatMode to Settings.shared.autoLoadMore },
@@ -2458,7 +2457,6 @@ object PlayerState {
 
     fun toggleShuffle() {
         if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.SHUFFLE, enabled = !shuffleEnabled))) return
-        if (isListenTogetherGuest()) return
         invalidatePersistedRestore()
         shuffleEnabled = !shuffleEnabled
         queue.toggleShuffle(legacyShuffle = Settings.shared.useLegacyShuffle)
@@ -2466,7 +2464,6 @@ object PlayerState {
     }
 
     fun cycleRepeatMode() {
-        if (isListenTogetherGuest()) return
         invalidatePersistedRestore()
         repeatMode =
             when (repeatMode) {
@@ -2518,7 +2515,7 @@ object PlayerState {
 
     fun castTo(device: CastDevice) {
         if (!Settings.shared.castEnabled) return
-        if (isListenTogetherGuest() || deviceConnect.isActive) return
+        if (deviceConnect.isActive) return
         if (castManager.state.value.device
                 ?.id != device.id
         ) {
@@ -2585,7 +2582,6 @@ object PlayerState {
         if (!speed.isFinite()) return
         val normalizedSpeed = speed.coerceIn(0.5f, 2f)
         if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.SPEED, speed = normalizedSpeed))) return
-        if (ListenTogetherState.listenTogetherManager.isInRoom.value) return
         Settings.shared.playbackSpeed = normalizedSpeed
         applyPlaybackSpeed(normalizedSpeed)
     }
@@ -2618,7 +2614,6 @@ object PlayerState {
         video.setTargetSize(width, height, fillViewport = true)
     }
 
-    fun isListenTogetherGuest(): Boolean = ListenTogetherState.listenTogetherManager.isGuestPlaybackLocked
 
     fun playQueueOccurrence(key: Long) {
         val entry =
@@ -2672,7 +2667,7 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest()) {
+        if (false) {
             val startIndex = list?.indexOfFirst { it.id == track.id }?.coerceAtLeast(0) ?: 0
             _listenTogetherPlaybackRequests.tryEmit(
                 ListenTogetherPlaybackRequest(
@@ -3114,7 +3109,7 @@ object PlayerState {
         song: SongItem,
         durationMs: Long = song.duration?.times(1000L) ?: 0L,
     ): Long? {
-        if (!song.isPodcast || isListenTogetherGuest() || deviceConnect.isActive) return null
+        if (!song.isPodcast || false || deviceConnect.isActive) return null
         podcastProgress.flush()?.join()
         return withContext(Dispatchers.IO) { PodcastLibrary.resumePosition(database, song, durationMs = durationMs) }
     }
@@ -3198,7 +3193,7 @@ object PlayerState {
             return
         }
         if (!fromEOF && !fromFailure && !fromListenTogether && deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.NEXT))) return
-        if ((!fromEOF || fromFailure) && !fromListenTogether && isListenTogetherGuest()) return
+        if ((!fromEOF || fromFailure) && !fromListenTogether && false) return
 
         if (fromEOF && sleepTimerStopAfterCurrentSong) {
             setPlaybackPlaying(false)
@@ -3359,7 +3354,7 @@ object PlayerState {
 
         fun canPlay() =
             shouldCommit() && isCurrentPlaybackTransition(generation) &&
-                Settings.shared.autoLoadMore && !deviceConnect.isFollowing && !syncSession.finite && !isListenTogetherGuest() &&
+                Settings.shared.autoLoadMore && !deviceConnect.isFollowing && !syncSession.finite &&
                 currentTrack?.id == seed.id && queue.currentItem()?.id == next.id
         if (!canPlay()) return
         val resource = withContext(Dispatchers.IO) { fetchSelectedPlaybackResource(next, generation) } ?: return
@@ -3372,7 +3367,7 @@ object PlayerState {
         fromRemoteControl: Boolean = false,
     ) {
         if (!fromListenTogether && deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.PREVIOUS))) return
-        if (!fromListenTogether && isListenTogetherGuest()) return
+        if (!fromListenTogether && false) return
 
         val startPlaying =
             if (fromListenTogether || fromRemoteControl ||
@@ -3436,7 +3431,6 @@ object PlayerState {
 
     fun addToQueue(songs: List<SongItem>) {
         if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.ADD, songs = BlockedContent.filterPlayableSongs(songs)))) return
-        if (isListenTogetherGuest()) return
 
         val filteredSongs = BlockedContent.filterPlayableSongs(songs)
         if (filteredSongs.isEmpty()) return
@@ -3470,7 +3464,7 @@ object PlayerState {
         fadeOut: Boolean,
         finishCurrentSong: Boolean = false,
     ) {
-        if (isListenTogetherGuest() || (!stopAfterCurrentSong && durationMs <= 0L)) return
+        if ((!stopAfterCurrentSong && durationMs <= 0L)) return
         sleepTimerJob?.cancel()
         applySleepTimerGain(1f)
         sleepTimerStopAfterCurrentSong = stopAfterCurrentSong
@@ -3547,7 +3541,6 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest()) return
 
         val filteredSongs = BlockedContent.filterPlayableSongs(songs)
         if (filteredSongs.isEmpty()) return
@@ -3587,7 +3580,6 @@ object PlayerState {
         indices: Set<Int>,
         expectedQueue: MusicQueueSnapshot = queue.snapshots.value,
     ): QueueRemoval? {
-        if (isListenTogetherGuest()) return null
         if (deviceConnect.isActive) {
             return syncSession.remove(indices, expectedQueue)
         }
@@ -3595,7 +3587,7 @@ object PlayerState {
     }
 
     fun removeQueueOccurrence(key: Long): QueueRemoval? {
-        if (isListenTogetherGuest() || Settings.shared.isQueueLocked) return null
+        if (Settings.shared.isQueueLocked) return null
         val state = queue.state.value
         val index = state.entries.indexOfFirst { it.key == key }
         if (index <= state.currentIndex) return null
@@ -3607,7 +3599,7 @@ object PlayerState {
         toKey: Long,
         selectedEntryKeys: Set<Long> = emptySet(),
     ) {
-        if (isListenTogetherGuest() || Settings.shared.isQueueLocked) return
+        if (Settings.shared.isQueueLocked) return
         val state = queue.state.value
         val from = state.entries.indexOfFirst { it.key == fromKey }
         val to = state.entries.indexOfFirst { it.key == toKey }
@@ -3625,7 +3617,7 @@ object PlayerState {
     }
 
     fun reorderQueue(order: List<Int>): Boolean {
-        if (isListenTogetherGuest() || Settings.shared.isQueueLocked) return false
+        if (Settings.shared.isQueueLocked) return false
         val expectedQueue = queue.snapshots.value
         if (order.size != expectedQueue.displayedItems.size || order.toSet() != expectedQueue.displayedItems.indices.toSet()) return false
         if (deviceConnect.intercept(
@@ -3641,7 +3633,6 @@ object PlayerState {
     }
 
     fun restoreQueueItems(removal: QueueRemoval) {
-        if (isListenTogetherGuest()) return
         if (syncSession.restore(removal)) return
         queue.restore(removal)
         queueChanged()
@@ -3659,7 +3650,6 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest()) return
         queue.move(from, to)
         queueChanged()
     }
@@ -3724,7 +3714,7 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest() || isSongBlocked(song)) return
+        if (isSongBlocked(song)) return
 
         cancelCrossfadeForManualAction()
         playbackTransitionJob =
@@ -3768,7 +3758,6 @@ object PlayerState {
     }
 
     fun playFromId(videoId: String) {
-        if (isListenTogetherGuest()) return
         if (deviceConnect.willStartRemotePlayback) {
             val generation = playbackTransitionGeneration
             scope.launch {
@@ -3889,7 +3878,6 @@ object PlayerState {
     ) = library.addToPlaylist(playlistId, song, onResult)
 
     fun togglePlay() {
-        if (isListenTogetherGuest()) return
         if (deviceConnect.isActive) {
             setPlaybackPlaying(!syncSession.desiredPlaying)
         } else {
@@ -3909,14 +3897,12 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest()) return
         playbackTransitions.setPlaying(playing)
         if (playing) playInternal() else pauseInternal()
     }
 
     fun stop() {
         if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.PAUSE))) return
-        if (isListenTogetherGuest()) return
         playbackTransitions.begin()
         playbackTransitionJob?.cancel()
         playbackTransitionJob = null
@@ -4024,10 +4010,8 @@ object PlayerState {
     fun seekToPosition(positionMs: Long) {
         if (isLiveStream) return
         if (deviceConnect.intercept(DcPlaybackCommand(DcPlaybackAction.SEEK, positionMs = positionMs))) return
-        if (isListenTogetherGuest()) return
         val dur = playbackDuration.value
         val targetMs = if (dur > 0) positionMs.coerceIn(0, dur) else positionMs.coerceAtLeast(0)
-        ListenTogetherState.listenTogetherManager.sendSeek(targetMs)
         seekToPositionInternal(targetMs)
     }
 
@@ -4071,7 +4055,6 @@ object PlayerState {
         ) {
             return
         }
-        if (isListenTogetherGuest()) return
 
         if (castManager.state.value.isConnected) {
             val targetMs = (fraction.coerceIn(0f, 1f) * playbackDuration.value).toLong()
@@ -4083,7 +4066,6 @@ object PlayerState {
         val dur = player.duration.value
         if (dur > 0) {
             val positionMs = (fraction * dur).toLong()
-            ListenTogetherState.listenTogetherManager.sendSeek(positionMs)
         }
         seekToInternal(fraction)
         persistPlaybackState()

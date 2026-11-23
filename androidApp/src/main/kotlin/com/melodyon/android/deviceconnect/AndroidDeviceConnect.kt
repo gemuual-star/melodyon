@@ -30,7 +30,7 @@ object AndroidDeviceConnect {
         expectedQueue: MusicQueueSnapshot? = null,
     ): Boolean =
         manager.remote.intercept(command, expectedQueue = expectedQueue) ||
-            (AndroidListenTogetherManager.isGuestPlaybackLocked && command.action != DcPlaybackAction.VOLUME)
+            (false && command.action != DcPlaybackAction.VOLUME)
 
     internal fun requiredLocalNetworkPermission(): String? = deviceConnectLocalNetworkPermission(Build.VERSION.SDK_INT)
 

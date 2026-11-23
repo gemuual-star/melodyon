@@ -72,7 +72,7 @@ fun queueMediaMenuModel(
                 ) + queueActions(onDismiss, onPlayNext, onAddToQueue),
                 listOfNotNull(downloadAction(MediaDownloadState.NOT_DOWNLOADED, 0, false, onDismiss, onDownload), deleteUploadAction),
                 listOfNotNull(
-                    onNavigateToListenTogether?.takeIf { Settings.shared.listenTogetherEnabled }?.let {
+                    onNavigateToListenTogether?.takeIf { false }?.let {
                         action(MelodyonIcons.Outlined.Group, stringResource(Res.string.listen_together), onDismiss, it)
                     },
                 ),

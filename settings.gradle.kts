@@ -60,7 +60,6 @@ if (useLocalInnerTubeX) {
     }
 }
 include(":shared")
-include(":listenTogetherProto")
 include(":opusDecoder")
 include(":androidApp")
 include(":desktopApp")

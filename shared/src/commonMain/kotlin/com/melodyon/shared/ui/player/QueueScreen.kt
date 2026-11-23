@@ -1648,7 +1648,7 @@ fun QueueScreen(
     var awaitingReorder by session::awaitingReorder
     var pendingRemovals by session::pendingRemovals
     val platform = LocalPlayerPlatform.current
-    val isListenTogetherGuest = platform.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val canControlPlayback = !isListenTogetherGuest
     val downloadedSongIds = platform.downloadedSongIds()
     val downloadSongs = platform.rememberSongDownloader()

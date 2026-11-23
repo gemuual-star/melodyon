@@ -194,7 +194,7 @@ private fun DesktopNavigationScaffold(
     val isNavigationRail = !adaptiveLayout.navigationSuiteType.isNavigationBar
     val allItems =
         LibraryState.sidebarNavItems.mapNotNull { item ->
-            if (item.id == NavigationId.LISTEN_TOGETHER && !Settings.shared.listenTogetherEnabled) return@mapNotNull null
+            if (item.id == NavigationId.LISTEN_TOGETHER) return@mapNotNull null
             val icons = navIcons(item.id)
             val labelResource =
                 when (item.id) {

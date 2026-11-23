@@ -120,7 +120,7 @@ object DesktopUrlHandler {
 
         val roomCode = extractListenTogetherRoomCode(url)
         if (roomCode != null) {
-            if (!Settings.shared.listenTogetherEnabled) return
+            if (true) return
             DesktopNavigation.openListenTogetherInvitation(roomCode) { ListenTogetherState.listenTogetherManager.joinRoom(it) }
             return
         }

@@ -694,7 +694,7 @@ class MusicService :
 
     private fun canStartCast(): Boolean {
         val sync = AndroidDeviceConnect.manager.remote
-        val guest = AndroidListenTogetherManager.isGuestPlaybackLocked
+        val guest = false
         if (!guest && !sync.isActive) return true
         sync.reportError(if (guest) DcSyncError.NOT_ALLOWED else DcSyncError.CONFLICT)
         return false
@@ -967,7 +967,7 @@ class MusicService :
                 enabled = snapshotFlow { Settings.shared.sponsorBlockEnabled },
                 canSeek = {
                     Settings.shared.sponsorBlockEnabled && !castManager.state.value.isConnected &&
-                        !AndroidListenTogetherManager.isGuestPlaybackLocked && !AndroidDeviceConnect.manager.remote.isActive
+                        !AndroidDeviceConnect.manager.remote.isActive
                 },
                 seekTo = { position ->
                     updatePendingRestorePosition(position)
@@ -1178,7 +1178,7 @@ class MusicService :
     }
 
     private suspend fun skipFailedTrackOrStop(error: Throwable?) {
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked || AndroidDeviceConnect.manager.remote.isFollowing ||
+        if (AndroidDeviceConnect.manager.remote.isFollowing ||
             consecutiveFailureSkips >= MAX_CONSECUTIVE_FAILURE_SKIPS
         ) {
             publishTerminalPlaybackError(error)
@@ -1598,7 +1598,7 @@ class MusicService :
                     database,
                     request.song,
                     requestedPosition.takeIf {
-                        it > 0L || AndroidListenTogetherManager.isGuestPlaybackLocked || AndroidDeviceConnect.manager.remote.isActive
+                        it > 0L || false || AndroidDeviceConnect.manager.remote.isActive
                     },
                 )
             }
@@ -1697,7 +1697,7 @@ class MusicService :
                     sourceSongId = sourceSong.id,
                     selectedSongId = playbackSong.id,
                     deviceConnectActive = sync.isActive,
-                    listenTogetherGuestPlaybackLocked = AndroidListenTogetherManager.isGuestPlaybackLocked,
+                    listenTogetherGuestPlaybackLocked = false,
                 )
         var errorReason: String? = null
         var playbackFailure: Throwable? = null
@@ -1721,7 +1721,7 @@ class MusicService :
                             canSwapToAudioCounterpart(
                                 videoPlaybackEnabled = Settings.shared.musicVideoPlaybackEnabled,
                                 networkConnected = PlaybackNetworkStateStore.current.connected,
-                                guestPlaybackLocked = AndroidListenTogetherManager.isGuestPlaybackLocked,
+                                guestPlaybackLocked = false,
                             ),
                         isCounterpartAllowed = { !BlockedContent.isBlocked(it) },
                         resolveMusicTrack = musicVideoResolver::resolveMusicTrack,
@@ -1834,7 +1834,7 @@ class MusicService :
                             PodcastLibrary.resumePosition(
                                 database,
                                 playbackSong,
-                                requestedPosition.takeIf { it > 0L || AndroidListenTogetherManager.isGuestPlaybackLocked || sync.isActive },
+                                requestedPosition.takeIf { it > 0L || false || sync.isActive },
                                 durationMs = resource.durationSeconds?.times(1000L) ?: 0L,
                             )
                         }
@@ -2045,7 +2045,7 @@ class MusicService :
                 song.isLocal || song.id.startsWith("local_") || song.id in available
             }
         if (!isCurrentQueueRequest(sessionId, request)) return
-        if (next != null && !AndroidListenTogetherManager.isGuestPlaybackLocked && !AndroidDeviceConnect.manager.remote.isActive) {
+        if (next != null && !AndroidDeviceConnect.manager.remote.isActive) {
             player.skipToQueueItem(next, resumePlayback = player.wantsPlayback)
         } else {
             player.pause()
@@ -2320,7 +2320,7 @@ class MusicService :
             playbackInstanceId = player.currentPlaybackInstanceId,
             controls =
                 WidgetControls(
-                    canPlayPause = !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                    canPlayPause = true,
                     canPrevious =
                         currentSong != null &&
                             canSkipToPrevious(
@@ -2328,7 +2328,7 @@ class MusicService :
                                 false,
                                 player.queueSnapshot(),
                                 _repeatMode.value,
-                                AndroidListenTogetherManager.isGuestPlaybackLocked,
+                                false,
                                 currentSong.isLive || player.currentPlaybackResource.value?.isLive == true,
                             ),
                     canNext =
@@ -2337,7 +2337,7 @@ class MusicService :
                             false,
                             player.queueSnapshot(),
                             _repeatMode.value,
-                            AndroidListenTogetherManager.isGuestPlaybackLocked,
+                            false,
                             hasPlaylistContinuation = queueCoordinator.playlistPage?.hasMore == true,
                         ),
                     canLike = currentSong != null,
@@ -2793,7 +2793,7 @@ class MusicService :
 
     internal fun playFromSearch(request: VoiceSearchRequest) {
         serviceScope.launch {
-            val generation = automotivePlaybackRequestGate.start(AndroidListenTogetherManager.isGuestPlaybackLocked)
+            val generation = automotivePlaybackRequestGate.start(false)
             val result =
                 try {
                     resolveVoicePlayback(request, generation)
@@ -2832,7 +2832,7 @@ class MusicService :
                         0,
                         if (index == state.currentIndex) player.currentPosition.value else C.TIME_UNSET,
                         replacesQueue = false,
-                        canApply = !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                        canApply = true,
                     )
                 }
             }
@@ -2844,7 +2844,7 @@ class MusicService :
                     0,
                     player.currentPosition.value,
                     replacesQueue = false,
-                    canApply = !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                    canApply = true,
                 )
             }
         }
@@ -2864,7 +2864,7 @@ class MusicService :
                 queueTitle = request.matchQuery.takeIf(String::isNotBlank),
                 playlistPage = voiceQueue.playlistPage,
                 shuffleModeEnabled = false,
-                canApply = !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                canApply = true,
             ).also { Settings.shared.pendingContinuePlayback = false }
     }
 
@@ -3066,7 +3066,7 @@ class MusicService :
             controller: MediaSession.ControllerInfo,
             playerCommand: Int,
         ): Int {
-            if (AndroidListenTogetherManager.isGuestPlaybackLocked && isGuestRestrictedPlayerCommand(playerCommand)) {
+            if (false && isGuestRestrictedPlayerCommand(playerCommand)) {
                 return SessionError.ERROR_PERMISSION_DENIED
             }
             if (playerCommand in
@@ -3131,7 +3131,7 @@ class MusicService :
                     return serviceScope.future {
                         addAutomotiveSongToQueue(
                             mediaId = args.getString(MediaConstants.EXTRA_KEY_MEDIA_ID),
-                            isPlaybackLocked = { AndroidListenTogetherManager.isGuestPlaybackLocked },
+                            isPlaybackLocked = { false },
                             resolve = { item ->
                                 (application as App).startup.await()
                                 playbackRestoreJob.join()
@@ -3147,21 +3147,21 @@ class MusicService :
                 }
 
                 MediaSessionConstants.ACTION_TOGGLE_REPEAT -> {
-                    if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+                    if (false) {
                         return Futures.immediateFuture(SessionResult(SessionError.ERROR_PERMISSION_DENIED))
                     }
                     media3Player?.repeatMode = nextMediaSessionRepeatMode(_repeatMode.value)
                 }
 
                 MediaSessionConstants.ACTION_TOGGLE_SHUFFLE -> {
-                    if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+                    if (false) {
                         return Futures.immediateFuture(SessionResult(SessionError.ERROR_PERMISSION_DENIED))
                     }
                     media3Player?.shuffleModeEnabled = !player.isShuffleEnabled
                 }
 
                 MediaSessionConstants.ACTION_TOGGLE_START_RADIO -> {
-                    if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+                    if (false) {
                         return Futures.immediateFuture(SessionResult(SessionError.ERROR_PERMISSION_DENIED))
                     }
                     player.currentSong.value?.let { playMix(it, startPlaying = true) }
@@ -3310,9 +3310,8 @@ class MusicService :
         ): ListenableFuture<List<MediaItem>> =
             serviceScope.future {
                 (application as App).startup.await()
-                if (AndroidListenTogetherManager.isGuestPlaybackLocked) throw CancellationException()
                 val playable = resolveMediaAdditions(mediaItems)
-                if (playable.isEmpty() || AndroidListenTogetherManager.isGuestPlaybackLocked) throw CancellationException()
+                if (playable.isEmpty()) throw CancellationException()
                 playable
             }
 
@@ -3355,7 +3354,7 @@ class MusicService :
                         player.currentPosition.value,
                     )
                 }
-                val generation = automotivePlaybackRequestGate.start(AndroidListenTogetherManager.isGuestPlaybackLocked)
+                val generation = automotivePlaybackRequestGate.start(false)
                 resolveVoicePlayback(VoiceSearchRequest(""), generation)
             }
 
@@ -3378,7 +3377,7 @@ class MusicService :
                     throw CancellationException()
                 }
                 val requestGeneration =
-                    automotivePlaybackRequestGate.start(AndroidListenTogetherManager.isGuestPlaybackLocked)
+                    automotivePlaybackRequestGate.start(false)
                 val requestedItem = mediaItems.singleOrNull()
                 val searchQuery = requestedItem?.requestMetadata?.searchQuery
                 if (searchQuery != null) {
@@ -3401,7 +3400,7 @@ class MusicService :
                             0,
                             if (index == activeQueueIndex) startPositionMs else C.TIME_UNSET,
                             replacesQueue = false,
-                            canApply = index != null && !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                            canApply = index != null,
                         )
                     }
                     return@future automotivePlaybackRequestGate.resolve(
@@ -3412,7 +3411,7 @@ class MusicService :
                         replacesQueue = false,
                         canApply =
                             activeQueueIndex != null &&
-                                !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                                true,
                     )
                 }
 
@@ -3455,7 +3454,7 @@ class MusicService :
                     queueTitle = pinnedQueue?.title,
                     shuffleModeEnabled = pinnedQueue?.shuffle ?: songQueue?.shuffle?.takeIf { it },
                     playlistPage = pinnedQueue?.playlistPage ?: songQueue?.playlistPage,
-                    canApply = playable != null && !AndroidListenTogetherManager.isGuestPlaybackLocked,
+                    canApply = playable != null,
                 )
             }
     }

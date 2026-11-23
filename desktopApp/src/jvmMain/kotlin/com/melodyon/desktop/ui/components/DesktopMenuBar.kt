@@ -159,7 +159,7 @@ fun FrameWindowScope.DesktopMenuBar(
 ) {
     val currentTrack = PlayerState.currentTrack
     val isTrackActive = currentTrack != null
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val isLiked =
         currentTrack?.let {
             PlayerState.isLiked(it.id)

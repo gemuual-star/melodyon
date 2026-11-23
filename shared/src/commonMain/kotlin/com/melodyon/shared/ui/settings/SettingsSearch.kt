@@ -324,7 +324,7 @@ internal fun rememberSettingsSearchResults(
     query: String,
 ): List<SettingsSearchResult> {
     val normalized = query.trim().lowercase()
-    val listenTogetherEnabled = Settings.shared.listenTogetherEnabled
+    val listenTogetherEnabled = false
     return remember(registry, normalized, listenTogetherEnabled) {
         settingsSearchResults(registry, normalized, listenTogetherEnabled)
     }

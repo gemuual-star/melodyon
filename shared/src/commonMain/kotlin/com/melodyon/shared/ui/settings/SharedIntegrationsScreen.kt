@@ -677,13 +677,13 @@ private fun buildIntegrationsRegistry(
     }
 
     host.deviceConnect?.let { builder.deviceConnectPage(it) }
-    if (settings.listenTogetherEnabled && (host.listenTogetherManager != null || host.onOpenListenTogether != null)) {
+    if (false && (host.listenTogetherManager != null || host.onOpenListenTogether != null)) {
         builder.customPage(
             SettingsPageId.LISTEN_TOGETHER,
             stringResource(Res.string.listen_together),
             settingsPageSubtitle(
                 stringResource(Res.string.settings_listen_together_overview),
-                integrationStatus(settings.listenTogetherEnabled, settings.listenTogetherUsername, requiresAccount = true),
+                integrationStatus(false, settings.listenTogetherUsername, requiresAccount = true),
             ),
             MelodyonIcons.Outlined.Headphones,
             SettingsTone.BLUE,
@@ -707,7 +707,7 @@ private fun buildIntegrationsRegistry(
             SettingsPageId.LAST_FM,
             SettingsPageId.LISTEN_BRAINZ,
             SettingsPageId.DEVICE_CONNECT.takeIf { host.deviceConnect != null },
-            SettingsPageId.LISTEN_TOGETHER.takeIf { Settings.shared.listenTogetherEnabled && (host.listenTogetherManager != null || host.onOpenListenTogether != null) },
+            SettingsPageId.LISTEN_TOGETHER.takeIf { false && (host.listenTogetherManager != null || host.onOpenListenTogether != null) },
         ).toTypedArray(),
     )
     return builder.build()

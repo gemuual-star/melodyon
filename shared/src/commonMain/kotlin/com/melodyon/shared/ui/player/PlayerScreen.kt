@@ -552,7 +552,7 @@ fun PlayerScreen(
 
     val isVideoViewerVisible by playerConnection?.isVideoViewerVisible?.collectWhilePlayerActive(isPlayerContentVisible && isScreenVisible)
         ?: remember { mutableStateOf(true) }
-    val isListenTogetherGuest = platform.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val castState by playerConnection?.castState?.collectWhilePlayerActive(isPlayerContentVisible && isScreenVisible) ?: remember {
         mutableStateOf(
             CastState(),

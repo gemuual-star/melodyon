@@ -525,7 +525,6 @@ fun PlayerMenuPanel(
     val isInListenTogetherRoom by listenTogetherManager.isInRoom.collectAsState()
     val listenTogetherRole by listenTogetherManager.role.collectAsState()
     val isListenTogetherGuest =
-        PlayerState.isListenTogetherGuest() ||
             (isInListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST)
     var showTempoPitch by remember { mutableStateOf(false) }
     var showEqualizer by remember { mutableStateOf(false) }

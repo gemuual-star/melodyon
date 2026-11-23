@@ -418,7 +418,6 @@ object ArtistState {
     fun playAllArtistSongs() = playArtistSongs(shuffle = false)
 
     private fun playArtistSongs(shuffle: Boolean) {
-        if (PlayerState.isListenTogetherGuest()) return
         val artist = artistData["header"]?.firstOrNull() as? ArtistItem ?: return
         val page = ArtistPageResult(artistData.toMap(), artistSectionBrowseIds.toMap())
         AppState.scope.launch {

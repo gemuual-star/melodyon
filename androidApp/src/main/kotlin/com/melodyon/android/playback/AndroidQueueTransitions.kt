@@ -216,7 +216,7 @@ internal class AndroidQueueTransitions(
 
     fun scheduleNextTrackPreload(trigger: NextTrackPreloadTrigger) {
         if (trigger.invalidationGeneration != nextTrackPreloadInvalidation.value) return
-        if (AndroidDeviceConnect.manager.remote.isActive || AndroidListenTogetherManager.isGuestPlaybackLocked) return
+        if (AndroidDeviceConnect.manager.remote.isActive) return
         val nextVideoId = trigger.nextVideoId ?: return
         val preloadToken = nextTrackPreloadToken
         if (
@@ -266,7 +266,7 @@ internal class AndroidQueueTransitions(
                                 videoPlaybackEnabled = Settings.shared.musicVideoPlaybackEnabled,
                                 networkConnected = PlaybackNetworkStateStore.current.connected,
                                 remotePlaybackActive = AndroidDeviceConnect.manager.remote.isActive,
-                                guestPlaybackLocked = AndroidListenTogetherManager.isGuestPlaybackLocked,
+                                guestPlaybackLocked = false,
                             ),
                         isCounterpartAllowed = { !BlockedContent.isBlocked(it) },
                         resolveMusicTrack = musicVideoResolver::resolveMusicTrack,
@@ -363,7 +363,7 @@ internal class AndroidQueueTransitions(
     }
 
     fun startAndroidCrossfade() {
-        if (AndroidDeviceConnect.manager.remote.isActive || AndroidListenTogetherManager.isGuestPlaybackLocked) return
+        if (AndroidDeviceConnect.manager.remote.isActive) return
         val token = nextTrackPreloadToken ?: return
         val resource = nextTrackPreloadResource ?: return
         val expectedInstanceId = nextTrackPreloadExpectedInstanceId
@@ -418,7 +418,7 @@ internal class AndroidQueueTransitions(
                         requested && (playing || state == Player.STATE_ENDED)
                     }
                 runCrossfadeFrames(playbackActive) {
-                    if (AndroidDeviceConnect.manager.remote.isActive || AndroidListenTogetherManager.isGuestPlaybackLocked) {
+                    if (AndroidDeviceConnect.manager.remote.isActive) {
                         cancelAndroidCrossfade()
                         cancelNextTrackPreload()
                         return@launch
@@ -613,7 +613,7 @@ internal class AndroidQueueTransitions(
         val token = nextTrackPreloadToken ?: return false
         val resource = nextTrackPreloadResource ?: return false
         if (!isPreloadedPlaybackModeCurrent() || nextTrackPreloadExpectedInstanceId != completedPlaybackInstanceId ||
-            AndroidDeviceConnect.manager.remote.isActive || AndroidListenTogetherManager.isGuestPlaybackLocked
+            AndroidDeviceConnect.manager.remote.isActive
         ) {
             cancelNextTrackPreload()
             return false
@@ -660,7 +660,7 @@ internal class AndroidQueueTransitions(
         wantVideo: Boolean,
     ): Boolean =
         !AndroidDeviceConnect.manager.remote.isActive &&
-            !AndroidListenTogetherManager.isGuestPlaybackLocked &&
+            true &&
             sessionId == queue.queueSessionId &&
             trigger.invalidationGeneration == nextTrackPreloadInvalidation.value &&
             player.currentPlaybackInstanceId == trigger.currentPlaybackInstanceId &&

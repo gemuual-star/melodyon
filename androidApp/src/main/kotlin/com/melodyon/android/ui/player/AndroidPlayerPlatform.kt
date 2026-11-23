@@ -95,13 +95,6 @@ class AndroidPlayerPlatform(
     override val supportsVideoPlayback = true
     override val supportsCasting = true
 
-    @Composable
-    override fun isListenTogetherGuest(): Boolean {
-        val manager = listenTogetherManager
-        val role by manager?.role?.collectAsState() ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-        val isInRoom by manager?.isInRoom?.collectAsState() ?: remember { mutableStateOf(false) }
-        return isInRoom && role == ListenTogetherRoomRole.GUEST
-    }
 
     @Composable
     override fun isDeviceConnectActive(): Boolean {

@@ -258,7 +258,7 @@ class MainActivity : ComponentActivity() {
                     wantVideo = Settings.shared.videoViewerVisible,
                     canPlayLocally =
                         PlaybackNetworkStateStore.current.connected &&
-                            !AndroidListenTogetherManager.isGuestPlaybackLocked && !AndroidDeviceConnect.manager.remote.isActive,
+                            !AndroidDeviceConnect.manager.remote.isActive,
                 ) { source ->
                     get<StreamResolver>().resolve(
                         source.id,

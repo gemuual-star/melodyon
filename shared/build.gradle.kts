@@ -390,7 +390,6 @@ kotlin {
             create("jvmSharedMain") {
                 dependsOn(getByName("commonMain"))
                 dependencies {
-                    implementation(project(":listenTogetherProto"))
                     implementation(libs.ktor.client.logging)
                     implementation(libs.ktor.client.cio)
                     implementation(libs.okhttp)
@@ -463,7 +462,7 @@ kotlin {
 }
 
 val reflectionFreeTestSuites =
-    listOf("*LocalDeviceServerTest", "*DeviceConnectManagerIntegrationTest", "*ListenTogetherManagerLifecycleTest")
+    listOf("*LocalDeviceServerTest", "*DeviceConnectManagerIntegrationTest")
 
 tasks.named<Test>("desktopTest") {
     filter { reflectionFreeTestSuites.forEach(::excludeTestsMatching) }

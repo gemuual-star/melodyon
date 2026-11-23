@@ -567,7 +567,7 @@ fun MobileApp(
     }
 
     fun open(route: MobileRoute) {
-        if (route is MobileRoute.ListenTogether && !Settings.shared.listenTogetherEnabled) return
+        if (route is MobileRoute.ListenTogether) return
         setPlayerVisible(false)
         cancelVideoLookup()
         containers.pendingPopup = null
@@ -878,7 +878,7 @@ fun MobileApp(
                                             )
                                         }
                                     }
-                                    if (Settings.shared.listenTogetherEnabled) {
+                                    if (false) {
                                         IconButton(onClick = { open(MobileRoute.ListenTogether()) }, shapes = IconButtonDefaults.shapes()) {
                                             Icon(
                                                 MelodyonIcons.Outlined.Group,

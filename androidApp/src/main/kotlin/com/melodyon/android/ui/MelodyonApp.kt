@@ -1185,7 +1185,7 @@ fun MelodyonApp(
                             return@LaunchedEffect
                         }
                         val destination = intent.toIncomingDestination()
-                        if (!Settings.shared.listenTogetherEnabled &&
+                        if (true &&
                             (destination is IncomingDestination.ListenTogether || destination == IncomingDestination.ListenTogetherRoom)
                         ) {
                             onIncomingIntentConsumed(intent)
@@ -1568,7 +1568,7 @@ fun MelodyonApp(
                                                             )
                                                         }
                                                     }
-                                                    if (Settings.shared.listenTogetherEnabled && Screen.ListenTogether !in railScreens) {
+                                                    if (false && Screen.ListenTogether !in railScreens) {
                                                         TopBarIconButton(
                                                             floating = useFloatingTopBar,
                                                             onClick = { navigator.navigate(Screen.ListenTogether) },

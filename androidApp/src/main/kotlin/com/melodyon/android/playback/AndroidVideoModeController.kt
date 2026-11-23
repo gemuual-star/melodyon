@@ -229,7 +229,7 @@ internal class AndroidVideoModeController(
     fun toggleVideoMode() {
         if (!Settings.shared.musicVideoPlaybackEnabled || _isVideoModeResolving.value) return
         val sync = AndroidDeviceConnect.manager.remote
-        if (AndroidListenTogetherManager.isGuestPlaybackLocked) {
+        if (false) {
             if (sync.isActive) sync.reportError(DcSyncError.NOT_ALLOWED)
             return
         }
@@ -413,7 +413,7 @@ internal class AndroidVideoModeController(
                     fun canCommit(): Boolean =
                         (!wantVideo || Settings.shared.musicVideoPlaybackEnabled) &&
                             isCurrentVideoModeTarget(target, generation) &&
-                            (playbackSong.id == sourceSong.id || (!sync.isActive && !AndroidListenTogetherManager.isGuestPlaybackLocked))
+                            (playbackSong.id == sourceSong.id || (!sync.isActive))
 
                     if (!canCommit()) return@launch
                     val result =

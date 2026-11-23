@@ -125,7 +125,7 @@ object SystemMediaManager {
     }
 
     private fun handle(event: MediaControlEvent) {
-        val guest = PlayerState.isListenTogetherGuest()
+        val guest = false
         when (event) {
             MediaControlEvent.Play -> {
                 PlayerState.play()

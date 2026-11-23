@@ -85,12 +85,6 @@ internal class MobilePlayerPlatform(
     override val supportsVideoPlayback = false
     override val supportsCasting = false
 
-    @Composable
-    override fun isListenTogetherGuest(): Boolean {
-        val inRoom by listenTogether.isInRoom.collectAsState()
-        val role by listenTogether.role.collectAsState()
-        return inRoom && role == ListenTogetherRoomRole.GUEST
-    }
 
     @Composable
     override fun isDeviceConnectActive() = false
@@ -170,7 +164,7 @@ internal class MobilePlayerPlatform(
         val deleteUploadAction = rememberDeleteUploadAction(song, database, onDismiss)
         val isDownloaded = song.id in downloadedSongIds()
         val playerSession = LocalPlayerSession.current
-        val isGuest = isListenTogetherGuest()
+        val isGuest = false
         val controller = LocalPlaybackController.current
         val playbackState by controller.state.collectAsState()
         val inRoom by listenTogether.isInRoom.collectAsState()
@@ -307,7 +301,7 @@ internal class MobilePlayerPlatform(
                                         onDismiss()
                                         onNavigateToListenTogether()
                                     },
-                                ).takeIf { Settings.shared.listenTogetherEnabled },
+                                ).takeIf { false },
                             ),
                 ),
             )
@@ -460,7 +454,7 @@ internal class MobilePlayerPlatform(
                     deleteUploadAction = rememberDeleteUploadAction(song, database, onDismiss),
                     onDismiss = onDismiss,
                     isLiked = isLiked,
-                    isGuest = isListenTogetherGuest(),
+                    isGuest = false,
                     onSuggestToHost = { listenTogether.suggestTrack(song) },
                     isDisliked = SongLikeState.isDisliked(song.id),
                     onLike = onLike,

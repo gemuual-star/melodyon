@@ -22,7 +22,7 @@ fun SongSwipeActions(
                 AppState.snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
             }
         },
-        enabled = enabled && !PlayerState.isListenTogetherGuest(),
+        enabled = enabled,
         content = content,
     )
 }

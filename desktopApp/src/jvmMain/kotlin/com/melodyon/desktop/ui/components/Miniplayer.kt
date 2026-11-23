@@ -190,7 +190,7 @@ private fun StandardMiniplayer(
     isNightMode: Boolean,
     transparentWindow: Boolean,
 ) {
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     Surface(
         modifier =
             Modifier
@@ -386,7 +386,7 @@ private fun FocusModeMiniplayer(
     isNightMode: Boolean,
     transparentWindow: Boolean,
 ) {
-    val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
+    val isListenTogetherGuest = false
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
     var hasFocus by remember { mutableStateOf(false) }

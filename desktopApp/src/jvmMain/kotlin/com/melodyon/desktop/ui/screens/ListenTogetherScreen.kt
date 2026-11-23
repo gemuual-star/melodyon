@@ -23,7 +23,7 @@ fun ListenTogetherScreen(manager: ListenTogetherManager) {
         onDispose { DesktopNavigation.listenTogetherRoomCode = null }
     }
 
-    if (!Settings.shared.listenTogetherEnabled && !showSettings) {
+    if (!showSettings) {
         LaunchedEffect(Unit) { DesktopNavigation.navigate(Screen.Home) }
         return
     }

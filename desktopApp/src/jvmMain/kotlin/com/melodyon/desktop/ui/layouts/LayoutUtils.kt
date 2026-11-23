@@ -95,7 +95,7 @@ object LayoutUtils {
         remember {
             derivedStateOf {
                 LibraryState.sidebarNavItems.filter {
-                    it.visible && (it.id != NavigationId.LISTEN_TOGETHER || Settings.shared.listenTogetherEnabled)
+                    it.visible && (it.id != NavigationId.LISTEN_TOGETHER)
                 }
             }
         }
