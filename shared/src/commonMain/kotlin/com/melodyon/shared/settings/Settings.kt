@@ -5,6 +5,7 @@
 
 package com.melodyon.shared.settings
 
+import com.melodyon.shared.constants.ListenTogetherServerMetadataKey
 import androidx.compose.runtime.SnapshotMutationPolicy
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue

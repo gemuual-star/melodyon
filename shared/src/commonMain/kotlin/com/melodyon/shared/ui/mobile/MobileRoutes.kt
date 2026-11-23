@@ -167,11 +167,6 @@ internal fun resolveMobileDeepLink(callback: String): MobileDeepLink? {
             videoId.takeIf(String::isNotBlank)?.let { MobileDeepLink.Video(it) }
         }
 
-        "party" -> {
-            val code = uri?.parameters?.get("r") ?: uri?.parameters?.get("code") ?: path.removePrefix("party/").substringBefore('/')
-            partyInvitation(code)
-        }
-
         "home" -> {
             MobileDeepLink.Tab(MobileRoute.Home)
         }
@@ -240,11 +235,6 @@ internal fun resolveMobileDeepLink(callback: String): MobileDeepLink? {
                         ?.trim()
                         ?.takeIf(String::isNotBlank)
             when {
-                path.startsWith("party/") || path == "party" -> {
-                    val code = uri?.parameters?.get("r") ?: uri?.parameters?.get("code") ?: path.removePrefix("party/").substringBefore('/')
-                    partyInvitation(code)
-                }
-
                 path.startsWith("watch/") || path == "watch" -> {
                     val videoId = uri?.parameters?.get("v") ?: path.removePrefix("watch/").substringBefore('/')
                     videoId.takeIf(String::isNotBlank)?.let { MobileDeepLink.Video(it) }
