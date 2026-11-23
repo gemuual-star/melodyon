@@ -36,7 +36,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun IntegrationsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToListenTogether: () -> Unit,
     initialPage: SettingsPageId? = null,
 ) {
     val copiedMessage = stringResource(Res.string.copied)
@@ -88,7 +87,6 @@ fun IntegrationsScreen(
                         }
                 },
                 deviceConnect = rememberDeviceConnectSettingsHost(),
-                onOpenListenTogether = onNavigateToListenTogether,
                 onOpenUrl = { url -> runCatching { context.openDiscordUrl(url) } },
                 onCopyText = { label, text -> context.copyToClipboard(label, text, copiedMessage) },
                 onMessage = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() },

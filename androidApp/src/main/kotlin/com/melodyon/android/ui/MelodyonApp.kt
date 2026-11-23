@@ -1970,8 +1970,6 @@ fun MelodyonApp(
 }
 
 @Composable
-
-@Composable
 private fun TopBarProfileAvatar(
     accountName: String,
     accountThumbnail: String,

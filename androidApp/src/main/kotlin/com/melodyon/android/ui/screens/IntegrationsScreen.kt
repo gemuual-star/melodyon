@@ -11,7 +11,6 @@ import com.melodyon.android.ui.screens.settings.IntegrationsScreen as SettingsIn
 @Composable
 fun IntegrationsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToListenTogether: () -> Unit,
 ) {
-    SettingsIntegrationsScreen(onNavigateBack = onNavigateBack, onNavigateToListenTogether = onNavigateToListenTogether)
+    SettingsIntegrationsScreen(onNavigateBack = onNavigateBack)
 }
