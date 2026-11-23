@@ -16,8 +16,6 @@ import com.melodyon.desktop.state.content.SearchState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.metrolist.innertubex.utils.YouTubeUrlParser
 import com.melodyon.shared.settings.Settings
-import com.melodyon.shared.utils.extractListenTogetherRoomCode
-import com.melodyon.shared.utils.isListenTogetherUrl
 import com.melodyon.shared.utils.parseYouTubePodcastId
 import com.melodyon.shared.utils.parseYouTubeUrl
 import java.awt.Desktop
@@ -60,7 +58,6 @@ object DesktopUrlHandler {
         if (rawInput.isNullOrBlank()) return false
         val normalized = normalizeUrl(rawInput) ?: return false
         if (parseDiscordLoginCallback(normalized) != null) return true
-        if (isListenTogetherUrl(normalized)) return true
         return parseYouTubePodcastId(normalized) != null || parseYouTubeUrl(normalized) != null
     }
 
@@ -116,13 +113,6 @@ object DesktopUrlHandler {
     private fun executeOpenUrl(url: String) {
         ComposeTrayManager.showWindow()
         if (parseDiscordLoginCallback(url) != null && DesktopDiscordLogin.flow.handleCallback(url)) return
-
-        val roomCode = extractListenTogetherRoomCode(url)
-        if (roomCode != null) {
-            if (true) return
-            DesktopNavigation.openListenTogetherInvitation(roomCode) { ListenTogetherState.listenTogetherManager.joinRoom(it) }
-            return
-        }
 
         val podcastId = parseYouTubePodcastId(url)
         val parsed = parseYouTubeUrl(url)

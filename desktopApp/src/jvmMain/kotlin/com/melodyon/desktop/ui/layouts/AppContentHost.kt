@@ -110,10 +110,7 @@ fun AppContentHost(
     ContentUndoHintsSnackbar(AppState.snackbarHostState) { page ->
         PlayerState.closeFullscreenPlayer()
         val settingsPage = page.settingsPage
-        if (settingsPage == null) {
-            UiState.showSettings = false
-            navigator.navigate(Screen.ListenTogetherBlockedUsers)
-        } else {
+        if (settingsPage != null) {
             UiState.selectedSettingsPage = settingsPage
             UiState.showSettings = true
         }
@@ -125,11 +122,7 @@ fun AppContentHost(
         onApprovePairing = DesktopDeviceConnect.manager::approvePairing,
         onRejectPairing = DesktopDeviceConnect.manager::rejectPairing,
     )
-    var pendingPlaybackRequest by remember { mutableStateOf<ListenTogetherPlaybackRequest?>(null) }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        PlayerState.listenTogetherPlaybackRequests.collect { pendingPlaybackRequest = it }
-    }
     LaunchedEffect(route) { LayoutUtils.syncContentState(route) }
     val contentShape = RoundedCornerShape(16.dp)
     Box(
@@ -202,14 +195,7 @@ fun AppContentHost(
                         LocalPlaylistScreen(destination.type)
                     }
 
-                    Screen.ListenTogetherBlockedUsers -> {
-                        ListenTogetherBlockedUsersScreen(
-                            manager = ListenTogetherState.listenTogetherManager,
-                            onNavigateBack = { navigator.goBack() },
-                        )
-                    }
-
-                    Screen.Library, Screen.Statistics, Screen.ListenTogether -> {
+                    Screen.Library, Screen.Statistics -> {
                         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                             Box(Modifier.widthIn(max = 1400.dp).fillMaxSize()) {
                                 when (destination) {
@@ -222,12 +208,8 @@ fun AppContentHost(
                                         )
                                     }
 
-                                    Screen.Statistics -> {
-                                        StatsScreen()
-                                    }
-
                                     else -> {
-                                        ListenTogetherScreen(ListenTogetherState.listenTogetherManager)
+                                        StatsScreen()
                                     }
                                 }
                             }
@@ -243,57 +225,6 @@ fun AppContentHost(
                     }
                 }
             }
-        }
-        PopupContent(pendingPlaybackRequest) { request ->
-            AlertDialog(
-                onDismissRequest = { pendingPlaybackRequest = null },
-                icon = {
-                    Icon(
-                        imageVector = MelodyonIcons.Filled.Groups,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                title = { Text(stringResource(Res.string.listen_together_guest_choice_title)) },
-                text = { Text(stringResource(Res.string.listen_together_guest_choice_message)) },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            ListenTogetherState.listenTogetherManager.suggestTrack(request.song)
-                            pendingPlaybackRequest = null
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                    ) {
-                        Text(stringResource(Res.string.listen_together_guest_queue))
-                    }
-                },
-                dismissButton = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = { pendingPlaybackRequest = null }, shapes = ButtonDefaults.shapes()) {
-                            Text(stringResource(Res.string.cancel))
-                        }
-                        TextButton(
-                            onClick = {
-                                pendingPlaybackRequest = null
-                                scope.launch {
-                                    ListenTogetherState.listenTogetherManager.leaveRoom()
-                                    withTimeoutOrNull(3000.milliseconds) {
-                                        ListenTogetherState.listenTogetherManager.isInRoom.first { !it }
-                                    }
-                                    if (request.queue.isNotEmpty()) {
-                                        PlayerState.playTrack(request.song, request.queue)
-                                    } else {
-                                        PlayerState.playTrack(request.song)
-                                    }
-                                }
-                            },
-                            shapes = ButtonDefaults.shapes(),
-                        ) {
-                            Text(stringResource(Res.string.listen_together_guest_solo))
-                        }
-                    }
-                },
-            )
         }
     }
 }

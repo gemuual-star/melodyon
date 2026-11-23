@@ -798,7 +798,6 @@ private fun shareSong(song: SongItem) {
 }
 
 private fun suggestToHost(song: SongItem) {
-    ListenTogetherState.suggestTrack(song)
 }
 
 @Composable

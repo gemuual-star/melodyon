@@ -1022,7 +1022,6 @@ private fun runDesktopApp(args: Array<String>) {
             SongLikeState.likedSongIds
             LyricsState.currentLyricsEntries
             HomeState.setLikedSongsName(runBlocking { getString(Res.string.liked_songs) })
-            ListenTogetherState.initialize()
             if (OsUtil.isWindows) {
                 listOf("previous.ico", "play.ico", "pause.ico", "next.ico").forEach { IconResources.toTempFile(it) }
             }
@@ -1277,7 +1276,6 @@ private fun runDesktopApp(args: Array<String>) {
                     Screen.Library,
                     Screen.History,
                     Screen.Statistics,
-                    Screen.ListenTogether,
                 )
             }
         val navigationState =

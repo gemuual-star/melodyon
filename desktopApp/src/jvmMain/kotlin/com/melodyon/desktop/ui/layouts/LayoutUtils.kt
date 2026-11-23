@@ -209,7 +209,6 @@ object LayoutUtils {
             Screen.Library,
             Screen.History,
             Screen.Statistics,
-            Screen.ListenTogether,
             -> {
                 clearContentSelection(clearSearch = true)
             }

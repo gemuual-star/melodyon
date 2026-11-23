@@ -120,7 +120,6 @@ fun SettingsOverlay(colorScheme: ColorScheme) {
     var devtoolsUnlocked by remember { mutableStateOf(Settings.shared.devtoolsUnlocked) }
     val openDevtoolsOnLaunch = remember { UiState.openDevtoolsSettingsRequested }
     val openPlaylistImportOnLaunch = remember { UiState.openPlaylistImportRequested }
-    val isInListenTogetherRoom by ListenTogetherState.listenTogetherManager.isInRoom.collectAsState()
     val customPages =
         buildSet {
             add(SettingsPageId.STORAGE)
@@ -463,12 +462,6 @@ fun SettingsOverlay(colorScheme: ColorScheme) {
                                 HomeState.fetchHomeData()
                             }
                         },
-                        playbackSpeedEnabled = !isInListenTogetherRoom,
-                        playbackSpeedOverride = 1f.takeIf { isInListenTogetherRoom },
-                        playbackSpeedDescription =
-                            stringResource(Res.string.settings_playback_speed_locked_listen_together).takeIf {
-                                isInListenTogetherRoom
-                            },
                         homeSections = homeSections,
                         onHomeSectionVisibilityChanged = { sectionTitle, visible ->
                             Settings.shared.toggleHomeSectionVisibility(sectionTitle, visible)

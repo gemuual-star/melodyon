@@ -392,12 +392,6 @@ internal fun resolvedAnimatedCoverUrl(
     animatedCoverSongId: String?,
 ): String? = animatedCoverUrl.takeIf { currentTrack?.id != null && currentTrack.id == animatedCoverSongId }
 
-data class ListenTogetherPlaybackRequest(
-    val song: SongItem,
-    val queue: List<SongItem> = emptyList(),
-    val startIndex: Int = 0,
-)
-
 internal fun deviceConnectCanReusePlayback(
     localQueue: MusicQueueSnapshot,
     incomingQueue: MusicQueueSnapshot,
@@ -426,8 +420,6 @@ internal fun MusicPlayer.setPlaying(playing: Boolean) {
 }
 
 object PlayerState {
-    private val _listenTogetherPlaybackRequests = MutableSharedFlow<ListenTogetherPlaybackRequest>(extraBufferCapacity = 1)
-    val listenTogetherPlaybackRequests: SharedFlow<ListenTogetherPlaybackRequest> = _listenTogetherPlaybackRequests.asSharedFlow()
     private val database by lazy { GlobalContext.get().get<MusicDatabase>() }
     private val musicVideoResolver by lazy { GlobalContext.get().get<MusicVideoResolver>() }
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -654,7 +646,6 @@ object PlayerState {
             }
         }
         deviceConnect.detach(deviceConnectPlayback)
-        ListenTogetherState.close()
         playbackTransitionJob?.cancel()
         videoModeRequestJob?.cancel()
         runCatching { video.close() }
@@ -1029,7 +1020,6 @@ object PlayerState {
                         queueChanged()
                         updateCurrentTrack(target, startArtworkFetch = true)
                         desiredPlayback.value = playing
-                        ListenTogetherState.listenTogetherManager.publishHostPlaybackChange(trackChanged = true)
                     } else {
                         player.attachPlaybackResource(resource)
                     }
@@ -2665,17 +2655,6 @@ object PlayerState {
                 expectedQueue = queue.snapshots.value,
             )
         ) {
-            return
-        }
-        if (false) {
-            val startIndex = list?.indexOfFirst { it.id == track.id }?.coerceAtLeast(0) ?: 0
-            _listenTogetherPlaybackRequests.tryEmit(
-                ListenTogetherPlaybackRequest(
-                    song = track,
-                    queue = list ?: emptyList(),
-                    startIndex = startIndex,
-                ),
-            )
             return
         }
 

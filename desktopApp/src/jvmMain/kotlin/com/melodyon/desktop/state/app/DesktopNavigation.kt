@@ -7,7 +7,6 @@ import com.melodyon.shared.ui.navigation.Navigator
 import com.melodyon.shared.ui.navigation.Screen
 
 object DesktopNavigation {
-    var listenTogetherRoomCode by mutableStateOf<String?>(null)
 
     // shortcut: Bridge legacy desktop state until shared screens accept Navigator directly.
     private var boundNavigator: Navigator? = null
@@ -25,15 +24,6 @@ object DesktopNavigation {
 
     fun navigate(route: Screen) {
         navigator.navigate(route)
-    }
-
-    fun openListenTogetherInvitation(
-        roomCode: String,
-        joinRoom: (String) -> Boolean,
-    ) {
-        listenTogetherRoomCode = roomCode
-        navigate(Screen.ListenTogether)
-        if (joinRoom(roomCode)) listenTogetherRoomCode = null
     }
 
     fun goBack(): Boolean {

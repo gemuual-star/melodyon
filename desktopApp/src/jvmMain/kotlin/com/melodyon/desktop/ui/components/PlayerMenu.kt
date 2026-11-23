@@ -519,7 +519,6 @@ fun PlayerMenuPanel(
             rememberDeleteUploadAction(it, remember { GlobalContext.get().get<MusicDatabase>() }, onDismiss)
         }
     val artistAction = artistNavigationMenuAction(currentTrack?.artists.orEmpty(), ArtistState::fetchArtistData, onDismiss)
-    val listenTogetherManager = ListenTogetherState.listenTogetherManager
     val isListenTogetherGuest =
             (false)
     var showTempoPitch by remember { mutableStateOf(false) }
@@ -543,7 +542,7 @@ fun PlayerMenuPanel(
                     pitch,
                     PlayerState::setPlaybackSpeed,
                     PlayerState::setPlaybackPitch,
-                    speedEnabled = !isInListenTogetherRoom,
+                    speedEnabled = true,
                     varispeed = varispeed,
                     onDone = { showTempoPitch = false },
                 )
@@ -664,7 +663,7 @@ fun PlayerMenuPanel(
                 ),
                 listOfNotNull(
                     currentTrack?.takeIf { isListenTogetherGuest }?.let { track ->
-                        suggestToHostMenuAction(onDismiss) { ListenTogetherState.suggestTrack(track) }
+                        suggestToHostMenuAction(onDismiss) { }
                     },
                 ),
                 listOfNotNull(
