@@ -13,7 +13,6 @@ import com.melodyon.desktop.state.content.ArtistState
 import com.melodyon.desktop.state.content.PlaylistAlbumState
 import com.melodyon.desktop.state.content.PodcastState
 import com.melodyon.desktop.state.content.SearchState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.metrolist.innertubex.utils.YouTubeUrlParser
 import com.melodyon.shared.settings.Settings

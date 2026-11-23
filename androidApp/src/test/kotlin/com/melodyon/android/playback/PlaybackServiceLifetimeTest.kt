@@ -1,6 +1,5 @@
 package com.melodyon.android.playback
 
-import com.melodyon.shared.listentogether.ListenTogetherConnectionState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

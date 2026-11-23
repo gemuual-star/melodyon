@@ -167,3 +167,9 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Остались сторонние сервисы, не Metrolist: загрузка лога сбоя на paste.crdroid.net (только по кнопке пользователя), Spotify Canvas через spotify-canva.vercel.app, BetterLyrics/Unison (boidu.dev), реестр player_configs на GitHub Metrolist (решение пользователя оставить).
 - В «О приложении» ещё есть список участников Metrolist со ссылками (AboutContent.kt) — убрать вместе с UI-шагом.
 - Ссылки melodyon.cc остались только в коде «Слушать вместе» и разборе ссылок — уйдут в шаге s2.
+
+## Удаление «Слушать вместе» (шаг s2 плана, ветка wip/remove-listen-together)
+- Удалены: модули shared/android/desktop listentogether, ui/listentogether, listenTogetherProto, экраны, тесты.
+- Проверки «гость комнаты» заменены на false и упрощены (скрипт подстановок), объявления isListenTogetherGuest() убраны.
+- Идёт итеративная починка компиляции через CI на ветке (workflow_dispatch ci.yml ref=wip/remove-listen-together). После зелёного CI — fast-forward merge в main (без force push).
+- Осталось: Android/desktop ссылки (MelodyonApp, MiniPlayer, PlayerState, AppContentHost, меню), Screen/NavigationId, SettingsPageId.LISTEN_TOGETHER, параметры isListenTogetherGuest в UI плеера, строки ресурсов listen_together_*, ключи Settings.

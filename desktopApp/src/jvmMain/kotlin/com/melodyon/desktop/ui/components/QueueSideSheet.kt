@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.state.playback.SuggestedSongKeys
 import com.melodyon.desktop.storage.DownloadManager

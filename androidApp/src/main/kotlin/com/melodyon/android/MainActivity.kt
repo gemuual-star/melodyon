@@ -47,7 +47,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.melodyon.android.deviceconnect.AndroidDeviceConnect
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.locale.AppLocale
 import com.melodyon.android.onboarding.OnboardingDestination
 import com.melodyon.android.onboarding.OnboardingScreen

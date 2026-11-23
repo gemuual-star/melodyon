@@ -4,7 +4,6 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.melodyon.shared.listentogether.ListenTogetherManager
 import com.melodyon.shared.model.SongItem
 
 /** Includes the area below the mini player without adding Scaffold padding. */

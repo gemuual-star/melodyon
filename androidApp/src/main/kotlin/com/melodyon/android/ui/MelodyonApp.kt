@@ -158,7 +158,6 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.melodyon.android.App
 import com.melodyon.android.BuildConfig
-import com.melodyon.android.LocalListenTogetherManager
 import com.melodyon.android.LocalMiniPlayerBottomInset
 import com.melodyon.android.LocalPlayerExpanded
 import com.melodyon.android.LocalPlayerExpandedOrExpanding
@@ -167,10 +166,8 @@ import com.melodyon.android.LocalStartupPresentation
 import com.melodyon.android.MainActivity
 import com.melodyon.android.deviceconnect.AndroidDeviceConnect
 import com.melodyon.android.extensions.findActivity
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.locale.AppLocale
 import com.melodyon.android.playback.AndroidPlaybackController
-import com.melodyon.android.playback.ListenTogetherPlaybackRequest
 import com.melodyon.android.playback.LocalPlayerConnection
 import com.melodyon.android.playback.PlaybackSnackbarEvents
 import com.melodyon.android.playback.PlayerConnection
@@ -218,11 +215,6 @@ import com.melodyon.android.ui.screens.settings.AndroidAboutScreen
 import com.melodyon.android.ui.screens.settings.AndroidAutoScreen
 import com.melodyon.android.ui.screens.settings.BackupRestoreScreen
 import com.melodyon.android.ui.screens.settings.DevtoolsSettingsScreen
-import com.melodyon.android.ui.screens.settings.ListenTogetherBlockedUsersScreen
-import com.melodyon.android.ui.screens.settings.ListenTogetherLogsScreen
-import com.melodyon.android.ui.screens.settings.ListenTogetherScreen
-import com.melodyon.android.ui.screens.settings.ListenTogetherServerScreen
-import com.melodyon.android.ui.screens.settings.ListenTogetherSettingsScreen
 import com.melodyon.android.ui.screens.settings.PlaybackBenchmarkSettingsScreen
 import com.melodyon.android.ui.screens.settings.PlaylistImportScreen
 import com.melodyon.android.ui.screens.settings.ReleaseNotesSheet
@@ -291,7 +283,6 @@ import com.melodyon.shared.generated.resources.updates_pending_parenthetical
 import com.melodyon.shared.generated.resources.youtube_music
 import com.melodyon.shared.generated.resources.youtube_session_expired_message
 import com.melodyon.shared.generated.resources.youtube_session_expired_title
-import com.melodyon.shared.listentogether.parseListenTogetherInvitation
 import com.melodyon.shared.model.ArtistTiny
 import com.melodyon.shared.model.BuiltinPlaylist
 import com.melodyon.shared.model.SearchFilter
@@ -327,7 +318,6 @@ import com.melodyon.shared.ui.design.expressive.components.ExpressiveMiniPlayerH
 import com.melodyon.shared.ui.haptics.HapticEvent
 import com.melodyon.shared.ui.haptics.rememberMelodyonHaptics
 import com.melodyon.shared.ui.icons.MelodyonIcons
-import com.melodyon.shared.ui.listentogether.ListenTogetherGlobalEvents
 import com.melodyon.shared.ui.menu.ContentUndoHintsSnackbar
 import com.melodyon.shared.ui.menu.HiddenHomeItemsSnackbar
 import com.melodyon.shared.ui.menu.LocalContextMenuAnchor
@@ -716,7 +706,6 @@ fun MelodyonApp(
         YouTubeSyncSnackbar(snackbarHostState)
         LyricsTranslationSnackbar(snackbarHostState, playerViewModel.lyricsTranslationFailures)
         listenTogetherManager?.let { manager ->
-            ListenTogetherGlobalEvents(manager) { snackbarHostState.showSnackbar(it) }
         }
         val addToPlaylist =
             rememberSongsPlaylistAdder(database) { completion ->

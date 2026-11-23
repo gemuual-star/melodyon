@@ -78,7 +78,6 @@ import com.materialkolor.ktx.isLight
 import com.melodyon.desktop.state.app.UiState
 import com.melodyon.desktop.state.content.ArtistState
 import com.melodyon.desktop.state.content.PlaylistAlbumState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.ui.DesktopDensityProvider
 import com.melodyon.desktop.ui.theme.MelodyonTheme

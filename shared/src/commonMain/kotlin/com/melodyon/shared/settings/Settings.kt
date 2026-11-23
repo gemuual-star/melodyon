@@ -115,8 +115,6 @@ import com.melodyon.shared.constants.LikedSongsCustomOrdersJsonKey
 import com.melodyon.shared.constants.LikedSongsOrderAccountKey
 import com.melodyon.shared.constants.LikedSongsOrderCustomizedKey
 import com.melodyon.shared.constants.LikedSongsRecencyJsonKey
-import com.melodyon.shared.constants.ListenTogetherEnabledKey
-import com.melodyon.shared.constants.ListenTogetherServerMetadataKey
 import com.melodyon.shared.constants.LoudnessLevelKey
 import com.melodyon.shared.constants.LyricsActiveByRealTimingKey
 import com.melodyon.shared.constants.LyricsNeutralColorKey

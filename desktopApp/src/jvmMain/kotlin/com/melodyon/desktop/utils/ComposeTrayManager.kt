@@ -11,7 +11,6 @@ import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.WindowState
 import com.melodyon.desktop.state.app.DesktopNavigation
 import com.melodyon.desktop.state.app.UiState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.shared.generated.resources.Res
 import com.melodyon.shared.generated.resources.tray_by

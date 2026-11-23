@@ -1,7 +1,6 @@
 package com.melodyon.shared.utils
 
 import com.metrolist.innertubex.utils.YouTubeUrlParser
-import com.melodyon.shared.listentogether.parseListenTogetherInvitation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs

@@ -109,7 +109,6 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.toBitmap
-import com.melodyon.android.LocalListenTogetherManager
 import com.melodyon.android.LocalPlaylistAdder
 import com.melodyon.android.playback.LocalPlayerConnection
 import com.melodyon.android.ui.player.MusicVideoSurface
@@ -129,7 +128,6 @@ import com.melodyon.shared.generated.resources.previous
 import com.melodyon.shared.generated.resources.subscribed_to_artist
 import com.melodyon.shared.generated.resources.unknown
 import com.melodyon.shared.generated.resources.unmute
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.model.isLive
 import com.melodyon.shared.model.previewThumbnailUrl
@@ -195,11 +193,9 @@ fun MiniPlayer(
     val isPlaying by playerConnection.isPlaying.collectAsState(initial = false)
     val volume by playerConnection.volume.collectAsState(initial = 1f)
     val listenTogetherManager = LocalListenTogetherManager.current
-    val listenTogetherRole by listenTogetherManager?.role?.collectAsState()
         ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-    val isInListenTogetherRoom by listenTogetherManager?.isInRoom?.collectAsState()
         ?: remember { mutableStateOf(false) }
-    val isListenTogetherGuest = isInListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST
+    val isListenTogetherGuest = false
     val isMuted = volume <= 0.01f
     val isPlaybackLoading by playerConnection.isPlaybackLoading.collectAsState(initial = false)
     val playbackResource by playerConnection.currentPlaybackResource.collectAsState(initial = null)

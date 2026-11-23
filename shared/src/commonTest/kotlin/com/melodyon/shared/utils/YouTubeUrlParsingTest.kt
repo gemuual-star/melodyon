@@ -1,7 +1,6 @@
 package com.melodyon.shared.utils
 
 import com.metrolist.innertubex.utils.YouTubeUrlParser
-import com.melodyon.shared.listentogether.parseListenTogetherInvitation
 import com.melodyon.shared.settings.Settings
 import com.melodyon.shared.ui.mobile.resolveMobileDeepLink
 import com.russhwolf.settings.MapSettings

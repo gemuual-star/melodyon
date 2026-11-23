@@ -47,8 +47,6 @@ import com.melodyon.desktop.state.content.LibraryContentState
 import com.melodyon.desktop.state.content.PlaylistAlbumState
 import com.melodyon.desktop.state.content.PodcastState
 import com.melodyon.desktop.state.content.SearchState
-import com.melodyon.desktop.state.playback.ListenTogetherPlaybackRequest
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.LyricsState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.ui.screens.AboutArtistScreenHost
@@ -58,7 +56,6 @@ import com.melodyon.desktop.ui.screens.BrowseScreen
 import com.melodyon.desktop.ui.screens.HistoryScreen
 import com.melodyon.desktop.ui.screens.HomeScreen
 import com.melodyon.desktop.ui.screens.LibraryScreen
-import com.melodyon.desktop.ui.screens.ListenTogetherScreen
 import com.melodyon.desktop.ui.screens.LocalPlaylistScreen
 import com.melodyon.desktop.ui.screens.PlaylistScreen
 import com.melodyon.desktop.ui.screens.PodcastScreen
@@ -79,8 +76,6 @@ import com.melodyon.shared.ui.components.PopupContent
 import com.melodyon.shared.ui.components.UnavailableSongSnackbar
 import com.melodyon.shared.ui.components.lyrics.LyricsTranslationSnackbar
 import com.melodyon.shared.ui.icons.MelodyonIcons
-import com.melodyon.shared.ui.listentogether.ListenTogetherBlockedUsersScreen
-import com.melodyon.shared.ui.listentogether.ListenTogetherGlobalEvents
 import com.melodyon.shared.ui.menu.ContentUndoHintsSnackbar
 import com.melodyon.shared.ui.menu.HiddenHomeItemsSnackbar
 import com.melodyon.shared.ui.menu.settingsPage
@@ -124,7 +119,6 @@ fun AppContentHost(
         }
     }
     LyricsTranslationSnackbar(AppState.snackbarHostState, LyricsState.lyricsTranslationFailures)
-    ListenTogetherGlobalEvents(ListenTogetherState.listenTogetherManager) { AppState.snackbarHostState.showSnackbar(it) }
     val deviceConnectState by DesktopDeviceConnect.manager.state.collectAsState()
     DeviceConnectPairingHost(
         state = deviceConnectState,

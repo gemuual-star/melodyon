@@ -25,7 +25,6 @@ import com.melodyon.desktop.auth.DesktopDiscordLogin
 import com.melodyon.desktop.state.app.AppState
 import com.melodyon.desktop.state.app.UiState
 import com.melodyon.desktop.state.playback.DiscordRpcState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.ui.screens.DiscordLoginDialog
 import com.melodyon.shared.discord.openDiscordUrl
@@ -89,7 +88,6 @@ fun IntegrationsOverlay(colorScheme: ColorScheme) {
                             DiscordRpcState.updateDiscordRpc()
                         },
                         deviceConnect = rememberDeviceConnectSettingsHost(),
-                        listenTogetherManager = ListenTogetherState.listenTogetherManager,
                         onOpenUrl = { openDiscordUrl(it, null) },
                         onCopyText = { _, text -> AppState.copyToClipboard(text) },
                     ),

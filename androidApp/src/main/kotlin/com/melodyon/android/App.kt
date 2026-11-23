@@ -57,7 +57,6 @@ import com.melodyon.shared.discord.DiscordRpcManager
 import com.melodyon.shared.discord.DiscordTokenStore
 import com.melodyon.shared.discord.observeDiscordInitialization
 import com.melodyon.shared.equalizer.EqualizerProfiles
-import com.melodyon.shared.listentogether.network.isAllowedListenTogetherServerUrl
 import com.melodyon.shared.settings.BlockedContent
 import com.melodyon.shared.settings.Settings
 import com.melodyon.shared.state.GlobalYouTube

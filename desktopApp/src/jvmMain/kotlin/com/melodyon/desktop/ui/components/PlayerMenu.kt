@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import com.melodyon.desktop.state.app.AppState
 import com.melodyon.desktop.state.content.ArtistState
 import com.melodyon.desktop.state.content.PlaylistAlbumState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.LyricsState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.shared.api.lyrics.LyricsUtils
@@ -89,7 +88,6 @@ import com.melodyon.shared.generated.resources.stop_music_after_set_time
 import com.melodyon.shared.generated.resources.stopping_after_current_song
 import com.melodyon.shared.generated.resources.tempo_and_pitch
 import com.melodyon.shared.generated.resources.view_song_info
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.settings.Settings
 import com.melodyon.shared.settings.displayName
@@ -522,10 +520,8 @@ fun PlayerMenuPanel(
         }
     val artistAction = artistNavigationMenuAction(currentTrack?.artists.orEmpty(), ArtistState::fetchArtistData, onDismiss)
     val listenTogetherManager = ListenTogetherState.listenTogetherManager
-    val isInListenTogetherRoom by listenTogetherManager.isInRoom.collectAsState()
-    val listenTogetherRole by listenTogetherManager.role.collectAsState()
     val isListenTogetherGuest =
-            (isInListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST)
+            (false)
     var showTempoPitch by remember { mutableStateOf(false) }
     var showEqualizer by remember { mutableStateOf(false) }
     if (showEqualizer) {

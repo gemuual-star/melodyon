@@ -29,8 +29,6 @@ import com.melodyon.shared.generated.resources.Res
 import com.melodyon.shared.generated.resources.dismiss
 import com.melodyon.shared.generated.resources.error_occurred
 import com.melodyon.shared.generated.resources.play
-import com.melodyon.shared.listentogether.ListenTogetherManager
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.AlbumItem
 import com.melodyon.shared.model.ArtistItem
 import com.melodyon.shared.model.EpisodeItem
@@ -105,7 +103,6 @@ internal fun MobileItemMenu(
     database: MusicDatabase,
     playbackController: PlaybackController,
     playerSession: PlayerSession,
-    listenTogetherManager: ListenTogetherManager,
     downloadedSongIds: Set<String>,
     onDownloadSong: (SongItem) -> Unit,
     onRemoveDownloads: (List<String>) -> Unit,
@@ -127,9 +124,7 @@ internal fun MobileItemMenu(
         BuiltinPlaylistMenu(item, database, onDismiss)
         return
     }
-    val inRoom by listenTogetherManager.isInRoom.collectAsState()
-    val role by listenTogetherManager.role.collectAsState()
-    val isGuest = inRoom && role == ListenTogetherRoomRole.GUEST
+    val isGuest = false
     when (item) {
         is SongItem, is EpisodeItem -> {
             val song = rememberSongWithAlbum(item as? SongItem ?: (item as EpisodeItem).toSongItem())
@@ -165,7 +160,6 @@ internal fun MobileItemMenu(
                                 song.artists.firstOrNull { it.id != null }?.let { artist ->
                                     { BlockedContent.blockArtist(artist) }
                                 },
-                            onSuggestToHost = { listenTogetherManager.suggestTrack(song) },
                             downloadState =
                                 if (song.id in
                                     downloadedSongIds

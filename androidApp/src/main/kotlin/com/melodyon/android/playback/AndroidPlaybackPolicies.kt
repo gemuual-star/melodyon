@@ -35,7 +35,6 @@ import com.melodyon.android.R
 import com.melodyon.android.cast.AndroidMdnsCastDiscovery
 import com.melodyon.android.constants.MediaSessionConstants
 import com.melodyon.android.deviceconnect.AndroidDeviceConnect
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.models.PersistPlayerState
 import com.melodyon.android.models.PersistRadioQueueChip
 import com.melodyon.android.models.PlaybackPersistenceWriter

@@ -33,8 +33,6 @@ import com.melodyon.shared.generated.resources.playback_speed
 import com.melodyon.shared.generated.resources.sleep_timer
 import com.melodyon.shared.generated.resources.tempo_and_pitch
 import com.melodyon.shared.generated.resources.unavailable
-import com.melodyon.shared.listentogether.ListenTogetherManager
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.playback.LocalPlayerSession
 import com.melodyon.shared.settings.BlockedContent
@@ -74,7 +72,6 @@ internal class MobilePlayerPlatform(
     private val onDownloadSongs: (List<SongItem>) -> Unit,
     private val onRemoveDownloads: (List<String>) -> Unit,
     private val onAddToPlaylist: (List<SongItem>) -> Unit,
-    private val listenTogether: ListenTogetherManager,
     private val touchExplorationEnabled: Boolean,
     private val shareLyrics: @Composable (PlayerViewModel) -> ((String) -> Unit)?,
 ) : PlayerPlatform {
@@ -167,7 +164,6 @@ internal class MobilePlayerPlatform(
         val isGuest = false
         val controller = LocalPlaybackController.current
         val playbackState by controller.state.collectAsState()
-        val inRoom by listenTogether.isInRoom.collectAsState()
         val scope = rememberCoroutineScope()
         val menuSheetState = rememberModalSheetState()
         var showEqualizer by remember { mutableStateOf(false) }
@@ -193,7 +189,7 @@ internal class MobilePlayerPlatform(
                                 pitch = playbackState.playbackPitch,
                                 onSpeedChange = controller::setPlaybackSpeed,
                                 onPitchChange = if (playbackState.isPitchProcessingAvailable) controller::setPlaybackPitch else null,
-                                speedEnabled = !inRoom,
+                                speedEnabled = true,
                                 varispeed = Settings.shared.varispeed,
                                 onDone = onBack,
                             )
@@ -221,7 +217,7 @@ internal class MobilePlayerPlatform(
                             pitch = playbackState.playbackPitch,
                             onSpeedChange = controller::setPlaybackSpeed,
                             onPitchChange = if (playbackState.isPitchProcessingAvailable) controller::setPlaybackPitch else null,
-                            speedEnabled = !inRoom,
+                            speedEnabled = true,
                             varispeed = Settings.shared.varispeed,
                             onDone = {
                                 showTempoPitch = false
@@ -257,7 +253,6 @@ internal class MobilePlayerPlatform(
                     isLiked = uiState.isLiked,
                     isDisliked = SongLikeState.isDisliked(song.id),
                     isGuest = isGuest,
-                    onSuggestToHost = { listenTogether.suggestTrack(song) },
                     onDismiss = onDismiss,
                     onLike = viewModel::toggleLike,
                     onDislike = playerSession?.let { { it.toggleDislike(song) } },
@@ -455,7 +450,6 @@ internal class MobilePlayerPlatform(
                     onDismiss = onDismiss,
                     isLiked = isLiked,
                     isGuest = false,
-                    onSuggestToHost = { listenTogether.suggestTrack(song) },
                     isDisliked = SongLikeState.isDisliked(song.id),
                     onLike = onLike,
                     onDislike = playerSession?.let { { it.toggleDislike(song) } },
@@ -484,10 +478,6 @@ internal class MobilePlayerPlatform(
     private fun downloadState(isDownloaded: Boolean) =
         if (isDownloaded) MediaDownloadState.DOWNLOADED else MediaDownloadState.NOT_DOWNLOADED
 
-    override fun prepareListenTogetherQueueImport(
-        title: String,
-        songs: List<SongItem>,
-    ) = listenTogether.prepareQueueImport(title, songs)
 
     @Composable
     private fun MenuSheet(

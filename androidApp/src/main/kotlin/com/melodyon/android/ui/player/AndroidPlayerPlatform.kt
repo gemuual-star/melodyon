@@ -41,7 +41,6 @@ import androidx.media3.datasource.DataSource
 import com.melodyon.android.App
 import com.melodyon.android.LocalPlaylistAdder
 import com.melodyon.android.deviceconnect.AndroidDeviceConnect
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.playback.PlayerConnection
 import com.melodyon.android.playback.SongDownloadManager
 import com.melodyon.android.ui.component.AdaptiveModalBottomSheet
@@ -60,8 +59,6 @@ import com.melodyon.shared.generated.resources.queued_songs
 import com.melodyon.shared.generated.resources.share
 import com.melodyon.shared.generated.resources.share_lyrics
 import com.melodyon.shared.generated.resources.unknown
-import com.melodyon.shared.listentogether.ListenTogetherManager
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.settings.Settings
 import com.melodyon.shared.settings.displayName
@@ -89,7 +86,6 @@ import com.melodyon.shared.ui.components.rememberModalSheetState as rememberBott
 class AndroidPlayerPlatform(
     private val activity: Activity?,
     private val playerConnection: PlayerConnection,
-    private val listenTogetherManager: ListenTogetherManager?,
 ) : PlayerPlatform {
     override val supportsPictureInPicture = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
     override val supportsVideoPlayback = true
@@ -537,11 +533,4 @@ class AndroidPlayerPlatform(
         )
     }
 
-    override fun prepareListenTogetherQueueImport(
-        title: String,
-        songs: List<SongItem>,
-    ) {
-        val manager = listenTogetherManager ?: AndroidListenTogetherManager.initialize(activity ?: App.instance, playerConnection)
-        manager.prepareQueueImport(title, songs)
-    }
 }

@@ -16,9 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.melodyon.android.LocalListenTogetherManager
 import com.melodyon.android.LocalPlaylistAdder
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.playback.PlayerConnection
 import com.melodyon.android.utils.startActivitySafely
 import com.melodyon.shared.db.MusicDatabase
@@ -31,7 +29,6 @@ import com.melodyon.shared.generated.resources.removed_dislike
 import com.melodyon.shared.generated.resources.share_song
 import com.melodyon.shared.generated.resources.song_updated
 import com.melodyon.shared.generated.resources.suggested_to_host
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.model.editSongMetadata
 import com.melodyon.shared.model.resetSongMetadata
@@ -96,11 +93,9 @@ fun SongMenu(
     val speedDialToggle = rememberSpeedDialToggle(song)
     val addToPlaylist = LocalPlaylistAdder.current
     val listenTogetherManager = LocalListenTogetherManager.current
-    val listenTogetherRole by listenTogetherManager?.role?.collectAsState()
         ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-    val isInListenTogetherRoom by listenTogetherManager?.isInRoom?.collectAsState()
         ?: remember { mutableStateOf(false) }
-    val isGuest = isInListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST
+    val isGuest = false
     var showEditDialog by remember { mutableStateOf(false) }
     var showDetails by remember(song.id) { mutableStateOf(false) }
     val scope = rememberCoroutineScope()

@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.shared.ui.theme.ComponentShapes
 import com.melodyon.shared.ui.components.SwipeGestureHandler as SharedSwipeGestureHandler
 

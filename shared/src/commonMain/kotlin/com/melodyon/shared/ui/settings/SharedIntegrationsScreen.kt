@@ -76,7 +76,6 @@ import com.melodyon.shared.discord.discordPlaybackTimestamps
 import com.melodyon.shared.discord.discordSettingsVisible
 import com.melodyon.shared.discord.resolveDiscordButtonLabel
 import com.melodyon.shared.generated.resources.*
-import com.melodyon.shared.listentogether.ListenTogetherManager
 import com.melodyon.shared.model.SongItem
 import com.melodyon.shared.scrobble.ScrobbleProvider
 import com.melodyon.shared.scrobble.ScrobbleSessions
@@ -87,7 +86,6 @@ import com.melodyon.shared.ui.components.PopupContent
 import com.melodyon.shared.ui.components.images.AsyncImage
 import com.melodyon.shared.ui.icons.MelodyonIcons
 import com.melodyon.shared.ui.icons.MelodyonIconsBrand
-import com.melodyon.shared.ui.mobile.MobileListenTogetherScreen
 import com.melodyon.shared.ui.navigation.NavigationBackHandler
 import com.melodyon.shared.ui.playback.wholeSecondPosition
 import com.melodyon.shared.utils.MelodyonClock
@@ -110,8 +108,6 @@ data class SharedIntegrationsHost(
     val onStartDiscordLogin: (DiscordAuthSession) -> Unit,
     val onDiscordSettingsChanged: () -> Unit = {},
     val deviceConnect: DeviceConnectSettingsHost? = null,
-    val listenTogetherManager: ListenTogetherManager? = null,
-    val onOpenListenTogether: (() -> Unit)? = null,
     val onOpenUrl: (String) -> Unit = {},
     val onCopyText: (String, String) -> Unit = { _, _ -> },
     val onShareText: ((String) -> Unit)? = null,
@@ -159,20 +155,6 @@ fun SharedIntegrationsScreen(
         }
     }
 
-    var showListenTogether by remember { mutableStateOf(host.initialPage == SettingsPageId.LISTEN_TOGETHER) }
-    if (showListenTogether && host.listenTogetherManager != null) {
-        NavigationBackHandler(onBack = { showListenTogether = false })
-        MobileListenTogetherScreen(
-            manager = host.listenTogetherManager,
-            onBack = { showListenTogether = false },
-            onCopyText = host.onCopyText,
-            onShareText = host.onShareText,
-            onMessage = host.onMessage,
-            bottomInset = host.bottomContentPadding,
-            initialSettings = true,
-        )
-        return
-    }
 
     val settingsHost =
         SharedSettingsHost(
@@ -180,12 +162,11 @@ fun SharedIntegrationsScreen(
             onClose = host.onClose,
             title = stringResource(Res.string.integrations),
             bottomContentPadding = host.bottomContentPadding,
-            initialPage = host.initialPage?.takeUnless { it == SettingsPageId.LISTEN_TOGETHER },
+            initialPage = host.initialPage,
             singlePane = true,
-            externalPages = setOf(SettingsPageId.LISTEN_TOGETHER),
+            externalPages = emptySet(),
             onOpenPage = { page ->
                 when (page) {
-                    SettingsPageId.LISTEN_TOGETHER -> host.onOpenListenTogether?.invoke() ?: run { showListenTogether = true }
                     else -> Unit
                 }
             },
@@ -677,29 +658,6 @@ private fun buildIntegrationsRegistry(
     }
 
     host.deviceConnect?.let { builder.deviceConnectPage(it) }
-    if (false && (host.listenTogetherManager != null || host.onOpenListenTogether != null)) {
-        builder.customPage(
-            SettingsPageId.LISTEN_TOGETHER,
-            stringResource(Res.string.listen_together),
-            settingsPageSubtitle(
-                stringResource(Res.string.settings_listen_together_overview),
-                integrationStatus(false, settings.listenTogetherUsername, requiresAccount = true),
-            ),
-            MelodyonIcons.Outlined.Headphones,
-            SettingsTone.BLUE,
-            searchTerms =
-                listOf(
-                    stringResource(Res.string.listen_together_description),
-                    stringResource(Res.string.username),
-                    stringResource(Res.string.listen_together_server),
-                    stringResource(Res.string.listen_together_blocked_users),
-                    stringResource(Res.string.listen_together_auto_approval_joins),
-                    stringResource(Res.string.listen_together_auto_approval_suggestions),
-                    stringResource(Res.string.listen_together_sync_volume),
-                    stringResource(Res.string.server_logs),
-                ),
-        )
-    }
     builder.rootGroup(
         stringResource(Res.string.integrations),
         *listOfNotNull(
@@ -707,7 +665,6 @@ private fun buildIntegrationsRegistry(
             SettingsPageId.LAST_FM,
             SettingsPageId.LISTEN_BRAINZ,
             SettingsPageId.DEVICE_CONNECT.takeIf { host.deviceConnect != null },
-            SettingsPageId.LISTEN_TOGETHER.takeIf { false && (host.listenTogetherManager != null || host.onOpenListenTogether != null) },
         ).toTypedArray(),
     )
     return builder.build()

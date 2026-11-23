@@ -55,9 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.melodyon.android.LocalListenTogetherManager
 import com.melodyon.android.LocalPlaylistAdder
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.android.playback.AudioCacheManager
 import com.melodyon.android.playback.LocalPlayerConnection
 import com.melodyon.android.playback.SongDownloadManager
@@ -93,7 +91,6 @@ import com.melodyon.shared.generated.resources.tempo_and_pitch
 import com.melodyon.shared.generated.resources.unknown
 import com.melodyon.shared.generated.resources.unknown_artist
 import com.melodyon.shared.generated.resources.volume
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.previewAspectRatio
 import com.melodyon.shared.settings.MusicVideoQuality
 import com.melodyon.shared.settings.Settings
@@ -173,12 +170,10 @@ fun PlayerMenu(
     val audioCacheManager: AudioCacheManager = koinInject()
     val requireDownloadNotifications = rememberDownloadPermissionGate()
     val listenTogetherManager = LocalListenTogetherManager.current
-    val listenTogetherRole by listenTogetherManager?.role?.collectAsState()
         ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-    val isInListenTogetherRoom by listenTogetherManager?.isInRoom?.collectAsState()
         ?: remember { mutableStateOf(false) }
 
-    val isGuest = isInListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST
+    val isGuest = false
 
     val systemEqualizerUnavailable = stringResource(Res.string.system_equalizer_unavailable)
     val systemEqualizerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}

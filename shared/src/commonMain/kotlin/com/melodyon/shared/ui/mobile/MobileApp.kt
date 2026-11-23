@@ -164,8 +164,6 @@ import com.melodyon.shared.generated.resources.shuffle
 import com.melodyon.shared.generated.resources.subscribed_to_artist
 import com.melodyon.shared.generated.resources.youtube_session_expired_message
 import com.melodyon.shared.generated.resources.youtube_session_expired_title
-import com.melodyon.shared.listentogether.ListenTogetherManager
-import com.melodyon.shared.listentogether.ListenTogetherRoomRole
 import com.melodyon.shared.model.AlbumItem
 import com.melodyon.shared.model.EpisodeItem
 import com.melodyon.shared.model.PlaylistItem
@@ -214,7 +212,6 @@ import com.melodyon.shared.ui.components.lyrics.LyricsTranslationSnackbar
 import com.melodyon.shared.ui.components.rememberBottomSheetState
 import com.melodyon.shared.ui.design.expressive.components.ExpressiveMiniPlayerHeight
 import com.melodyon.shared.ui.icons.MelodyonIcons
-import com.melodyon.shared.ui.listentogether.ListenTogetherGlobalEvents
 import com.melodyon.shared.ui.menu.ContentUndoHintsSnackbar
 import com.melodyon.shared.ui.menu.HiddenHomeItemsSnackbar
 import com.melodyon.shared.ui.menu.settingsPage
@@ -307,7 +304,6 @@ import kotlin.time.Instant
 fun MobileApp(
     database: MusicDatabase,
     playbackController: PlaybackController,
-    listenTogetherManager: ListenTogetherManager,
     playerServices: PlayerPlatformServices,
     lyricsShareAction: @Composable (PlayerViewModel) -> ((String) -> Unit)?,
     onExportStatistics: suspend (ImageBitmap) -> Boolean,
@@ -345,7 +341,6 @@ fun MobileApp(
     var playerSheetCoversSnackbars by remember { mutableStateOf(false) }
     HiddenHomeItemsSnackbar(snackbarHostState)
     UnavailableSongSnackbar(snackbarHostState)
-    ListenTogetherGlobalEvents(listenTogetherManager) { snackbarHostState.showSnackbar(it) }
     val onSwipeFeedback: (String) -> Unit = { message ->
         snackbarHostState.currentSnackbarData?.dismiss()
         scope.launch { snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short) }
@@ -401,9 +396,6 @@ fun MobileApp(
     val playerState by remember(playbackController) {
         playbackController.state.map { it.copy(positionMs = 0L, bufferedPositionMs = 0L) }.distinctUntilChanged()
     }.collectAsState(initial = playbackController.state.value.copy(positionMs = 0L, bufferedPositionMs = 0L))
-    val listenTogetherRole by listenTogetherManager.role.collectAsState()
-    val inListenTogetherRoom by listenTogetherManager.isInRoom.collectAsState()
-    val isListenTogetherGuest = inListenTogetherRoom && listenTogetherRole == ListenTogetherRoomRole.GUEST
     val homeListState = rememberLazyListState()
     val visibleTabRoutes =
         buildList {
@@ -567,7 +559,6 @@ fun MobileApp(
     }
 
     fun open(route: MobileRoute) {
-        if (route is MobileRoute.ListenTogether) return
         setPlayerVisible(false)
         cancelVideoLookup()
         containers.pendingPopup = null
@@ -577,7 +568,7 @@ fun MobileApp(
     ContentUndoHintsSnackbar(snackbarHostState) { page ->
         open(
             page.settingsPage?.let { MobileRoute.Settings(initialPage = it) }
-                ?: MobileRoute.ListenTogether(initialBlockedUsers = true),
+                ?: MobileRoute.Settings(),
         )
     }
 
@@ -874,15 +865,6 @@ fun MobileApp(
                                             Icon(
                                                 MelodyonIcons.Outlined.Settings,
                                                 contentDescription = stringResource(Res.string.devtools_title),
-                                                modifier = Modifier.size(24.dp),
-                                            )
-                                        }
-                                    }
-                                    if (false) {
-                                        IconButton(onClick = { open(MobileRoute.ListenTogether()) }, shapes = IconButtonDefaults.shapes()) {
-                                            Icon(
-                                                MelodyonIcons.Outlined.Group,
-                                                contentDescription = stringResource(Res.string.listen_together),
                                                 modifier = Modifier.size(24.dp),
                                             )
                                         }
@@ -1298,19 +1280,6 @@ fun MobileApp(
                                 )
                             }
 
-                            is MobileRoute.ListenTogether -> {
-                                MobileListenTogetherScreen(
-                                    manager = listenTogetherManager,
-                                    initialRoomCode = route.initialRoomCode,
-                                    initialBlockedUsers = route.initialBlockedUsers,
-                                    onBack = ::back,
-                                    onCopyText = { _, text -> scope.launch { clipboard.setText(text) } },
-                                    onShareText = playerServices::shareText,
-                                    onMessage = onSwipeFeedback,
-                                    bottomInset = padding.calculateBottomPadding(),
-                                )
-                            }
-
                             MobileRoute.Integrations -> {
                                 val integrationPlayback by playbackController.state.collectAsState()
                                 SharedIntegrationsScreen(
@@ -1330,7 +1299,6 @@ fun MobileApp(
                                                     )
                                                 },
                                             onMessage = onSwipeFeedback,
-                                            listenTogetherManager = listenTogetherManager,
                                             onCopyText = { _, text -> scope.launch { clipboard.setText(text) } },
                                             onShareText = playerServices::shareText,
                                             onStartDiscordLogin = { session ->
@@ -1821,7 +1789,6 @@ fun MobileApp(
                     database = database,
                     playbackController = playbackController,
                     playerSession = playerSession,
-                    listenTogetherManager = listenTogetherManager,
                     downloadedSongIds = downloadedSongIds,
                     onDownloadSong = { song -> downloadSongs(listOf(song)) },
                     onRemoveDownloads = removeDownloads,
@@ -2010,7 +1977,6 @@ fun MobileApp(
                             database,
                             downloadSongs,
                             removeDownloads,
-                            listenTogetherManager,
                             touchExplorationEnabled,
                             lyricsShareAction,
                         ) {
@@ -2019,8 +1985,7 @@ fun MobileApp(
                                 downloadSongs,
                                 removeDownloads,
                                 playlistWorkflow::select,
-                                listenTogetherManager,
-                                touchExplorationEnabled,
+                                    touchExplorationEnabled,
                                 lyricsShareAction,
                             )
                         }
@@ -2107,9 +2072,9 @@ fun MobileApp(
                                         onTogglePlay = playbackController::togglePlayPause,
                                         onSkipNext = playbackController::skipToNext,
                                         onSkipPrevious = playbackController::skipToPrevious,
-                                        canSkipNext = !isListenTogetherGuest && playbackController.canSkipNext,
-                                        canSkipPrevious = !isListenTogetherGuest && playbackController.canSkipPrevious,
-                                        playbackEnabled = !isListenTogetherGuest,
+                                        canSkipNext = playbackController.canSkipNext,
+                                        canSkipPrevious = playbackController.canSkipPrevious,
+                                        playbackEnabled = true,
                                         error =
                                             playbackState.error?.let {
                                                 stringResource(
@@ -2125,10 +2090,6 @@ fun MobileApp(
                                 viewModel = playerViewModel,
                                 bottomSheetState = sheetState,
                                 onClose = { setPlayerVisible(false) },
-                                onNavigateToListenTogether = {
-                                    showPlayer = false
-                                    open(MobileRoute.ListenTogether())
-                                },
                                 onNavigateToArtist = { artistId ->
                                     showPlayer = false
                                     open(

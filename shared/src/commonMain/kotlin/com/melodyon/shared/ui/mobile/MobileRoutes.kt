@@ -1,6 +1,5 @@
 package com.melodyon.shared.ui.mobile
 
-import com.melodyon.shared.listentogether.parseListenTogetherInvitation
 import com.melodyon.shared.model.AlbumItem
 import com.melodyon.shared.model.ArtistItem
 import com.melodyon.shared.model.BuiltinPlaylist
@@ -32,11 +31,6 @@ internal sealed interface MobileRoute {
     data object Statistics : MobileRoute
 
     data object Integrations : MobileRoute
-
-    data class ListenTogether(
-        val initialRoomCode: String? = null,
-        val initialBlockedUsers: Boolean = false,
-    ) : MobileRoute
 
     data class Login(
         val isSwitchingChannel: Boolean,
@@ -161,37 +155,11 @@ internal fun routeForMobileItem(item: YTItem): MobileRoute? =
 internal fun String.isLikedMusicPlaylistId(): Boolean = this == "LM" || this == "VLLM" || startsWith("LM:")
 
 private val youtubeVideoId = Regex("^[A-Za-z0-9_-]{11}$")
-private val listenTogetherRoomCode = Regex("^[A-Za-z0-9]{8}$")
-private val partyCodePattern = Regex("^[A-Za-z0-9_-]{1,64}$")
-
-private fun listenTogetherInvitation(code: String?): MobileDeepLink? =
-    code?.takeIf(listenTogetherRoomCode::matches)?.let {
-        MobileDeepLink.Destination(MobileRoute.ListenTogether(it.uppercase()))
-    }
-
-private fun partyInvitation(code: String?): MobileDeepLink? =
-    code?.takeIf(partyCodePattern::matches)?.let {
-        MobileDeepLink.Destination(MobileRoute.ListenTogether(it.uppercase()))
-    }
-
 internal fun resolveMobileDeepLink(callback: String): MobileDeepLink? {
-    parseListenTogetherInvitation(callback)?.let { return MobileDeepLink.Destination(MobileRoute.ListenTogether(it)) }
     val uri = runCatching { Url(callback.replace("melodyon://", "https://app.melodyon/")) }.getOrNull()
     val path = uri?.encodedPath?.trim('/') ?: callback.removePrefix("melodyon://").substringBefore('?').trim('/')
     if (!callback.startsWith("melodyon://")) {
-        val host = uri?.host?.lowercase()?.removeSuffix(".")
-        val isMelodyonHost =
-            uri?.protocol == URLProtocol.HTTPS && (host == "melodyon.cc" || host?.endsWith(".melodyon.cc") == true)
-        return if (isMelodyonHost) {
-            when (path) {
-                "listen" -> listenTogetherInvitation(uri.parameters["code"])
-                "party" -> partyInvitation(uri.parameters["r"] ?: uri.parameters["code"])
-                "watch" -> uri.parameters["v"]?.takeIf(String::isNotBlank)?.let { MobileDeepLink.Video(it) }
-                else -> null
-            }
-        } else {
-            null
-        }
+        return null
     }
     return when (path) {
         "watch" -> {
@@ -239,10 +207,6 @@ internal fun resolveMobileDeepLink(callback: String): MobileDeepLink? {
             MobileDeepLink.Destination(MobileRoute.Integrations)
         }
 
-        "listen-together" -> {
-            MobileDeepLink.Destination(MobileRoute.ListenTogether())
-        }
-
         "settings" -> {
             MobileDeepLink.Destination(MobileRoute.Settings())
         }
@@ -284,10 +248,6 @@ internal fun resolveMobileDeepLink(callback: String): MobileDeepLink? {
                 path.startsWith("watch/") || path == "watch" -> {
                     val videoId = uri?.parameters?.get("v") ?: path.removePrefix("watch/").substringBefore('/')
                     videoId.takeIf(String::isNotBlank)?.let { MobileDeepLink.Video(it) }
-                }
-
-                path.startsWith("listen-together/") -> {
-                    listenTogetherInvitation(path.removePrefix("listen-together/"))
                 }
 
                 path.startsWith("playlist/") || path == "playlist" -> {
@@ -339,7 +299,6 @@ internal val MobileRoute.motionScreen: Screen
             MobileRoute.History -> Screen.History
             MobileRoute.Statistics -> Screen.Statistics
             MobileRoute.Integrations -> Screen.Integrations
-            is MobileRoute.ListenTogether -> Screen.ListenTogether
             is MobileRoute.Login -> if (isSwitchingChannel) Screen.SwitchChannel else Screen.Login
             MobileRoute.TokenLogin -> Screen.TokenLogin
             MobileRoute.About -> Screen.About

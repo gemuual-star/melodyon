@@ -153,10 +153,6 @@ interface PlayerPlatform {
         onNavigateToListenTogether: () -> Unit,
     )
 
-    fun prepareListenTogetherQueueImport(
-        title: String,
-        songs: List<SongItem>,
-    )
 }
 
 val LocalPlayerPlatform = staticCompositionLocalOf<PlayerPlatform> { error("No PlayerPlatform provided") }

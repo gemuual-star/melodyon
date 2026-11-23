@@ -48,7 +48,6 @@ import com.melodyon.desktop.state.content.ArtistState
 import com.melodyon.desktop.state.content.HomeState
 import com.melodyon.desktop.state.content.LibraryState
 import com.melodyon.desktop.state.content.SearchState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.LyricsState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.storage.DownloadManager

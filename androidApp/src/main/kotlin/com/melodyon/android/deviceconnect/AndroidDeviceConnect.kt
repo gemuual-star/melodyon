@@ -12,7 +12,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.media3.common.Player
-import com.melodyon.android.listentogether.AndroidListenTogetherManager
 import com.melodyon.shared.deviceconnect.DcPlaybackAction
 import com.melodyon.shared.deviceconnect.DcPlaybackCommand
 import com.melodyon.shared.deviceconnect.DcPlaybackSnapshot

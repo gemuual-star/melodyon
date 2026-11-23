@@ -1977,7 +1977,6 @@ fun QueueScreen(
                     downloadQueueSongs(setOf(menuEntryKey))
                 },
                 onNavigateToListenTogether = {
-                    platform.prepareListenTogetherQueueImport(song.title, listOf(song))
                     onNavigateToListenTogether()
                 },
             )

@@ -81,7 +81,6 @@ import androidx.compose.ui.unit.dp
 import com.melodyon.desktop.state.app.AppState
 import com.melodyon.desktop.state.app.UiState
 import com.melodyon.desktop.state.content.ArtistState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.LyricsState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.shared.api.lyrics.LyricsUtils

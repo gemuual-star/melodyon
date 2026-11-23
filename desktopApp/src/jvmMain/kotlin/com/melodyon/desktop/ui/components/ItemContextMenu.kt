@@ -81,7 +81,6 @@ import com.melodyon.desktop.state.content.HomeState
 import com.melodyon.desktop.state.content.LibraryState
 import com.melodyon.desktop.state.content.PlaylistAlbumState
 import com.melodyon.desktop.state.content.PodcastState
-import com.melodyon.desktop.state.playback.ListenTogetherState
 import com.melodyon.desktop.state.playback.PlayerState
 import com.melodyon.desktop.storage.DownloadManager
 import com.melodyon.desktop.storage.DownloadState
@@ -258,7 +257,6 @@ fun SongContextMenu(
                 onDismiss()
             },
             onShare = { shareSong(song) },
-            onSuggestToHost = { suggestToHost(song) },
             onPlayNext = { playback.playNext(listOf(song)) },
             onAddToQueue = { playback.addToQueue(listOf(song)) },
             onTogglePin = {
