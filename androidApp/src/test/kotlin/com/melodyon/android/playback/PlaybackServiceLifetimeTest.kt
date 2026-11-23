@@ -14,18 +14,6 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlaybackServiceLifetimeTest {
     @Test
-    fun leavingOrFailingAnIdleRoomReleasesDemandButPendingRequestsAndActiveRoomsKeepIt() {
-        for (connection in ListenTogetherConnectionState.entries) {
-            assertEquals(
-                connection == ListenTogetherConnectionState.CONNECTING || connection == ListenTogetherConnectionState.RECONNECTING,
-                roomNeedsPlaybackService(false, false, connection),
-            )
-            assertTrue(roomNeedsPlaybackService(true, false, connection))
-            assertTrue(roomNeedsPlaybackService(false, true, connection))
-        }
-    }
-
-    @Test
     fun removedTaskStopsPausedPlaybackAndDoesNotPoll() =
         runTest {
             val removed = MutableStateFlow(false)

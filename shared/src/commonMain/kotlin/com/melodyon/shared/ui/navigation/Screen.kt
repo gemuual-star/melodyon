@@ -122,20 +122,10 @@ sealed class Screen : NavKey {
     @Serializable
     data object ListenBrainz : Screen()
 
-    @Serializable
-    data object ListenTogether : Screen()
 
-    @Serializable
-    data object ListenTogetherSettings : Screen()
 
-    @Serializable
-    data object ListenTogetherServer : Screen()
 
-    @Serializable
-    data object ListenTogetherBlockedUsers : Screen()
 
-    @Serializable
-    data object ListenTogetherLogs : Screen()
 
     @Serializable
     data object History : Screen()
@@ -183,7 +173,6 @@ val Screen.navigationId: String?
             Screen.Library -> NavigationId.LIBRARY
             Screen.History -> NavigationId.HISTORY
             Screen.Statistics -> NavigationId.STATISTICS
-            Screen.ListenTogether -> NavigationId.LISTEN_TOGETHER
             else -> null
         }
 
@@ -193,7 +182,6 @@ fun screenForNavigationId(id: String): Screen? =
         NavigationId.LIBRARY -> Screen.Library
         NavigationId.HISTORY -> Screen.History
         NavigationId.STATISTICS -> Screen.Statistics
-        NavigationId.LISTEN_TOGETHER -> Screen.ListenTogether
         else -> null
     }
 

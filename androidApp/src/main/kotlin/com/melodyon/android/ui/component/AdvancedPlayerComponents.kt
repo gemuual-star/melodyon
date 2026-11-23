@@ -27,7 +27,7 @@ fun SwipeGestureHandler(
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val isGuest by AndroidListenTogetherManager.isGuestPlaybackLockedFlow.collectAsState()
+    val isGuest = false
     SharedSwipeGestureHandler(
         onSwipeLeft = onSwipeLeft,
         onSwipeRight = onSwipeRight,

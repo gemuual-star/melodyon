@@ -169,9 +169,6 @@ fun PlayerMenu(
     val downloadManager: SongDownloadManager = koinInject()
     val audioCacheManager: AudioCacheManager = koinInject()
     val requireDownloadNotifications = rememberDownloadPermissionGate()
-    val listenTogetherManager = LocalListenTogetherManager.current
-        ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-        ?: remember { mutableStateOf(false) }
 
     val isGuest = false
 
@@ -213,7 +210,7 @@ fun PlayerMenu(
                                 pitch = playbackPitch,
                                 onSpeedChange = onPlaybackSpeedChange,
                                 onPitchChange = onPlaybackPitchChange,
-                                speedEnabled = !isInListenTogetherRoom,
+                                speedEnabled = true,
                                 varispeed = Settings.shared.varispeed,
                                 onDone = onBack,
                             )
@@ -271,7 +268,7 @@ fun PlayerMenu(
                             onSpeedChange = onPlaybackSpeedChange,
                             pitch = playbackPitch,
                             onPitchChange = onPlaybackPitchChange,
-                            speedEnabled = !isInListenTogetherRoom,
+                            speedEnabled = true,
                             varispeed = Settings.shared.varispeed,
                             onBack = { showPlaybackSpeed = false },
                         )
@@ -393,7 +390,7 @@ fun PlayerMenu(
                                         actions =
                                             listOf(
                                                 suggestToHostMenuAction(onDismiss) {
-                                                    currentSong?.toSongItem()?.let { AndroidListenTogetherManager.suggestTrack(it) }
+                                                    Unit
                                                     Toast.makeText(context, suggestedToHostText, Toast.LENGTH_SHORT).show()
                                                 },
                                             ),
@@ -426,7 +423,7 @@ fun PlayerMenu(
                                 )
                             }
 
-                            if (uiState.isVideoModeActive && !isInListenTogetherRoom) {
+                            if (uiState.isVideoModeActive) {
                                 item {
                                     PlayerMenuActionGroup(
                                         actions =

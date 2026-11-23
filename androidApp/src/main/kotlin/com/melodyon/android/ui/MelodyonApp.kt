@@ -360,7 +360,6 @@ import com.melodyon.shared.ui.theme.resolveThemeSeedColor
 import com.melodyon.shared.ui.tv.tvFocusHighlight
 import com.melodyon.shared.ui.utils.LocalMouseScrollFactors
 import com.melodyon.shared.utils.BlockScreenshots
-import com.melodyon.shared.utils.extractListenTogetherRoomCode
 import com.melodyon.shared.utils.parseYouTubePodcastId
 import com.melodyon.shared.utils.parseYouTubeStartPositionMs
 import com.melodyon.shared.utils.parseYouTubeUrl
@@ -670,26 +669,9 @@ fun MelodyonApp(
 
         val playerConnection = playbackViewModel.playerConnection
         val playbackController = remember(playerConnection) { AndroidPlaybackController(playerConnection, coroutineScope) }
-        var listenTogetherManager by remember(playerConnection) {
-            mutableStateOf(AndroidListenTogetherManager.currentManager)
-        }
-        LaunchedEffect(playerConnection, currentRoute) {
-            if (listenTogetherManager != null || Settings.shared.listenTogetherDesktopSession.isNotBlank() ||
-                currentRoute in
-                setOf(
-                    Screen.ListenTogether,
-                    Screen.ListenTogetherSettings,
-                    Screen.ListenTogetherServer,
-                    Screen.ListenTogetherBlockedUsers,
-                    Screen.ListenTogetherLogs,
-                )
-            ) {
-                listenTogetherManager = AndroidListenTogetherManager.initialize(context, playerConnection)
-            }
-        }
         val playerPlatform =
-            remember(context, playerConnection, listenTogetherManager) {
-                AndroidPlayerPlatform(context.findActivity(), playerConnection, listenTogetherManager)
+            remember(context, playerConnection) {
+                AndroidPlayerPlatform(context.findActivity(), playerConnection)
             }
         val playerViewModel: PlayerViewModel = koinInject()
         val downloadManager: SongDownloadManager = koinInject()
@@ -705,8 +687,6 @@ fun MelodyonApp(
         UnavailableSongSnackbar(snackbarHostState)
         YouTubeSyncSnackbar(snackbarHostState)
         LyricsTranslationSnackbar(snackbarHostState, playerViewModel.lyricsTranslationFailures)
-        listenTogetherManager?.let { manager ->
-        }
         val addToPlaylist =
             rememberSongsPlaylistAdder(database) { completion ->
                 snackbarHostState.showSnackbar(
@@ -941,7 +921,6 @@ fun MelodyonApp(
             LocalPlayerConnection provides playerConnection,
             LocalPlayerSession provides playerConnection,
             LocalPlayerPlatform provides playerPlatform,
-            LocalListenTogetherManager provides listenTogetherManager,
             LocalIsTv provides isAndroidTv,
             LocalMenuState provides menuState,
             LocalUseDesktopUi provides useDesktopUi,
@@ -1059,7 +1038,6 @@ fun MelodyonApp(
                         }
                     }
                 }
-                ListenTogetherPlaybackRequestHandler(playerConnection)
                 BoxWithConstraints(
                     Modifier
                         .weight(1f)
@@ -1084,7 +1062,7 @@ fun MelodyonApp(
                     ContentUndoHintsSnackbar(snackbarHostState) { page ->
                         coroutineScope.launch {
                             if (hasMedia) playerBottomSheetState.collapseSoft()
-                            navigator.navigate(page.settingsPage?.let { Screen.SettingsPage(it) } ?: Screen.ListenTogetherBlockedUsers)
+                            navigator.navigate(page.settingsPage?.let { Screen.SettingsPage(it) } ?: Screen.Settings)
                         }
                     }
                     val calculateFloatingActionsBottomInset by rememberUpdatedState {
@@ -1123,12 +1101,6 @@ fun MelodyonApp(
                         libraryViewModel.setActive(libraryActive)
                         onStopOrDispose { libraryViewModel.setActive(false) }
                     }
-                    val listenTogetherVisible = currentRoute == Screen.ListenTogether && !isPlayerExpandedOrExpanding && !isInPipMode
-                    LifecycleResumeEffect(listenTogetherVisible) {
-                        AndroidListenTogetherManager.setScreenVisible(listenTogetherVisible)
-                        onPauseOrDispose { AndroidListenTogetherManager.setScreenVisible(false) }
-                    }
-
                     val isPlayerExpanded = playerBottomSheetState.isExpanded
                     var lyricsVisible by remember { mutableStateOf(false) }
                     val activeImport by PlaylistImportStatusManager.activeImport.collectAsState()
@@ -1174,12 +1146,6 @@ fun MelodyonApp(
                             return@LaunchedEffect
                         }
                         val destination = intent.toIncomingDestination()
-                        if (true &&
-                            (destination is IncomingDestination.ListenTogether || destination == IncomingDestination.ListenTogetherRoom)
-                        ) {
-                            onIncomingIntentConsumed(intent)
-                            return@LaunchedEffect
-                        }
                         if (destination != null && destination !is IncomingDestination.Search) {
                             pendingSearchQuery = null
                         }
@@ -1204,10 +1170,6 @@ fun MelodyonApp(
                                 navigator.navigate(Screen.Downloads)
                             }
 
-                            IncomingDestination.ListenTogetherRoom -> {
-                                pendingRoomCode = null
-                                navigator.navigate(Screen.ListenTogether)
-                            }
 
                             IncomingDestination.Updates -> {
                                 navigator.navigate(Screen.UpdateDetails)
@@ -1284,12 +1246,6 @@ fun MelodyonApp(
                                 navigator.navigate(Screen.Browse(destination.id, destination.params, destination.title))
                             }
 
-                            is IncomingDestination.ListenTogether -> {
-                                pendingRoomCode = destination.roomCode
-                                pendingOpenPlayer = false
-                                if (hasMedia) playerBottomSheetState.collapseSoft()
-                                navigator.navigate(Screen.ListenTogether)
-                            }
 
                             is IncomingDestination.PlaylistImport -> {
                                 navigator.navigate(Screen.PlaylistImport)
@@ -1553,24 +1509,6 @@ fun MelodyonApp(
                                                             Icon(
                                                                 MelodyonIcons.Outlined.Settings,
                                                                 contentDescription = stringResource(Res.string.devtools_title),
-                                                                modifier = Modifier.size(24.dp),
-                                                            )
-                                                        }
-                                                    }
-                                                    if (false && Screen.ListenTogether !in railScreens) {
-                                                        TopBarIconButton(
-                                                            floating = useFloatingTopBar,
-                                                            onClick = { navigator.navigate(Screen.ListenTogether) },
-                                                            modifier =
-                                                                Modifier.tvFocusHighlight(
-                                                                    CircleShape,
-                                                                    scale = 1.08f,
-                                                                    bringIntoView = false,
-                                                                ),
-                                                        ) {
-                                                            Icon(
-                                                                MelodyonIcons.Outlined.Group,
-                                                                contentDescription = stringResource(Res.string.listen_together),
                                                                 modifier = Modifier.size(24.dp),
                                                             )
                                                         }
@@ -1930,10 +1868,6 @@ fun MelodyonApp(
                                     playerBottomSheetState.collapseSoft()
                                     navigator.navigate(Screen.Artist(artistId))
                                 },
-                                onNavigateToListenTogether = {
-                                    playerBottomSheetState.collapseSoft()
-                                    navigator.navigate(Screen.ListenTogether)
-                                },
                                 onNavigateToIntegrations = {
                                     playerBottomSheetState.collapseSoft()
                                     navigator.navigate(Screen.Integrations)
@@ -2036,69 +1970,6 @@ fun MelodyonApp(
 }
 
 @Composable
-private fun ListenTogetherPlaybackRequestHandler(playerConnection: PlayerConnection) {
-    var request by remember { mutableStateOf<ListenTogetherPlaybackRequest?>(null) }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(playerConnection) {
-        playerConnection.listenTogetherPlaybackRequests.collect { request = it }
-    }
-
-    PopupContent(request) { pending ->
-        AlertDialog(
-            onDismissRequest = { request = null },
-            icon = {
-                Icon(
-                    imageVector = MelodyonIcons.Filled.Groups,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            },
-            title = { Text(stringResource(Res.string.listen_together_guest_choice_title)) },
-            text = { Text(stringResource(Res.string.listen_together_guest_choice_message)) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        AndroidListenTogetherManager.suggestTrack(pending.song)
-                        request = null
-                    },
-                    shapes = ButtonDefaults.shapes(),
-                ) {
-                    Text(stringResource(Res.string.listen_together_guest_queue))
-                }
-            },
-            dismissButton = {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(onClick = { request = null }, shapes = ButtonDefaults.shapes()) {
-                        Text(stringResource(Res.string.cancel))
-                    }
-                    TextButton(
-                        onClick = {
-                            request = null
-                            scope.launch {
-                                if (AndroidListenTogetherManager.leaveRoomAndWait()) {
-                                    if (pending.queue.isNotEmpty()) {
-                                        playerConnection.playQueue(
-                                            pending.queue,
-                                            pending.startIndex,
-                                            pending.queueTitle,
-                                            shuffleModeEnabled = pending.shuffleModeEnabled,
-                                        )
-                                    } else {
-                                        playerConnection.playSong(pending.song, "")
-                                    }
-                                }
-                            }
-                        },
-                        shapes = ButtonDefaults.shapes(),
-                    ) {
-                        Text(stringResource(Res.string.listen_together_guest_solo))
-                    }
-                }
-            },
-        )
-    }
-}
 
 @Composable
 private fun TopBarProfileAvatar(
@@ -2244,8 +2115,6 @@ sealed class IncomingDestination {
         val resultMessage: String?,
     ) : IncomingDestination()
 
-    object ListenTogetherRoom : IncomingDestination()
-
     object Updates : IncomingDestination()
 
     object Settings : IncomingDestination()
@@ -2290,10 +2159,6 @@ sealed class IncomingDestination {
         val title: String?,
     ) : IncomingDestination()
 
-    data class ListenTogether(
-        val roomCode: String,
-    ) : IncomingDestination()
-
     data class PlayVideo(
         val videoId: String,
         val playlistId: String?,
@@ -2335,7 +2200,6 @@ fun Intent.toIncomingDestination(): IncomingDestination? {
         MainActivity.ACTION_LIBRARY -> IncomingDestination.Library
         MainActivity.ACTION_PLAYLIST_IMPORT -> IncomingDestination.PlaylistImport(getStringExtra(MainActivity.EXTRA_IMPORT_RESULT_MESSAGE))
         MainActivity.ACTION_DOWNLOADS -> IncomingDestination.Downloads
-        MainActivity.ACTION_LISTEN_TOGETHER -> IncomingDestination.ListenTogetherRoom
         MainActivity.ACTION_UPDATES -> IncomingDestination.Updates
         MainActivity.ACTION_LOGIN -> IncomingDestination.Login
         Intent.ACTION_APPLICATION_PREFERENCES -> IncomingDestination.Settings
@@ -2348,8 +2212,6 @@ fun Intent.toIncomingDestination(): IncomingDestination? {
 
 private fun incomingUrlDestination(rawUri: String): IncomingDestination? {
     parseYouTubePodcastId(rawUri)?.let { return IncomingDestination.Podcast(it) }
-    parseListenTogetherInvitation(rawUri)?.let { return IncomingDestination.ListenTogether(it) }
-    extractListenTogetherRoomCode(rawUri)?.let { return IncomingDestination.ListenTogether(it) }
     when (val parsed = parseYouTubeUrl(rawUri)) {
         is YouTubeUrlParser.ParsedUrl.Video -> {
             return IncomingDestination.PlayVideo(parsed.id, null, parseYouTubeStartPositionMs(rawUri))
@@ -2642,14 +2504,12 @@ fun getEntryProvider(
         entry<Screen.Integrations>(metadata = navTabMetadata) {
             IntegrationsScreen(
                 onNavigateBack = { navigator.goBack() },
-                onNavigateToListenTogether = { navigator.navigate(Screen.ListenTogetherSettings) },
             )
         }
 
         entry<Screen.Discord>(metadata = navTabMetadata) {
             SettingsIntegrationsScreen(
                 onNavigateBack = { navigator.goBack() },
-                onNavigateToListenTogether = { navigator.navigate(Screen.ListenTogetherSettings) },
                 initialPage = SettingsPageId.DISCORD,
             )
         }
@@ -2723,7 +2583,6 @@ fun getEntryProvider(
         entry<Screen.LastFm>(metadata = navTabMetadata) {
             SettingsIntegrationsScreen(
                 onNavigateBack = { navigator.goBack() },
-                onNavigateToListenTogether = { navigator.navigate(Screen.ListenTogetherSettings) },
                 initialPage = SettingsPageId.LAST_FM,
             )
         }
@@ -2731,39 +2590,14 @@ fun getEntryProvider(
         entry<Screen.ListenBrainz>(metadata = navTabMetadata) {
             SettingsIntegrationsScreen(
                 onNavigateBack = { navigator.goBack() },
-                onNavigateToListenTogether = { navigator.navigate(Screen.ListenTogetherSettings) },
                 initialPage = SettingsPageId.LISTEN_BRAINZ,
             )
         }
 
-        entry<Screen.ListenTogether>(metadata = navTabMetadata) {
-            ListenTogetherScreen(
-                initialRoomCode = pendingRoomCode(),
-                onNavigateBack = { navigator.goBack() },
-                onNavigateToSettings = { navigator.navigate(Screen.ListenTogetherSettings) },
-            )
-        }
 
-        entry<Screen.ListenTogetherSettings>(metadata = navTabMetadata) {
-            ListenTogetherSettingsScreen(
-                onNavigateBack = { navigator.goBack() },
-                onNavigateToServer = { navigator.navigate(Screen.ListenTogetherServer) },
-                onNavigateToBlockedUsers = { navigator.navigate(Screen.ListenTogetherBlockedUsers) },
-                onNavigateToLogs = { navigator.navigate(Screen.ListenTogetherLogs) },
-            )
-        }
 
-        entry<Screen.ListenTogetherServer>(metadata = navTabMetadata) {
-            ListenTogetherServerScreen(onNavigateBack = { navigator.goBack() })
-        }
 
-        entry<Screen.ListenTogetherBlockedUsers>(metadata = navTabMetadata) {
-            ListenTogetherBlockedUsersScreen(onNavigateBack = { navigator.goBack() })
-        }
 
-        entry<Screen.ListenTogetherLogs>(metadata = navTabMetadata) {
-            ListenTogetherLogsScreen(onNavigateBack = { navigator.goBack() })
-        }
 
         entry<Screen.BackupRestore>(metadata = navTabMetadata) {
             BackupRestoreScreen(onNavigateBack = { navigator.goBack() })

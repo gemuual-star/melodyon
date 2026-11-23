@@ -232,7 +232,6 @@ class App :
         if (hadLegacyInstallationAtStartup) Settings.shared.migrateLegacyV13AccountSettings()
         setPlaybackServicesEnabled(onboardingManager.isComplete)
         migrateTelemetryConsent()
-        migrateCleartextIntegrations()
         migrateLegacyEqualizerProfiles()
         EqualizerProfiles.ensureDefaultProfile()
 
@@ -294,17 +293,6 @@ class App :
         if (Settings.shared.equalizerProfilesJson.isNotEmpty()) return
         val legacy = getSharedPreferences("nanosonic_eq_profiles", MODE_PRIVATE)
         EqualizerProfiles.migrateLegacy(legacy.getString("eq_profiles", null), legacy.getString("active_profile_id", null))
-    }
-
-    private fun migrateCleartextIntegrations() {
-        if (!isAllowedListenTogetherServerUrl(Settings.shared.listenTogetherServerUrl)) {
-            Settings.shared.listenTogetherServerUrl = Settings.DEFAULT_LISTEN_TOGETHER_SERVER_URL
-        }
-        Settings.shared.listenTogetherCustomServers =
-            Settings.shared.listenTogetherCustomServers
-                .lineSequence()
-                .filter(::isAllowedListenTogetherServerUrl)
-                .joinToString("\n")
     }
 
     private fun migrateTelemetryConsent() {

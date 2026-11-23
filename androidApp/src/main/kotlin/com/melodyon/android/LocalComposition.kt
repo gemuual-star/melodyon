@@ -15,8 +15,6 @@ val LocalPlayerExpanded: ProvidableCompositionLocal<Boolean> = compositionLocalO
 /** Includes expansion in progress so navigation can release focus. */
 val LocalPlayerExpandedOrExpanding: ProvidableCompositionLocal<Boolean> = compositionLocalOf { false }
 
-val LocalListenTogetherManager: ProvidableCompositionLocal<ListenTogetherManager?> = compositionLocalOf { null }
-
 /** Requires the app-root provider; reading outside it fails. */
 val LocalPlaylistAdder: ProvidableCompositionLocal<(List<SongItem>) -> Unit> =
     compositionLocalOf { error("LocalPlaylistAdder was not provided") }

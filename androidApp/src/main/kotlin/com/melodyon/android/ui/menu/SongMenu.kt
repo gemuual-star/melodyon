@@ -92,9 +92,6 @@ fun SongMenu(
     val downloadAction = rememberMediaDownloadAction(song, onDismiss, onDownload)
     val speedDialToggle = rememberSpeedDialToggle(song)
     val addToPlaylist = LocalPlaylistAdder.current
-    val listenTogetherManager = LocalListenTogetherManager.current
-        ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-        ?: remember { mutableStateOf(false) }
     val isGuest = false
     var showEditDialog by remember { mutableStateOf(false) }
     var showDetails by remember(song.id) { mutableStateOf(false) }
@@ -167,7 +164,6 @@ fun SongMenu(
                     Unit
                 },
             onSuggestToHost = {
-                AndroidListenTogetherManager.suggestTrack(song)
                 Toast.makeText(context, suggestedToHostText, Toast.LENGTH_SHORT).show()
             },
             onPlayNext = onPlayNext,

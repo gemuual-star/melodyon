@@ -68,14 +68,6 @@ import timber.log.Timber
 
 val LocalPlayerConnection = staticCompositionLocalOf<PlayerConnection?> { null }
 
-data class ListenTogetherPlaybackRequest(
-    val song: SongItem,
-    val queue: List<SongItem> = emptyList(),
-    val startIndex: Int = 0,
-    val queueTitle: String? = null,
-    val shuffleModeEnabled: Boolean? = null,
-)
-
 internal fun canSkipToNext(
     isServiceConnected: Boolean,
     isDeviceConnectActive: Boolean,
@@ -228,9 +220,6 @@ class PlayerConnection(
 
     private val _currentSong = MutableStateFlow<SongItem?>(null)
     override val currentSong: StateFlow<SongItem?> = _currentSong.asStateFlow()
-    private val listenTogetherPlaybackRequestsState =
-        MutableSharedFlow<ListenTogetherPlaybackRequest>(extraBufferCapacity = 1)
-    val listenTogetherPlaybackRequests: SharedFlow<ListenTogetherPlaybackRequest> = listenTogetherPlaybackRequestsState
 
     private val _isPlaying = MutableStateFlow(false)
     override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
@@ -333,7 +322,7 @@ class PlayerConnection(
                 Triple(isConnected, deviceConnectState, queue)
             },
             _repeatMode,
-            AndroidListenTogetherManager.isGuestPlaybackLockedFlow,
+            kotlinx.coroutines.flow.MutableStateFlow(false),
             _currentSong,
         ) { (isConnected, deviceConnectState, queue), repeatMode, isPlaybackLocked, song ->
             canSkipToPrevious(
@@ -351,7 +340,7 @@ class PlayerConnection(
             AndroidDeviceConnect.manager.remote.state,
             _queueSnapshot,
             _repeatMode,
-            AndroidListenTogetherManager.isGuestPlaybackLockedFlow,
+            kotlinx.coroutines.flow.MutableStateFlow(false),
         ) { isConnected, deviceConnectState, queue, repeatMode, isPlaybackLocked ->
             canSkipToNext(
                 isConnected || queue.displayedItems.isNotEmpty(),
@@ -671,10 +660,6 @@ class PlayerConnection(
     ) {
         if (song.isUnavailable) return
         cancelPlaylistRequest()
-        if (false) {
-            listenTogetherPlaybackRequestsState.tryEmit(ListenTogetherPlaybackRequest(song = song))
-            return
-        }
         if (AndroidDeviceConnect.intercept(
                 DcPlaybackCommand(
                     DcPlaybackAction.REPLACE_QUEUE,
@@ -901,19 +886,6 @@ class PlayerConnection(
                         }
                     }
                 }
-            return
-        }
-        if (false) {
-            val selectedSong = songs.getOrElse(startIndex) { songs.firstOrNull() } ?: return
-            listenTogetherPlaybackRequestsState.tryEmit(
-                ListenTogetherPlaybackRequest(
-                    song = selectedSong,
-                    queue = songs,
-                    startIndex = startIndex,
-                    queueTitle = queueTitle,
-                    shuffleModeEnabled = shuffleModeEnabled,
-                ),
-            )
             return
         }
         musicService?.playQueue(
@@ -1212,10 +1184,6 @@ class PlayerConnection(
         if (deferUntilConnected { startRadio(song) }) return
         if (song.isUnavailable) return
         cancelPlaylistRequest()
-        if (false) {
-            listenTogetherPlaybackRequestsState.tryEmit(ListenTogetherPlaybackRequest(song = song))
-            return
-        }
         musicService?.playMix(song, startPlaying = localSongChangeStartsPlayback())
     }
 

@@ -334,7 +334,7 @@ class MediaSessionPlayer(
     private val repeatMode: MutableStateFlow<Int>,
     private val shuffleModeEnabled: MutableStateFlow<Boolean> = MutableStateFlow(musicPlayer.isShuffleEnabled),
     private val isPlaybackLockedProvider: () -> Boolean = { false },
-    private val isPlaybackLockedFlow: StateFlow<Boolean> = AndroidListenTogetherManager.isGuestPlaybackLockedFlow,
+    private val isPlaybackLockedFlow: StateFlow<Boolean> = kotlinx.coroutines.flow.MutableStateFlow(false),
     private val remotePlaybackState: StateFlow<CastState>? = null,
     private val onRemotePlaybackChange: (Boolean) -> Unit = {},
     private val onRemoteStop: () -> Unit = {},

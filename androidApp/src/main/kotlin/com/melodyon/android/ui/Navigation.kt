@@ -75,7 +75,6 @@ val Screen.labelRes: StringResource?
             Screen.Settings -> Res.string.settings
             Screen.History -> Res.string.menu_history
             Screen.Statistics -> Res.string.statistics
-            Screen.ListenTogether -> Res.string.listen_together
             else -> null
         }
 
@@ -88,7 +87,6 @@ val Screen.icon: ImageVector?
             Screen.Settings -> MelodyonIcons.Outlined.Settings
             Screen.History -> MelodyonIcons.Outlined.History
             Screen.Statistics -> MelodyonIcons.Outlined.SsidChart
-            Screen.ListenTogether -> MelodyonIcons.Outlined.Group
             else -> null
         }
 
@@ -102,7 +100,6 @@ val Screen.iconFilled: ImageVector?
             Screen.Settings -> MelodyonIcons.Filled.Settings
             Screen.History -> MelodyonIcons.Filled.History
             Screen.Statistics -> MelodyonIcons.Filled.SsidChart
-            Screen.ListenTogether -> MelodyonIcons.Outlined.Group
             else -> null
         }
 

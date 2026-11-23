@@ -192,9 +192,6 @@ fun MiniPlayer(
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val isPlaying by playerConnection.isPlaying.collectAsState(initial = false)
     val volume by playerConnection.volume.collectAsState(initial = 1f)
-    val listenTogetherManager = LocalListenTogetherManager.current
-        ?: remember { mutableStateOf(ListenTogetherRoomRole.NONE) }
-        ?: remember { mutableStateOf(false) }
     val isListenTogetherGuest = false
     val isMuted = volume <= 0.01f
     val isPlaybackLoading by playerConnection.isPlaybackLoading.collectAsState(initial = false)

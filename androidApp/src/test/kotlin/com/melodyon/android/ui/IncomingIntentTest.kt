@@ -64,16 +64,4 @@ class IncomingIntentTest {
         }
     }
 
-    @Test
-    fun invitationLinksPreserveAllEightCharactersAndRejectInvalidCodes() {
-        listOf("https://melodyon.cc/listen?code=room1234", "melodyon://listen-together/room1234").forEach {
-            assertEquals(IncomingDestination.ListenTogether("ROOM1234"), Intent(Intent.ACTION_VIEW, it.toUri()).toIncomingDestination())
-        }
-        listOf(
-            "https://melodyon.cc/listen?code=ROOM12",
-            "melodyon://listen-together/ROOM12345",
-            "melodyon://listen-together/ROOM123!",
-            "https://melodyon.cc.example/listen?code=ROOM1234",
-        ).forEach { assertNull(Intent(Intent.ACTION_VIEW, it.toUri()).toIncomingDestination()) }
-    }
 }

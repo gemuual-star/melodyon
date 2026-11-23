@@ -588,7 +588,7 @@ class MusicService :
                     isPlaybackLoading,
                     castManager.state,
                     AndroidDeviceConnect.manager.state,
-                    AndroidListenTogetherManager.playbackRequired,
+                    kotlinx.coroutines.flow.MutableStateFlow(false),
                 ) { requested, loading, cast, devices, room ->
                     requested || loading || cast.isConnected || room ||
                         devices.peers.any { it.state == DeviceConnectManager.PeerState.CONNECTED }
@@ -2269,7 +2269,7 @@ class MusicService :
                     ) { (song, liked), requested -> Triple(song, liked, requested) },
                     player.queueSnapshots,
                     _repeatMode,
-                    AndroidListenTogetherManager.isGuestPlaybackLockedFlow,
+                    kotlinx.coroutines.flow.MutableStateFlow(false),
                     combine(
                         player.currentPlaybackResource,
                         player.playbackInstanceId,
