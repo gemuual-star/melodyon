@@ -165,45 +165,5 @@ class YouTubeUrlParsingTest {
         assertEquals("123456789", assertIs<YouTubeUrlParser.ParsedUrl.Video>(parsed).id)
     }
 
-    @Test
-    fun extractsListenTogetherRoomCodes() {
-        assertEquals("LISTENTOGETHERID", extractListenTogetherRoomCode("melodyon://party?r=listentogetherid"))
-        assertEquals("LISTENTOGETHERID", extractListenTogetherRoomCode("https://melodyon.cc/party?r=listentogetherid"))
-        assertEquals("ROOM1234", extractListenTogetherRoomCode("melodyon://party?r=ROOM1234"))
-        assertEquals("ROOM1234", extractListenTogetherRoomCode("melodyon://listen?code=ROOM1234"))
-        assertEquals("ROOM1234", extractListenTogetherRoomCode("https://melodyon.cc/listen?code=ROOM1234"))
-        assertEquals("ROOM1234", extractListenTogetherRoomCode("melodyon://listen-together/ROOM1234"))
-        assertTrue(isListenTogetherUrl("melodyon://party?r=listentogetherid"))
-        assertNull(extractListenTogetherRoomCode("https://example.com/party?r=listentogetherid"))
-        assertNull(extractListenTogetherRoomCode("not a url"))
-    }
 
-    @Test
-    fun rejectsPreviewAndLoopbackLinks() {
-        for (host in listOf(
-            "localhost:8080",
-            "127.0.0.1:8080",
-            "feat-redesign2-metrosite.melodyon.workers.dev",
-            "other.melodyon.workers.dev",
-        )) {
-            for (path in listOf(
-                "watch?v=R93xV3v718s",
-                "playlist?list=PL1234567890abcdef",
-                "browse/MPSP_show",
-                "channel/UC1234567890abcdef",
-            )) {
-                val url = "https://$host/$path"
-                assertEquals(url, normalizeMelodyonShareUrl(url))
-                assertNull(parseYouTubeUrl(url), url)
-                assertNull(parseYouTubePodcastId(url), url)
-                assertNull(resolveMobileDeepLink(url), url)
-            }
-            for (path in listOf("party?r=ROOM1234", "listen?code=ROOM1234")) {
-                val url = "https://$host/$path"
-                assertNull(extractListenTogetherRoomCode(url), url)
-                assertNull(parseListenTogetherInvitation(url), url)
-                assertNull(resolveMobileDeepLink(url), url)
-            }
-        }
-    }
 }

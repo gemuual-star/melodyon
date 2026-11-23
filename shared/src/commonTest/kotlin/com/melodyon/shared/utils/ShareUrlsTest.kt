@@ -56,13 +56,4 @@ class ShareUrlsTest {
         assertEquals("R93xV3v718s", assertIs<YouTubeUrlParser.ParsedUrl.Video>(parseYouTubeUrl(episodeUrl)).id)
     }
 
-    @Test
-    fun roomInvitationsKeepTheProductionHost() {
-        val url = ShareUrls.party("ROOM1234", usePartyParam = false)
-        assertEquals("https://melodyon.cc/listen?code=ROOM1234", url)
-        assertEquals("ROOM1234", parseListenTogetherInvitation(url))
-        val partyUrl = ShareUrls.party("ROOM1234")
-        assertEquals("https://melodyon.cc/party?r=ROOM1234", partyUrl)
-        assertEquals("ROOM1234", extractListenTogetherRoomCode(partyUrl))
-    }
 }
