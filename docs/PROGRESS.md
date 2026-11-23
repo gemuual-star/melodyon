@@ -173,3 +173,8 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Проверки «гость комнаты» заменены на false и упрощены (скрипт подстановок), объявления isListenTogetherGuest() убраны.
 - Идёт итеративная починка компиляции через CI на ветке (workflow_dispatch ci.yml ref=wip/remove-listen-together). После зелёного CI — fast-forward merge в main (без force push).
 - Осталось: Android/desktop ссылки (MelodyonApp, MiniPlayer, PlayerState, AppContentHost, меню), Screen/NavigationId, SettingsPageId.LISTEN_TOGETHER, параметры isListenTogetherGuest в UI плеера, строки ресурсов listen_together_*, ключи Settings.
+
+### Итог шага s2 (коммит 98c51158, влит в main fast-forward)
+- Код «Слушать вместе» удалён из shared/Android/Windows; CI на ветке зелёный: 3836 тестов, 0 упало, 7 пропущено; debug APK собран.
+- Ключи настроек listenTogether* в Settings.kt оставлены как мёртвые поля (для совместимости бэкапов/миграции), UI их не использует.
+- Не проверено: компиляция desktopApp (Windows) — только через release.yml (запущен после мержа).
