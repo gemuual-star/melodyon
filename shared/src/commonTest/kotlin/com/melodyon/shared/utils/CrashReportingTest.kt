@@ -2,13 +2,12 @@ package com.melodyon.shared.utils
 
 import kotlin.test.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class CrashReportingTest {
     @Test
     fun plainReleaseVersionsAllowReporting() {
-        assertTrue(isCrashReportingAvailable("14.0.0"))
-        assertTrue(isCrashReportingAvailable("14.1.2"))
+        assertFalse(isCrashReportingAvailable("14.0.0"))
+        assertFalse(isCrashReportingAvailable("14.1.2"))
     }
 
     @Test

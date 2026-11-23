@@ -159,3 +159,11 @@ Git-доступ: credential helper `/home/user/.secrets/gh-cred.sh` читае�
 - Настройки: отдельная страница SettingsPageId.PROXY (корневая группа «Конфиденциальность и безопасность»), разделы Подключение/Сервер/Авторизация/Проверка/Надёжность, карточка результата проверки.
 - Тесты: ProxyTunnelTest (фейковые SOCKS5/HTTP-серверы). CI cfbc8ff: 3885 тестов, 0 упало, 7 пропущено; debug APK собран.
 - Не проверено: на телефоне; live-тест с реальным прокси в логах CI не виден.
+
+## Аудит телеметрии (план s1)
+Найдено и сделано:
+- Sentry Metrolist (DSN o4511744603193344.ingest.de.sentry.io) был зашит в Android release, Desktop и iOS. Отправка была по согласию (по умолчанию выкл.). Удалено: DSN стёрт, `isCrashReportingAvailable()` всегда false (скрывает согласие в онбординге и настройках), Android release использует no-op `SentryManager`/`PlaybackErrorReporter`, убраны Sentry Gradle-плагин, `sentry-android-ndk` и meta-data в release-манифесте. Desktop ещё содержит библиотеку io.sentry, но без DSN и никогда не инициализируется.
+- Lyprio (тексты, сервер Metrolist): ключи берутся из секретов CI LYPRIO_*; у нас их нет, провайдер не создаётся. Оставлен выключенным.
+- Остались сторонние сервисы, не Metrolist: загрузка лога сбоя на paste.crdroid.net (только по кнопке пользователя), Spotify Canvas через spotify-canva.vercel.app, BetterLyrics/Unison (boidu.dev), реестр player_configs на GitHub Metrolist (решение пользователя оставить).
+- В «О приложении» ещё есть список участников Metrolist со ссылками (AboutContent.kt) — убрать вместе с UI-шагом.
+- Ссылки melodyon.cc остались только в коде «Слушать вместе» и разборе ссылок — уйдут в шаге s2.
